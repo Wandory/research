@@ -1,11 +1,4 @@
-<!doctype html>
-<html lang="en">
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Organic yield against token subsidies</title>
-</head>
-<body>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,600;8..60,700&family=Source+Sans+3:wght@400;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap">
@@ -357,6 +350,7 @@ ol.refs code{font-family:var(--mono); font-size:12.5px}
     <li><b>The event sample is small.</b> 41 switch offs and 50 switch ons across eight protocols, and 3 to 14 events per protocol.</li>
     <li><b>The Morpho Blue aggregate averages curators.</b> There the rate is set by the manager of each vault rather than by the protocol, and 232 vaults have different managers.</li>
     <li><b>Euler v2 is not described.</b> Its rank spread is six positions out of eight and the re collection confirmed it. Any statement about Euler would depend on the chosen aggregation.</li>
+    <li><b>The pool set mixes lending positions with collateral positions.</b> At Morpho Blue, Compound v3 and SparkLend the source lists collateral assets as pools. Collateral earns no borrower interest by protocol design, so 147 of 462 pools never report a base rate. Because the share is weighted by yield dollars rather than by pool, a position that pays nothing and receives nothing does not move it: restricting the set to positions that earn a base rate raises Aave v3 from 0.9402 to 0.9695 and Morpho Blue from 0.8520 to 0.8643, and leaves the other six protocols unchanged.</li>
     <li><b>Almost everything rests on one source.</b> One point was verified externally, the Aave buyback in April 2025. The rest is cross checked only between endpoints of the same provider. Token unlock schedules were not collected.</li>
     <li><b>There is no causal identification.</b> The event study nets out the protocol trend but does not separate the decision to switch rewards off from the reason it was taken. This is correlation adjusted for a common trend, not an experiment.</li>
   </ul>
@@ -552,7 +546,7 @@ table('tok',['Protocol','Revenue, $M','To holders, $M','Holders share','First mo
    first||'never'];}));
 
 /* files */
-var R='../data/';
+var R='https://github.com/Wandory/research/raw/main/data/';
 var FL=[['incentives_month.csv','monthly reward rate and subsidy in dollars, per protocol'],
  ['protocol_month.csv','daily supply and borrow aggregated to months'],
  ['fees_month.csv','five revenue series on one matched scope'],
@@ -572,6 +566,3 @@ document.getElementById('tt').addEventListener('click',function(){
  document.documentElement.setAttribute('data-theme',c==='dark'?'light':'dark');});
 })();
 </script>
-
-</body>
-</html>

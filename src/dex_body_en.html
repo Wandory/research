@@ -4,19 +4,19 @@
 <header class="titleblock">
   <p class="kicker">Independent research &middot; decentralised exchanges</p>
   <h1>Mercenary liquidity</h1>
-  <p class="sub">The composition of liquidity-provider yield across seven exchanges, and how liquidity responds when emissions are switched on and off, January 2024 to September 2026</p>
+  <p class="sub">The composition of liquidity-provider yield across six exchanges, and how liquidity responds when emissions are switched on and off, January 2024 to September 2026</p>
   <dl class="meta">
     <div><dt>Author</dt><dd>Illia Sharan (Wandor)</dd></div>
     <div><dt>Date</dt><dd>17 September 2026</dd></div>
     <div><dt>Data</dt><dd>DefiLlama yields and protocol APIs</dd></div>
-    <div><dt>Sample</dt><dd>7 exchanges, 143 pools, 65,727 pool-days</dd></div>
+    <div><dt>Sample</dt><dd>6 exchanges, 143 pools, 78,412 pool-days</dd></div>
   </dl>
 </header>
 
 <section class="abstract">
   <h2>Abstract</h2>
   <p>This paper transfers the method of the preceding study on lending protocols to decentralised exchanges. Liquidity-provider yield is decomposed into trading fees and exchange-token emissions, and the response of liquidity is measured by an event study adjusted for the venue-wide trend.</p>
-  <p>The fee share of yield ranges from 1.00 at Uniswap v3 and v4, which pay no emissions at all, down to 0.10 at Aerodrome v1. Over the period the seven venues paid out $96.7M, about a third more than eight lending protocols paid over a longer window. The event-study result is the opposite of lending: switching emissions on produces a median excess pool-TVL gain of 39.5% over 90 days, against zero in lending, while switching them off costs Aerodrome 10.2% of pool TVL. The paper describes the composition of reported yield and does not measure the liquidity provider's bottom line, since the fee rate does not account for impermanent loss.</p>
+  <p>The fee share of yield ranges from 1.00 at Uniswap v3 and v4, which pay no emissions at all, down to 0.10 at Aerodrome v1. Over the period the six venues paid out $96.7M, about a third more than eight lending protocols paid over a longer window. The event-study result is the opposite of lending: switching emissions on produces a median excess pool-TVL gain of 39.5% over 90 days, against zero in lending, while switching them off costs Aerodrome 10.2% of pool TVL. The paper describes the composition of reported yield and does not measure the liquidity provider's bottom line, since the fee rate does not account for impermanent loss.</p>
 </section>
 
 <nav class="toc">
@@ -96,6 +96,7 @@
     <li><b>Vote-escrow emissions are not decomposed.</b> At Curve, Aerodrome and Velodrome the allocation of rewards is decided by token-holder votes, and part of the payout is bought by third-party protocols. In the data this appears as a reward from the venue even though a third party pays it.</li>
     <li><b>The sample is biased toward large pools.</b> Small pools, where emissions relative to TVL are highest, barely enter the sample.</li>
     <li><b>Totals were reconciled against the monthly panel after publication.</b> One venue, Curve, disagreed: its totals row exceeded the sum of its own monthly rows by $50.3M. The monthly figure is used throughout. The check now runs over every venue and issuer in the data set.</li>
+    <li><b>The emissions totals are a lower bound.</b> A pool-day enters the data only when the base rate is readable, and a dropped day takes its reward spending with it. Payouts made on days the source could not price are therefore absent from every total in this paper.</li>
     <li><b>The event sample is small.</b> 17 switch-ons and 43 switch-offs across six venues, with 4 to 27 cases per venue.</li>
     <li><b>Velodrome v3 dropped out entirely</b> because every selected pool failed to load.</li>
   </ul>

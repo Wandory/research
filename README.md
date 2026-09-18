@@ -9,8 +9,8 @@ the method and four live panels that recompute each result on current data.
 |---|---|---|---|
 | Organic yield against token subsidies | 8 lending protocols, 478 pools, 146,866 pool days | [PDF](docs/organic-vs-subsidies-2026-09.pdf) | [open](https://wandory.github.io/research/lending-live.html) |
 | Who runs your money in Morpho | 78 vaults, 12 curators, a year of daily history | [PDF](docs/morpho-curators-2026-09.pdf) | [open](https://wandory.github.io/research/morpho-live.html) |
-| Mercenary liquidity | 7 exchanges, 143 pools, 65,727 pool days | [PDF](docs/dex-mercenary-liquidity-2026-09.pdf) | [open](https://wandory.github.io/research/dex-live.html) |
-| The rate that does not hold | 8 stablecoin issuers, 38 pools | [PDF](docs/stablecoin-yield-2026-09.pdf) | [open](https://wandory.github.io/research/stable-live.html) |
+| Mercenary liquidity | 6 exchanges, 143 pools, 78,412 pool days | [PDF](docs/dex-mercenary-liquidity-2026-09.pdf) | [open](https://wandory.github.io/research/dex-live.html) |
+| The rate that does not hold | 7 stablecoin issuers, 36 pools | [PDF](docs/stablecoin-yield-2026-09.pdf) | [open](https://wandory.github.io/research/stable-live.html) |
 | Execution as a market | protocol research, 41 pages | [PDF](docs/altius-execution-marketplace-research.pdf) | |
 
 ## What is here
@@ -26,17 +26,27 @@ CLAUDE.md        metric definitions, endpoints, house rules
 NEXT.md          what is unfinished
 ```
 
-## Reproducing it
+## What can and cannot be rebuilt
 
 ```bash
-python3 tools/verify.py     # 42 checks against the data, all passing
-bash tools/rebuild.sh       # rebuilds documents, PDFs and the four live panels
+python3 tools/verify.py     # checks the documents against the data in src/
+bash tools/rebuild.sh       # rebuilds documents, PDFs and the four live panels from src/
 ```
 
-`verify.py` does two jobs. It confirms that every headline figure in the studies
-matches the data, and it tests whether the data itself can be true: every total
-must equal the sum of its own monthly rows, no entity may quote an impossible
-rate, and the lending panel's accounting identities must hold.
+The collection step is not in this repository. `src/` holds the data as it was
+retrieved and reduced on 16 and 17 September 2026, and `rebuild.sh` regenerates
+every document, PDF and panel from it. The scripts that called the DefiLlama and
+Morpho endpoints and built those files were not kept, so the figures cannot be
+regenerated from the APIs here, only re-derived from the data that is included.
+The live panels do query the endpoints directly, so anyone can compare today's
+values against the published baseline without running anything.
+
+`verify.py` checks the documents against that data: every headline figure must
+match, every total must equal the sum of its own monthly rows, no entity may
+quote an impossible rate, the accounting identities must hold, and the sample
+sizes stated in each paper must match the rows behind them. It cannot check how
+the data was built, which is a real gap and the reason the correction below
+about collateral positions was found by reading the source rather than by a test.
 
 ## Corrections
 
@@ -51,6 +61,17 @@ The exchange study carries a correction found after publication. Curve's emissio
 total exceeded the sum of its own monthly rows by $50.3M, because that totals pass
 had not applied the inclusion rule stated in the method. The venue total changed
 from $147M to $96.7M and Aerodrome Slipstream, not Curve, is the largest spender.
+
+A later audit found three more. The exchange study's sample line said seven
+exchanges and 65,727 pool days; the data behind it has six venues, because
+Velodrome v3 dropped out, and 78,412 pool days. The stablecoin study counted
+Origin Ether among eight stablecoin issuers, although OETH is pegged to ether
+rather than to a dollar; it is removed and the sample is seven issuers and 36
+pools. The lending study's pool set mixes lending positions with collateral
+positions, which earn no borrower interest by design at Morpho Blue, Compound v3
+and SparkLend; because the organic share is weighted by yield dollars rather than
+by pool, restricting the set moves only Aave v3, from 0.9402 to 0.9695, and Morpho
+Blue, from 0.8520 to 0.8643.
 
 ## Sources
 

@@ -9,14 +9,14 @@
     <div><dt>Author</dt><dd>Illia Sharan (Wandor)</dd></div>
     <div><dt>Date</dt><dd>17 September 2026</dd></div>
     <div><dt>Data</dt><dd>DefiLlama yields API</dd></div>
-    <div><dt>Sample</dt><dd>8 issuers, 38 pools, $9.6B</dd></div>
+    <div><dt>Sample</dt><dd>7 issuers, 36 pools, $9.5B</dd></div>
   </dl>
 </header>
 
 <section class="abstract">
   <h2>Abstract</h2>
   <p>A yield-bearing stablecoin is sold as a single annualised percentage. Behind that number sit different mechanisms: a Treasury coupon, the funding rate on a derivatives market, interest on loans, or a distribution of the issuer's own token. In the interface they all look the same.</p>
-  <p>This paper sets the advertised rate on the day of entry against the yield actually compounded over the following 30, 90, 180 and 365 days. At a one-month horizon the rate is informative for all eight issuers. At a one-year horizon the median ratio of realised to promised falls to 0.81 at Ethena and 0.88 at Sky, whereas at Ondo, backed by Treasuries, the rate misses in only 9% of monthly windows. The case of Usual USD0 is examined separately: at its peak 87% of the displayed yield was funded by distributing the issuer's own token.</p>
+  <p>This paper sets the advertised rate on the day of entry against the yield actually compounded over the following 30, 90, 180 and 365 days. At a one-month horizon the rate is informative for all seven issuers. At a one-year horizon the median ratio of realised to promised falls to 0.81 at Ethena and 0.88 at Sky, whereas at Ondo, backed by Treasuries, the rate misses in only 9% of monthly windows. The case of Usual USD0 is examined separately: at its peak 87% of the displayed yield was funded by distributing the issuer's own token.</p>
 </section>
 
 <nav class="toc">
@@ -38,7 +38,7 @@
   <h2><span class="n">1</span>Research question</h2>
   <p class="lead">The question of this paper: how well does the advertised rate on a yield-bearing stablecoin predict what the holder ends up with.</p>
   <p>What matters to a holder is not the rate at the moment of entry but the result compounded over the holding period. The two coincide only when the rate is constant. This paper measures the gap and shows that its size is systematically tied to the mechanism funding the yield.</p>
-  <p>Sample: Sky (sUSDS), Ondo, Ethena (sUSDe), Midas, Falcon, Usual USD0, Origin Dollar and Origin Ether. In total 38 pools of at least $2M each.</p>
+  <p>Sample: Sky (sUSDS), Ondo, Ethena (sUSDe), Midas, Falcon, Usual USD0 and Origin Dollar. In total 36 pools of at least $2M each.</p>
 </section>
 
 <section id="s2">
@@ -75,7 +75,7 @@
 
 <section id="s5">
   <h2><span class="n">5</span>The case of Usual USD0</h2>
-  <p>At seven of the eight issuers the entire yield comes from the asset: bonds, funding, or loans. Usual USD0 is different, since a substantial part of it is a distribution of the issuer's own token.</p>
+  <p>At six of the seven issuers the entire yield comes from the asset: bonds, funding, or loans. Usual USD0 is different, since a substantial part of it is a distribution of the issuer's own token.</p>
   <figure id="fig2">
     <div class="smallmult" id="usualMult"></div>
     <figcaption><b>Figure 2.</b> Share of the displayed yield funded by the asset itself: Usual USD0 and, for comparison, Ethena.</figcaption>

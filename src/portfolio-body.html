@@ -7,7 +7,6 @@
     <a class="mark" href="#top">Illia Sharan <span>/ Wandor</span></a>
     <nav class="jump" aria-label="Sections">
       <a href="#studies">Studies</a>
-      <a href="#timeline">Timeline</a>
       <a href="#method">Method</a>
       <a href="#contact">Contact</a>
     </nav>
@@ -25,8 +24,8 @@
 
     <div class="nums">
       <div class="num"><b>5</b><span>studies published, all done solo</span></div>
-      <div class="num"><b>737</b><span>pools and vaults collected and verified</span></div>
-      <div class="num"><b>220,000</b><span>pool days behind the published numbers</span></div>
+      <div class="num"><b>735</b><span>pools and vaults collected and verified</span></div>
+      <div class="num"><b>233,000</b><span>pool days behind the published numbers</span></div>
       <div class="num"><b>$175M</b><span>of token subsidies priced in dollars</span></div>
     </div>
 
@@ -182,7 +181,7 @@
         <button class="shead" aria-expanded="false" aria-controls="p3">
           <div class="smeta">
             <p class="worg">Exchanges</p>
-            <p class="wsub">7 venues &middot; 143 pools</p>
+            <p class="wsub">6 venues &middot; 143 pools</p>
             <p class="wsub">Jan 2024 &rarr; Sep 2026</p>
             <p class="wsub dim">Published Sep 2026</p>
           </div>
@@ -231,7 +230,7 @@
 <a class="frow" href="https://wandory.github.io/research/dex-live.html" target="_blank" rel="noopener"><span class="fn">Live panel</span><span class="fd">Fee share against emissions recomputed on today’s pools</span></a>
 <a class="frow" href="https://github.com/Wandory/research/raw/main/dex-mercenary-liquidity-2026-09.pdf" target="_blank" rel="noopener"><span class="fn">dex-mercenary-liquidity-2026-09.pdf</span><span class="fd">The full study, formatted for print and for sending on</span></a>
 <a class="frow" href="https://claude.ai/artifact/UWQyqLQLe4hNPaLzfViwoS" target="_blank" rel="noopener"><span class="fn">Read in the browser</span><span class="fd">The same 7 sections as a web page</span></a>
-<a class="frow" href="https://github.com/Wandory/research/raw/main/data/dex_stable_monthly.csv" target="_blank" rel="noopener"><span class="fn">dex_stable_monthly.csv</span><span class="fd">Monthly panel, seven venues and eight issuers</span></a>
+<a class="frow" href="https://github.com/Wandory/research/raw/main/data/dex_stable_monthly.csv" target="_blank" rel="noopener"><span class="fn">dex_stable_monthly.csv</span><span class="fd">Monthly panel, six venues and seven issuers</span></a>
 <a class="frow" href="https://github.com/Wandory/research/raw/main/data/dex_stable_totals.csv" target="_blank" rel="noopener"><span class="fn">dex_stable_totals.csv</span><span class="fd">Per venue totals: pools, TVL, emissions, rate split</span></a>
 <a class="frow" href="https://github.com/Wandory/research/raw/main/data/dex_events_did.csv" target="_blank" rel="noopener"><span class="fn">dex_events_did.csv</span><span class="fd">60 reward switches with the venue trend netted out</span></a>
 </div></div></div>
@@ -244,7 +243,7 @@
         <button class="shead" aria-expanded="false" aria-controls="p4">
           <div class="smeta">
             <p class="worg">Stablecoins</p>
-            <p class="wsub">8 issuers &middot; $9.6B</p>
+            <p class="wsub">7 issuers &middot; $9.5B</p>
             <p class="wsub">Jan 2024 &rarr; Sep 2026</p>
             <p class="wsub dim">Published Sep 2026</p>
           </div>
@@ -346,51 +345,6 @@
   </section>
 
   <div class="band">
-  <section class="sec" id="timeline">
-    <div class="sec-head r">
-      <h2>How this came about</h2>
-      <p>The dates on the studies are close together. This is why.</p>
-    </div>
-    <div class="tl r">
-      <div class="ev">
-        <span class="when">July 2026</span>
-        <div class="what">
-          <h4>Started, and stopped</h4>
-          <p>Began a study of lending protocol economics and ran into two problems I could not get past. Historical borrowing looked unavailable from the open APIs, and there appeared to be no way to price what a protocol had actually handed out in rewards. Both were written up as blockers and the project was left alone.</p>
-        </div>
-      </div>
-      <div class="ev">
-        <span class="when">September 2026</span>
-        <div class="what">
-          <h4>Both blockers turned out to be solvable</h4>
-          <p>Historical borrowing is in the protocol endpoint the whole time, as a daily series under <span class="mono">chainTvls.borrowed</span>. Rewards can be priced by taking the published reward rate against pool size on each day and summing. Neither needs a paid data source.</p>
-          <p>With the method unblocked, the same panel construction applies to any market that publishes a rate, which is why four studies followed in one week rather than one in four months.</p>
-        </div>
-      </div>
-      <div class="ev">
-        <span class="when">16 to 17 Sep</span>
-        <div class="what">
-          <h4>Data collected</h4>
-          <p>737 pools and vaults, 220,000 pool days, four markets. Every intermediate table saved, so every figure rebuilds without touching the network again. The collection date is on every study because it is part of the method: a reader checking these numbers needs to know which day the snapshot is from.</p>
-        </div>
-      </div>
-      <div class="ev">
-        <span class="when">18 Sep</span>
-        <div class="what">
-          <h4>Two errors found and printed</h4>
-          <p>An audit for implausible values, rather than for internal agreement, caught an emissions total that exceeded the sum of its own monthly rows by $50.3M, and six vaults quoting rates near 298,000% a year that turned out to be an artefact of their share price. The first changed a headline figure and a ranking. Both corrections are printed in the documents rather than applied quietly.</p>
-        </div>
-      </div>
-      <div class="ev now">
-        <span class="when">Continuing</span>
-        <div class="what">
-          <h4>The panels keep running</h4>
-          <p>Each study has a live panel that recomputes its headline metric on current data and sets it against the published baseline, so the work shows its own age. Aave has already moved from 0.94 to 0.84 since publication.</p>
-        </div>
-      </div>
-    </div>
-  </section>
-
   <section class="sec" id="method">
     <div class="sec-head r">
       <h2>How the work is done</h2>

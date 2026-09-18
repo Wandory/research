@@ -1,11 +1,4 @@
-<!doctype html>
-<html lang="en">
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Who runs your money in Morpho</title>
-</head>
-<body>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,600;8..60,700&family=Source+Sans+3:wght@400;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap">
@@ -401,7 +394,7 @@ table('badTable',['Vault','Chain','Asset','Assets','Rate per API','Fee','Curator
   {v:num(b.reported_net_apy).toLocaleString('en-US')+'%',cl:'neg'},
   {v:num(b.fee_pct).toFixed(0)+'%',cl:num(b.fee_pct)>=50?'neg':''},'not listed',b.markets]}));
 
-var R='../data/';
+var R='https://github.com/Wandory/research/raw/main/data/';
 document.getElementById('files').innerHTML=[['morpho_vaults.csv','78 vaults: curator, fee, collateral mix, LLTV, utilisation'],
  ['morpho_curators.csv','the same aggregated by curator'],
  ['morpho_vault_history.csv','a year of daily rate and assets, thirty largest vaults'],
@@ -415,6 +408,3 @@ document.getElementById('tt').addEventListener('click',function(){
  document.documentElement.setAttribute('data-theme',c==='dark'?'light':'dark');});
 })();
 </script>
-
-</body>
-</html>

@@ -94,8 +94,14 @@ chk('morpho: Steakhouse reward days 1.3%', 1.3,
 # that disagrees with the panel it is drawn from is how the Curve figure was
 # wrong by $50.3M in the first version of the exchange study.
 import csv, os
-mon_path = os.path.join(ROOT, 'docs', 'data', 'dex_stable_monthly.csv')
-if os.path.exists(mon_path):
+mon_path = next((p for p in (os.path.join(ROOT, 'data', 'dex_stable_monthly.csv'),
+                             os.path.join(ROOT, 'docs', 'data', 'dex_stable_monthly.csv'))
+                 if os.path.exists(p)), None)
+if mon_path is None:
+    raise SystemExit('verify: dex_stable_monthly.csv not found; the totals checks '
+                     'cannot be skipped silently, they are the ones that caught the '
+                     '$50.3M Curve error')
+if True:
     per = {}
     with open(mon_path, encoding='utf-8') as f:
         for row in csv.DictReader(f):
@@ -130,6 +136,32 @@ for p, rows in rep['series'].items():
         if o is not None and not (-1e-9 <= o <= 1 + 1e-9):
             viol += 1
 chk('lending panel: no accounting identity broken', 0, viol, 0)
+
+# Sample sizes stated in the papers must match the rows behind them.
+import re
+DOC = os.path.join(SRC, '')
+def body(name):
+    with open(os.path.join(SRC, name), encoding='utf-8') as fh:
+        return fh.read()
+
+dexrows = [t for t in d['totals'] if t['grp'] == 'dex']
+strows = [t for t in d['totals'] if t['grp'] == 'stable']
+db, sb = body('dex_body_en.html'), body('stable_body_en.html')
+
+chk('dex: venues in data = venues claimed', len(dexrows),
+    int(re.search(r'(\d+) exchanges, ', db).group(1)), 0)
+chk('dex: pools in data = pools claimed', sum(int(t['pools']) for t in dexrows),
+    int(re.search(r'exchanges, ([\d,]+) pools', db).group(1).replace(',', '')), 0)
+chk('dex: pool-days in data = pool-days claimed', sum(int(t['pool_days']) for t in dexrows),
+    int(re.search(r'pools, ([\d,]+) pool-days', db).group(1).replace(',', '')), 0)
+chk('stable: issuers in data = issuers claimed', len(strows),
+    int(re.search(r'(\d+) issuers, ', sb).group(1)), 0)
+chk('stable: pools in data = pools claimed', sum(int(t['pools']) for t in strows),
+    int(re.search(r'issuers, (\d+) pools', sb).group(1)), 0)
+chk('stable: no ether denominated issuer in a stablecoin sample', 0,
+    len([t for t in strows if 'ether' in t['project']]), 0)
+chk('dex: venue count in prose matches the sample line', 0,
+    len(re.findall(r'seven venues|seven exchanges', db)), 0)
 
 for ok, label, claimed, actual in checks:
     try:

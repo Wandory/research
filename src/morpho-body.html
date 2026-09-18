@@ -1,0 +1,86 @@
+<div id="dock"><button id="theme" type="button" aria-label="Switch theme">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
+</button></div>
+
+<header class="sec hero">
+  <p class="kicker">Live panel &middot; Morpho Blue</p>
+  <h1>Who runs your money in Morpho</h1>
+  <p class="intro">Curator concentration, fees, rates and collateral, read live from Morpho's own GraphQL API every time this page opens, against the snapshot published in September 2026.</p>
+  <div class="statusline">
+    <span id="stat"><i></i> connecting</span>
+    <span id="stamp"></span>
+    <button class="plain" id="refresh" type="button" disabled>Refresh</button>
+  </div>
+  <div id="errbox"></div>
+  <div class="nums" id="hero"></div>
+</header>
+
+<section class="sec" id="sec-drift">
+  <h2>What moved since publication</h2>
+  <p class="note">The hollow marker is each curator's share of readable assets as the study measured it, the filled marker is the same calculation on today's vaults.</p>
+  <figure>
+    <div id="drift"></div>
+    <div class="ckey" id="drift-lg"></div>
+    <figcaption><b>Figure 1.</b> Share of assets by curator, published snapshot against live. Vaults quoting a rate above 100% a year or a fee above 35% are excluded from both, and listed separately below. Source: Morpho GraphQL API, author's calculation.</figcaption>
+  </figure>
+</section>
+
+<section class="sec" id="sec-live">
+  <h2>Live curator table</h2>
+  <p class="note">Assets, rate and fee are weighted by vault size. Blue chip is the share of collateral in majors; PT is fixed maturity Pendle paper, which carries a maturity date and behaves differently from a plain asset while looking identical in the interface. LLTV is the average liquidation threshold. Click any heading to sort.</p>
+  <div class="tw"><table class="d wide" id="tlive"></table></div>
+</section>
+
+<section class="sec" id="sec-rate">
+  <h2>Rate and its spread</h2>
+  <p class="note">The published year of daily history for the thirty largest vaults, unchanged. The dot is the median rate, the bar is the interquartile range.</p>
+  <figure>
+    <div class="chart" id="whisker"></div>
+    <figcaption><b>Figure 2.</b> Median annual rate and interquartile range over 365 days, thirty largest readable vaults. Scale runs from zero to 8% a year. Source: Morpho GraphQL API, author's panel.</figcaption>
+  </figure>
+  <figure>
+    <div id="feebars"></div>
+    <div class="ckey" id="feebars-lg"></div>
+    <figcaption><b>Figure 3.</b> What the curator charges against what the depositor receives, live. A fee that rises without the rate rising with it is paid by the depositor and nobody else.</figcaption>
+  </figure>
+</section>
+
+<section class="sec" id="sec-vaults">
+  <h2>Vault explorer</h2>
+  <p class="note">Every live vault above one million dollars, sortable. Twenty five rows a page, largest first.</p>
+  <div class="ctl">
+    <span class="cl">Search</span>
+    <input type="search" id="q" placeholder="vault, asset, chain or curator" autocomplete="off">
+    <span class="cl">Curator</span>
+    <span class="grp" id="chips"></span>
+    <span class="cnt" id="cnt"></span>
+  </div>
+  <div class="tw"><table class="d wide" id="tvaults"></table></div>
+  <div class="pager">
+    <button class="plain" id="prev" type="button">Previous</button>
+    <button class="plain" id="next" type="button">Next</button>
+    <span class="pg" id="pg"></span>
+  </div>
+</section>
+
+<section class="sec" id="sec-bad">
+  <h2>Vaults with an unreadable rate</h2>
+  <p class="note">Excluded from every figure above rather than dropped silently. The API returns these rates as published; they are not corrected here.</p>
+  <p class="note" id="badnote"></p>
+  <div class="tw"><table class="d" id="tbad"></table></div>
+</section>
+
+<footer class="foot">
+  <div class="blk">
+    <h4>Method</h4>
+    <p>All V1 vaults holding at least one million dollars are taken. Curator names come from the curators query and are matched to each vault through the curator address on its state; a vault whose address matches no curator is shown as no curator listed. Rate is netApy, the rate a depositor actually receives after the fee. Collateral shares are computed per allocation, weighted by the amount allocated, and blue chip means WETH, wstETH, cbETH, rETH, weETH, ezETH, WBTC, cbBTC, tBTC, LBTC, USDC, USDT, DAI or USDS.</p>
+  </div>
+  <div class="blk">
+    <h4>Sources</h4>
+    <p><a href="https://blue-api.morpho.org/graphql" target="_blank" rel="noopener">blue-api.morpho.org/graphql</a>, queries vaults and curators, fetched by this page at open time. Baseline snapshot from the study published September 2026, covering 78 vaults and a year of daily history for the thirty largest.</p>
+  </div>
+  <div class="blk">
+    <h4>Limits</h4>
+    <p>Six vaults are excluded for quoting a rate above 100% a year or a fee above 35%. They are unlisted vaults whose share price has been pushed to hundreds of dollars in a vault denominated in a dollar asset, which is what the quoted rate is derived from; none of the listed vaults in the sample is affected. This is a snapshot rather than a daily series, so the live column moves with the market and is noisier than a monthly panel would be. V2 vaults are out of scope, which is why the total does not match protocol TVL at aggregators, where collateral held in isolated markets is also counted. A curator can run vaults under more than one address, and any address the curators query does not list falls into the unlisted row.</p>
+  </div>
+</footer>

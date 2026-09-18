@@ -1,0 +1,228 @@
+<button id="tt" type="button">Theme</button>
+<article class="paper">
+
+<header class="titleblock">
+  <p class="kicker">Independent research &middot; DeFi lending</p>
+  <h1>Organic yield against token subsidies</h1>
+  <p class="sub">Splitting depositor yield at eight lending protocols into the part paid by borrowers and the part printed in the protocol's own token, January 2024 to August 2026</p>
+  <dl class="meta">
+    <div><dt>Author</dt><dd>Illia Sharan (Wandor)</dd></div>
+    <div><dt>Date</dt><dd>17 September 2026</dd></div>
+    <div><dt>Version</dt><dd>2.0, rebuilt on a matched scope</dd></div>
+    <div><dt>Sample</dt><dd>8 protocols, 478 pools, 146,866 pool days</dd></div>
+  </dl>
+</header>
+
+<section class="abstract">
+  <h2>Abstract</h2>
+  <p>The yield a depositor sees in a lending protocol is the sum of two things of different nature: interest paid by borrowers, and token rewards printed by the protocol. The interface shows them as one number. This study separates them using daily pool level data for eight protocols over 32 months, prices the rewards in dollars, and compares that spend against what each protocol earns.</p>
+  <p>The share of yield paid by borrowers ranges from 1.00 at SparkLend to 0.45 at Euler v2. Over the period the eight protocols paid out $73.0M in rewards against $288.3M of their own revenue and $2,669.5M of fees paid by borrowers. Four of the eight pay out more than they earn. A difference in differences study of 91 reward switches, netting out each protocol's own trend, finds that turning rewards on buys no additional liquidity, while turning them off costs about 7% of pool TVL. The advertised rate describes a one month horizon and not a one year horizon: the median ratio of received to advertised yield falls to 0.64 at Moonwell.</p>
+</section>
+
+<nav class="toc">
+  <h2>Contents</h2>
+  <ol>
+    <li><a href="#s1"><span class="n">1</span>Question</a></li>
+    <li><a href="#s2"><span class="n">2</span>Data and method</a></li>
+    <li><a href="#s3"><span class="n">3</span>Yield decomposition</a></li>
+    <li><a href="#s4"><span class="n">4</span>Robustness</a></li>
+    <li><a href="#s5"><span class="n">5</span>Cost of the subsidy</a></li>
+    <li><a href="#s6"><span class="n">6</span>Protocol economics</a></li>
+    <li><a href="#s7"><span class="n">7</span>Advertised against received</a></li>
+    <li><a href="#s8"><span class="n">8</span>Event study of rewards</a></li>
+    <li><a href="#s9"><span class="n">9</span>Utilisation decomposition</a></li>
+    <li><a href="#s10"><span class="n">10</span>Structure and concentration</a></li>
+    <li><a href="#s11"><span class="n">11</span>Where revenue goes</a></li>
+    <li><a href="#s12"><span class="n">12</span>Limitations</a></li>
+    <li><a href="#s13"><span class="n">13</span>Conclusions</a></li>
+    <li><a href="#refs"><span class="n">&nbsp;</span>References</a></li>
+    <li><a href="#data"><span class="n">&nbsp;</span>Data availability</a></li>
+  </ol>
+</nav>
+
+<section id="s1">
+  <h2><span class="n">1</span>Question</h2>
+  <p class="lead">Which lending protocols generate durable economic activity, and which depend on token incentives to attract capital?</p>
+  <p>A depositor sees one annual percentage number. Two different sources sit behind it. The first is interest from borrowers: it reflects demand for credit and exists independently of protocol policy. The second is rewards printed in the protocol's own token: they reflect a customer acquisition budget and end when the team decides they end. A protocol showing 5% a year of which 4.5 points are printed, and a protocol showing the same 5% entirely paid by borrowers, are two different businesses behind one identical display.</p>
+  <p>Sample: Aave v3, Compound v3, SparkLend, Morpho Blue, Venus Core Pool, Fluid Lending, Euler v2 and Moonwell. Period January 2024 to August 2026, 32 months.</p>
+</section>
+
+<section id="s2">
+  <h2><span class="n">2</span>Data and method</h2>
+  <h3>2.1 Sources</h3>
+  <p>Three open endpoints, all from DefiLlama [1]. The yields API gives daily series per pool: the interest rate <span class="mono">apyBase</span>, the reward rate <span class="mono">apyReward</span> and pool size <span class="mono">tvlUsd</span>. The protocol API gives daily TVL and borrowed amounts per protocol. The fees API gives five series: fees, revenue, holders revenue, supply side revenue and treasury revenue.</p>
+  <p>478 pools were collected, covering at least 98% of each protocol's current TVL. Five pools failed to load, 1.0% of the sample. Collection ran with three parallel requests, exponential backoff on HTTP 429 and six retries.</p>
+
+  <h3>2.2 Inclusion rule</h3>
+  <p>A pool day counts only when <span class="mono">apyBase</span> is populated. On those same days an empty <span class="mono">apyReward</span> is treated as zero. The rule matters: without it the sample fills with collateral pools that pay no interest at all, and coverage collapses to 9.4% at Compound v3 and 50% at Morpho Blue. The same rule is written in the source project's own methodology [3], which states that Compound III collateral never belongs to base asset supply.</p>
+
+  <h3>2.3 Matched scope</h3>
+  <p>Economics, supply and borrow are all taken for the same protocol identifier. This is what separates version 2.0 from the first pass, where economics came from parent identifiers (<span class="mono">aave</span> instead of <span class="mono">aave-v3</span>, <span class="mono">spark</span> instead of <span class="mono">sparklend</span>, <span class="mono">fluid</span> instead of <span class="mono">fluid-lending</span>), overstating Spark fees by 49% and Aave fees by 25%. Supply is computed as TVL plus borrowed, because the source subtracts borrowed amounts from TVL.</p>
+
+  <h3>2.4 Metrics</h3>
+  <ul class="plain">
+    <li><b>Share of yield paid by borrowers</b> is apyBase divided by the sum of apyBase and apyReward, aggregated across days weighted by TVL.</li>
+    <li><b>Subsidies in dollars</b> are the sum over pool days of apyReward divided by 36,500 and multiplied by tvlUsd. This is the cost of rewards paid to depositors, valued by the source on the day of payment.</li>
+    <li><b>Incentive dependency</b> is subsidies divided by protocol revenue. Above one means the protocol hands out more than it earns.</li>
+    <li><b>Incentive cost of capital</b> is subsidies divided by average supply, annualised.</li>
+    <li><b>Realised yield</b> is computed by log compounding daily rates rather than averaging them.</li>
+  </ul>
+</section>
+
+<section id="s3">
+  <h2><span class="n">3</span>Yield decomposition</h2>
+  <p>Figure 1 shows the share of yield paid by borrowers over the whole period, weighted by TVL. One means the entire depositor yield came from borrowers, zero means all of it was printed.</p>
+  <figure id="fig1">
+    <div class="bars" id="rank"></div>
+    <div class="legend"><span><i class="sw" style="background:var(--ink)"></i>interest from borrowers</span><span><i class="sw" style="background:var(--rule-2)"></i>token rewards</span></div>
+    <figcaption><b>Figure 1.</b> Share of yield paid by borrowers, January 2024 to August 2026, TVL weighted. Source: DefiLlama yields API, author's calculation.</figcaption>
+  </figure>
+  <p>The spread is roughly twofold. SparkLend recorded no reward day at all across 6,454 pool days while averaging $5.2B of supply. Euler v2 displays 4.7% a year in total, of which 2.74 points are rewards, so its interest component sits below Morpho Blue and Compound v3 despite the higher headline.</p>
+  <p>Figure 2 shows how the share moved month by month. Aave v3 ran without rewards until April 2026 and then moved to a state where rewards supply almost half of the displayed rate, which is why its 2026 slice diverges from earlier years.</p>
+  <figure id="fig2">
+    <div class="smallmult" id="mult"></div>
+    <figcaption><b>Figure 2.</b> Monthly share of yield paid by borrowers. The filled area is interest, the gap above it is rewards, the dashed line marks 0.5. The horizontal axis is the same in all eight panels, January 2024 to August 2026 from left to right.</figcaption>
+  </figure>
+</section>
+
+<section id="s4">
+  <h2><span class="n">4</span>Robustness</h2>
+  <p>A single aggregation can produce an accidental result, so the metric was recomputed eight ways: TVL weighting, equal weighting of pools, median across pool months, exclusion of pools below $1M, exclusion of pools with less than 18 months of history, and each calendar year separately. Table 1 reports these, plus the value obtained when the whole panel was collected again a day later in an independent pass.</p>
+  <div class="tbl" id="tab1">
+    <p class="tcap"><b>Table 1.</b> Share of yield paid by borrowers under eight angles, plus an independent re collection.</p>
+    <div class="tw"><table id="angles"></table></div>
+    <p class="tnote">Rank spread is the number of positions a protocol moves across angles. The re collection ran on 17 September 2026 with a different pool list (478 against 476).</p>
+  </div>
+  <p>Seven of the eight protocols are stable: rank moves by no more than three positions. Euler v2 moves six positions out of eight and takes values from 0.41 to 1.00 depending on the angle, so no conclusion is drawn about it. The re collection reproduced six protocols to four decimals; Aave differed by 0.005 and Euler by 0.035, which confirms that the instability belongs to Euler rather than to the method.</p>
+</section>
+
+<section id="s5">
+  <h2><span class="n">5</span>Cost of the subsidy</h2>
+  <p>A share in per cent says nothing about the size of the spend. Table 2 converts rewards into dollars and sets them against protocol revenue.</p>
+  <div class="tbl" id="tab2">
+    <p class="tcap"><b>Table 2.</b> Subsidies, revenue and derived measures over the period.</p>
+    <div class="tw"><table id="tmoney"></table></div>
+    <p class="tnote">Dependency is subsidies divided by protocol revenue. Cost of capital is subsidies over average supply, annualised. Net margin is revenue minus subsidies over supply, also annualised.</p>
+  </div>
+  <p>Four protocols out of eight run a negative net margin. Morpho Blue paid out $30.6M with zero revenue, Fluid $21.8M against $12.9M, Euler v2 $6.6M against $4.7M and Compound v3 $0.54M against $0.39M. Aave v3 earns roughly twenty times what it hands out, and almost all of its handouts fall in the last five months of the period.</p>
+  <figure id="fig3">
+    <div class="bars" id="netmargin"></div>
+    <figcaption><b>Figure 3.</b> Net margin: protocol revenue minus subsidies, relative to average supply, in per cent a year. Bars to the right of the zero line are positive, to the left negative.</figcaption>
+  </figure>
+  <p>The cost of attracted capital is small everywhere. Even for the most generous it is 0.54% a year of supply at Fluid and 0.26% at Euler v2. Subsidy in lending is cheaper than the headline rates suggest, because it is spread across a very large base.</p>
+</section>
+
+<section id="s6">
+  <h2><span class="n">6</span>Protocol economics</h2>
+  <p>Borrowers pay interest, part of it reaches depositors, part stays with the protocol. Table 3 reports these on the matched scope.</p>
+  <div class="tbl" id="tab3">
+    <p class="tcap"><b>Table 3.</b> Fees, the protocol's share and derived ratios.</p>
+    <div class="tw"><table id="take"></table></div>
+    <p class="tnote">Take rate is protocol revenue divided by fees. Borrower rate is fees over average borrowed, annualised. Revenue to supply and revenue to borrow are annualised as well.</p>
+  </div>
+  <p>Take rate ranges from 0.00% at Morpho Blue to 21.47% at Moonwell. Morpho Blue kept nothing out of $338M of fees across 31 months; that is a protocol parameter, not a data defect. Compound v3 held revenue at zero for fifteen observed months and switched it on in May 2026: $19.7k in May, $75.3k in June, $112.3k in July and $180.3k in August (figure 4). No public governance record could be matched to that month, so it is reported here as an observation in the data rather than as a decision retold.</p>
+  <figure id="fig4">
+    <div class="lines" id="switch"></div>
+    <figcaption><b>Figure 4.</b> Monthly protocol revenue of Compound v3, in thousands of dollars. Fifteen observed months sit at exactly zero and are drawn as ticks on the baseline; revenue is switched on in May 2026.</figcaption>
+  </figure>
+  <p>Correction to the first version. It substituted treasury revenue for total revenue on some protocols, which made the Venus take rate look like 0.84% instead of 17.82%. Table 3 is rebuilt on one definition for all eight.</p>
+</section>
+
+<section id="s7">
+  <h2><span class="n">7</span>Advertised against received</h2>
+  <p>Nine per cent a year displayed on 1 January does not mean a depositor earned nine per cent over that year. For every entry day the displayed total rate was recorded and compared with what actually accrued over the next 30, 90, 180 and 365 days, compounded daily. Windows are taken every 15 days and dropped when a gap in the series exceeds a quarter of the window length.</p>
+  <figure id="fig5">
+    <div class="lines" id="ratio"></div>
+    <figcaption><b>Figure 5.</b> Median ratio of received to advertised yield across four horizons. Only windows where the displayed rate on entry was at least 3% a year are included.</figcaption>
+  </figure>
+  <div class="tbl" id="tab4">
+    <p class="tcap"><b>Table 4.</b> Received divided by advertised, by horizon.</p>
+    <div class="tw"><table id="crt"></table></div>
+    <p class="tnote">SparkLend has fewer than thirty windows at 365 days, so the cell is not computed. A 1% threshold was also tested: direction and ordering hold, only levels change.</p>
+  </div>
+  <p>At the one month horizon the ratio is close to one for all eight. At one year the median falls to 0.64 at Moonwell and 0.74 at Euler v2, so the depositor received about two thirds of what was displayed. The protocols with the largest reward share fall the furthest.</p>
+</section>
+
+<section id="s8">
+  <h2><span class="n">8</span>Event study of rewards</h2>
+  <p>91 sharp reward switches were identified at pool level. A switch on is a move of the 14 day average reward from below 0.15% to above 1% a year; a switch off is a fall from above 1% to a quarter of that level or less. Each event requires pool TVL of at least $300k and 45 days of data on each side, with at least 60 days between consecutive events in the same pool. For every event the change in pool TVL is measured net of the change in the protocol's own supply over the same days, otherwise a rising market is easily mistaken for an effect of rewards.</p>
+  <div class="tbl" id="tab5">
+    <p class="tcap"><b>Table 5.</b> TVL around reward switches, net of the protocol trend.</p>
+    <div class="tw"><table id="evt"></table></div>
+    <p class="tnote">Per protocol rows are shown where at least three events exist. Excess is the change in pool TVL minus the change in protocol supply over the same days.</p>
+  </div>
+  <p>Across 50 switch ons the median excess at 90 days is minus 0.6%, indistinguishable from zero: pools with rewards did not grow faster than their protocol. Across 41 switch offs the median excess is minus 7.4% with 56% of cases negative. Moonwell is the exception: 13 switch offs, median excess minus 24.3%, negative in 69% of cases. Morpho Blue shows a positive excess of plus 128.7%, most likely selection rather than effect, since rewards were switched off in vaults that were already scaling. Per protocol samples run from 3 to 14 events, so only descriptive statements are made about them. One caveat on the pooled row: 27 of the 50 switch ons are Morpho Blue pools, so the pooled median for switch ons is effectively Morpho's median and the two rows coincide to the decimal. The null result on switch ons is therefore established for Morpho Blue and is only weakly supported for the other four protocols.</p>
+</section>
+
+<section id="s9">
+  <h2><span class="n">9</span>Utilisation decomposition</h2>
+  <p>Utilisation is borrowed divided by supply. It rises both when borrowers arrive and when depositors leave, so every monthly change is decomposed in logs into a borrow contribution and a supply contribution. A contribution is called dominant when it exceeds the other by a factor of two. Thresholds were chosen after inspecting the distribution: the median monthly change in utilisation is 1.13 percentage points, so changes below one point are classified as no movement.</p>
+  <figure id="fig6">
+    <div class="ustack" id="ustack"></div>
+    <figcaption><b>Figure 6.</b> Distribution of months by the driver of the utilisation change, as a share of each protocol's observed months.</figcaption>
+  </figure>
+  <p>In 44% of months utilisation did not move by more than one point. A clean supply exit against rising utilisation appears in 2.5% of months, six cases across eight protocols over the whole period. Euler v2 is the only protocol with a clear trend: utilisation rose from 0.42 to 0.62 over a year with supply falling faster than borrowing. Moonwell has 11 months out of 32 in the category where both sides decline.</p>
+</section>
+
+<section id="s10">
+  <h2><span class="n">10</span>Structure and concentration</h2>
+  <p>Covering 98% of TVL takes nine pools at SparkLend and 232 at Morpho Blue. These are differently built markets even though they sit next to each other in summary tables.</p>
+  <div class="tbl" id="tab6">
+    <p class="tcap"><b>Table 6.</b> Pool concentration and share of total rewards.</p>
+    <div class="tw"><table id="tconc"></table></div>
+    <p class="tnote">HHI is the sum of squared pool shares; closer to one means more concentrated. Pool counts are taken on the collection date.</p>
+  </div>
+  <p>The practical meaning is where the risk sits. At SparkLend 63% of TVL is in a single pool and that risk is legible. At Morpho Blue risk is spread across 232 vaults run by different managers, which moves the question from the protocol to the individual curator. Morpho also holds 42% of all rewards paid in the sample.</p>
+</section>
+
+<section id="s11">
+  <h2><span class="n">11</span>Where revenue goes</h2>
+  <p>Protocol revenue can accrue to a treasury or reach token holders through buybacks and staking. Table 7 shows the split.</p>
+  <div class="tbl" id="tab7">
+    <p class="tcap"><b>Table 7.</b> Protocol revenue and the share flowing to token holders.</p>
+    <div class="tw"><table id="tok"></table></div>
+    <p class="tnote">The two series are not nested. In eight protocol months, five at SparkLend and three at Fluid, the source reports more holders revenue than total revenue, which an accounting split cannot do. The share is therefore an indicator of where revenue is directed and not an exact payout. It does identify the month a buyback begins.</p>
+  </div>
+  <p>At Aave v3 holders revenue appears in April 2025 and immediately amounts to $3.03M for the month. The Aave DAO approved a $1M weekly buyback on 7 April 2025 and started it on 9 April [2]. That month level agreement is the single point in this study where the data source was verified against an independent one. Venus sends 94.5% of its revenue to holders, and a separate treasury line appears there only from December 2025.</p>
+</section>
+
+<section id="s12">
+  <h2><span class="n">12</span>Limitations</h2>
+  <ul class="plain">
+    <li><b>Subsidies are measured on the depositor side only.</b> Borrower side rewards, which Moonwell and Venus both run, do not appear in the supply pool reward rate, so actual payouts are higher than measured, and Moonwell is understated the most.</li>
+    <li><b>The dollar valuation inherits the source.</b> It uses the token price of the day and the advertised rate. Rewards that were advertised but never paid are indistinguishable from paid ones here.</li>
+    <li><b>The pooled switch on row is one protocol.</b> Morpho Blue supplies 27 of the 50 switch ons, so the pooled median reproduces Morpho's median exactly. The pooled figure should not be read as a cross protocol average.</li>
+    <li><b>The event sample is small.</b> 41 switch offs and 50 switch ons across eight protocols, and 3 to 14 events per protocol.</li>
+    <li><b>The Morpho Blue aggregate averages curators.</b> There the rate is set by the manager of each vault rather than by the protocol, and 232 vaults have different managers.</li>
+    <li><b>Euler v2 is not described.</b> Its rank spread is six positions out of eight and the re collection confirmed it. Any statement about Euler would depend on the chosen aggregation.</li>
+    <li><b>Almost everything rests on one source.</b> One point was verified externally, the Aave buyback in April 2025. The rest is cross checked only between endpoints of the same provider. Token unlock schedules were not collected.</li>
+    <li><b>There is no causal identification.</b> The event study nets out the protocol trend but does not separate the decision to switch rewards off from the reason it was taken. This is correlation adjusted for a common trend, not an experiment.</li>
+  </ul>
+</section>
+
+<section id="s13">
+  <h2><span class="n">13</span>Conclusions</h2>
+  <ol>
+    <li>The share of yield paid by borrowers splits the sample in two: SparkLend, Venus, Aave v3, Compound v3 and Morpho Blue rest mainly on borrowing demand, while Fluid, Moonwell and Euler v2 rest substantially on printing.</li>
+    <li>Subsidies in lending are cheap relative to the asset base, yet for half of the sample they exceed the protocol's own revenue, meaning they are not funded from operations.</li>
+    <li>Switching rewards on does not buy liquidity at a level distinguishable from zero. Switching them off costs about 7% of pool TVL, and only one protocol in the sample shows a strong dependence.</li>
+    <li>The advertised rate is informative over a month and misleading over a year, and the gap widens with the reward share.</li>
+  </ol>
+</section>
+
+<section id="refs">
+  <h2>References</h2>
+  <ol class="refs">
+    <li>DefiLlama. Yields API, <code>yields.llama.fi/pools</code> and <code>yields.llama.fi/chart/{pool}</code>; Protocol API, <code>api.llama.fi/protocol/{slug}</code>; Fees API, <code>api.llama.fi/summary/fees/{slug}</code>. Retrieved 16 and 17 September 2026.</li>
+    <li>Aave DAO. Approval of a $1M weekly AAVE buyback, vote 7 April 2025, start 9 April 2025. Reported by CryptoSlate, <code>cryptoslate.com/aave-dao-greenlights-1-million-weekly-token-buyback-amid-market-decline</code>.</li>
+    <li>Project methodology of defi-lending-economics: <code>docs/methodology.md</code>, <code>docs/metric_definitions.md</code>, <code>docs/HISTORICAL_ACTIVITY_BLOCKERS.md</code>, which records the stop condition against combining global economics with partial activity scopes.</li>
+  </ol>
+</section>
+
+<section id="data">
+  <h2>Data availability</h2>
+  <p>Every number in this study is reproducible from the intermediate tables without going back to the network.</p>
+  <div class="files2" id="files"></div>
+</section>
+
+</article>

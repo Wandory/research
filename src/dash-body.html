@@ -1,0 +1,84 @@
+<div id="dock"><button id="theme" type="button" aria-label="Switch theme">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
+</button></div>
+
+<header class="sec hero">
+  <p class="kicker">Live panel &middot; DeFi lending</p>
+  <h1>Organic yield against token subsidies</h1>
+  <p class="intro">The metric from the September 2026 study, recomputed on live data every time this page opens. Eight lending protocols, every pool with a readable base rate, set against the published 32 month baseline.</p>
+  <div class="statusline">
+    <span id="stat"><i></i> connecting</span>
+    <span id="stamp"></span>
+    <button class="plain" id="refresh" type="button" disabled>Refresh</button>
+  </div>
+  <div id="errbox"></div>
+  <div class="nums" id="hero"></div>
+</header>
+
+<section class="sec" id="sec-drift">
+  <h2>What moved since publication</h2>
+  <p class="note">The hollow marker is the figure the study published, the filled marker is the same calculation on today's pools, and the bar between them is the distance travelled.</p>
+  <figure>
+    <div id="drift"></div>
+    <div class="ckey" id="drift-lg"></div>
+    <figcaption><b>Figure 1.</b> Share of yield paid by borrowers, published baseline against live. One means every cent of depositor yield came from interest, zero means all of it was printed. The live figure is weighted by TVL across all pools returned with a non null base rate.</figcaption>
+  </figure>
+</section>
+
+<section class="sec" id="sec-live">
+  <h2>Live protocol economics</h2>
+  <p class="note">Rates and deposits come from the yields endpoint, fees and revenue from the fees endpoint, both read directly by your browser. Subsidy run rate annualises today's reward rate, so it is a forward projection and not comparable with realised spend. Dependency is that run rate over annualised revenue; above one means the protocol hands out more than it earns. Click any heading to sort.</p>
+  <div class="tw"><table class="d wide" id="tlive"></table></div>
+</section>
+
+<section class="sec" id="sec-hist">
+  <h2>The baseline series</h2>
+  <p class="note">Thirty two months of the published panel, unchanged. This is the part of the page that does not move: it is the record the live numbers are compared against. Each protocol gets its own panel rather than eight lines in one frame, because eight lines that cross cannot be told apart reliably.</p>
+  <figure>
+    <div id="hist"></div>
+    <p class="ckey" id="hist-lg"></p>
+    <figcaption><b>Figure 2.</b> Monthly share of yield paid by borrowers, January 2024 to August 2026, weighted by TVL within each protocol month. Gaps are months with no readable rate rather than zero. Source: DefiLlama yields API, author's panel.</figcaption>
+  </figure>
+  <figure>
+    <div id="subs"></div>
+    <p class="ckey" id="subs-lg"></p>
+    <figcaption><b>Figure 3.</b> Cumulative subsidies paid to depositors, in dollars, priced as the reward rate applied to pool size on each day and accumulated. All eight panels share one vertical scale, so the filled area is proportional to what each protocol actually spent. Source: DefiLlama yields API, author's panel.</figcaption>
+  </figure>
+</section>
+
+<section class="sec" id="sec-pools">
+  <h2>Pool explorer</h2>
+  <p class="note">Every live pool behind the numbers above, sortable by the same ratio. A pool counts only when the base rate is populated, which keeps collateral only pools from diluting the result. Nearly 300 of the 1,200 pools hold less than a hundred thousand dollars, so the view starts at one million, the cut the study used as one of its eight robustness angles. Twenty five rows a page, largest first.</p>
+  <div class="ctl">
+    <span class="cl">Search</span>
+    <input type="search" id="q" placeholder="symbol, chain or protocol" autocomplete="off">
+    <span class="cl">Minimum size</span>
+    <span class="grp" id="sizes"></span>
+    <span class="cnt" id="cnt"></span>
+  </div>
+  <div class="ctl" style="border-bottom:none;padding-bottom:0;margin-top:14px">
+    <span class="cl">Protocol</span>
+    <span class="grp" id="chips"></span>
+  </div>
+  <div class="tw"><table class="d wide" id="tpools"></table></div>
+  <div class="pager">
+    <button class="plain" id="prev" type="button">Previous</button>
+    <button class="plain" id="next" type="button">Next</button>
+    <span class="pg" id="pg"></span>
+  </div>
+</section>
+
+<footer class="foot">
+  <div class="blk">
+    <h4>Method</h4>
+    <p>Share of yield paid by borrowers is the base rate divided by the sum of base and reward rate, weighted by pool size. A pool enters only when the base rate is non null; on those pools a missing reward rate counts as zero. Subsidies are the reward rate divided by 36,500, multiplied by pool size, summed over days; the live figure annualises the current day instead. Protocol scopes are matched between the yields and fees endpoints, so Aave v3 is read as aave-v3 and not as the Aave parent.</p>
+  </div>
+  <div class="blk">
+    <h4>Sources</h4>
+    <p><a href="https://yields.llama.fi/pools" target="_blank" rel="noopener">yields.llama.fi/pools</a> and <a href="https://api.llama.fi/summary/fees/aave-v3" target="_blank" rel="noopener">api.llama.fi/summary/fees/{slug}</a>, fetched by this page at open time. Baseline panel from the study published September 2026, which covers January 2024 to August 2026 across 478 pools and 146,866 pool days.</p>
+  </div>
+  <div class="blk">
+    <h4>Limits</h4>
+    <p>The live column is a snapshot of one moment and is noisier than the monthly panel. Reward rates are as published by the protocol and priced at the aggregator's token price, and announced rewards cannot be told apart from paid ones. Borrower side rewards are not in supply pool rates, so real subsidies are higher than shown, most of all at Moonwell and Venus.</p>
+  </div>
+</footer>

@@ -1,0 +1,163 @@
+<button id="tt" type="button">Theme</button>
+<article class="paper">
+
+<header class="titleblock">
+  <p class="kicker">Independent research &middot; Morpho Blue</p>
+  <h1>Who runs your money in Morpho</h1>
+  <p class="sub">Market structure of curated vaults, their rates, fees and collateral profile. Snapshot of 17 September 2026 with one year of daily history</p>
+  <dl class="meta">
+    <div><dt>Author</dt><dd>Illia Sharan (Wandor)</dd></div>
+    <div><dt>Date</dt><dd>17 September 2026</dd></div>
+    <div><dt>Source</dt><dd>Morpho's own API</dd></div>
+    <div><dt>Sample</dt><dd>78 vaults, $2.00B</dd></div>
+  </dl>
+</header>
+
+<section class="abstract">
+  <h2>Abstract</h2>
+  <p>In Aave the protocol sets the risk parameters. In Morpho Blue the protocol supplies isolated markets, while the decision of where to place a deposit and against which collateral belongs to an external curator. The depositor sees a rate and a vault name, but not whose decision it is or what backs it.</p>
+  <p>This study covers all 78 vaults above $1M on the snapshot date, $2.00B in total, plus one year of daily history for the thirty largest. Of the $1.53B held in vaults with a readable rate, 84.5% belongs to three curators. The median rate across the thirty largest is 3.40% a year with an interquartile range of 1.08 points, so the choice of curator barely moves the yield, while the curator fee ranges from zero to 25% and the share of blue chip collateral from zero to 100%. Six vaults holding $473M are documented separately: their API returns rates of up to 297,995% a year and none of them lists a curator.</p>
+</section>
+
+<nav class="toc">
+  <h2>Contents</h2>
+  <ol>
+    <li><a href="#s1"><span class="n">1</span>Question</a></li>
+    <li><a href="#s2"><span class="n">2</span>Data and method</a></li>
+    <li><a href="#s3"><span class="n">3</span>Curator concentration</a></li>
+    <li><a href="#s4"><span class="n">4</span>Rate and its stability</a></li>
+    <li><a href="#s5"><span class="n">5</span>Curator fee</a></li>
+    <li><a href="#s6"><span class="n">6</span>Collateral profile</a></li>
+    <li><a href="#s7"><span class="n">7</span>Movement of deposits</a></li>
+    <li><a href="#s8"><span class="n">8</span>Vaults with an unreadable rate</a></li>
+    <li><a href="#s9"><span class="n">9</span>Limitations</a></li>
+    <li><a href="#s10"><span class="n">10</span>Conclusions</a></li>
+    <li><a href="#refs"><span class="n">&nbsp;</span>References</a></li>
+    <li><a href="#data"><span class="n">&nbsp;</span>Data availability</a></li>
+  </ol>
+</nav>
+
+<section id="s1">
+  <h2><span class="n">1</span>Question</h2>
+  <p class="lead">If every curator delivers roughly the same rate, what actually separates them, and what is the depositor paying a fee for?</p>
+  <p>Morpho Blue ranks second by fees and first by rewards paid among the eight lending protocols measured in the preceding study [2], yet it keeps none of the fees itself: the rate a depositor gets is set by a curator, not by the protocol. The curated model moves the risk decision from the protocol to an external team. Formally this increases competition: there are many curators and each builds its own vault. In practice the depositor chooses by rate, and the rate, as shown below, barely distinguishes curators. The difference therefore lies in what the rate does not express: the composition of collateral, the liquidation threshold, the number of markets and the fee.</p>
+</section>
+
+<section id="s2">
+  <h2><span class="n">2</span>Data and method</h2>
+  <h3>2.1 Source</h3>
+  <p>Data comes from Morpho's own API (<span class="mono">blue-api.morpho.org</span>) [1] rather than from an aggregator, for two reasons. First, the API returns the rate twice, with and without rewards, so the split between organic and subsidised yield is a protocol fact here rather than an estimate. Second, it returns the allocation across markets with the collateral asset and liquidation threshold of each, which makes the risk profile describable.</p>
+  <h3>2.2 Sample</h3>
+  <p>All V1 vaults with assets above $1M were taken: 78 vaults, $2.00B. The API lists 1,402 vaults in total, so 94% of them do not reach one million. V2 vaults are out of scope, which is why the total does not match protocol TVL at aggregators, where collateral held in isolated markets is also counted.</p>
+  <h3>2.3 Quality filter</h3>
+  <p>Vaults with a rate above 100% a year or a fee above 35% were excluded: six vaults holding $473M. They are not dropped silently but analysed in section 8. Sections 3 to 7 are computed on the remaining 72 vaults and $1.53B.</p>
+  <h3>2.4 Metrics</h3>
+  <ul class="plain">
+    <li><b>Collateral profile.</b> For each allocation the collateral symbol and the market liquidation threshold are taken and weighted by the amount allocated. Blue chip means WETH, wstETH, cbETH, rETH, weETH, ezETH, WBTC, cbBTC, tBTC, LBTC, USDC, USDT, DAI and USDS.</li>
+    <li><b>Rate stability</b> uses the median and the interquartile range instead of mean and standard deviation, because single day spikes up to 90% a year otherwise distort the picture. Spikes are counted separately as the number of days above 20% a year.</li>
+    <li><b>History.</b> Daily series of rate, rate excluding rewards and assets over 365 days for the thirty largest readable vaults. The series arrive newest first, which is accounted for when computing the change in assets.</li>
+  </ul>
+</section>
+
+<section id="s3">
+  <h2><span class="n">3</span>Curator concentration</h2>
+  <p>Figure 1 shows how assets are distributed across curators; table 1 adds the rate, the fee and the collateral profile.</p>
+  <figure id="fig1">
+    <div class="bars" id="curAum"></div>
+    <figcaption><b>Figure 1.</b> Share of assets by curator among vaults with a readable rate, $1.53B. Source: Morpho API [1], author's calculation.</figcaption>
+  </figure>
+  <div class="tbl" id="tab1">
+    <p class="tcap"><b>Table 1.</b> Rate, fee and collateral composition by curator, across the 72 vaults with a readable rate.</p>
+    <div class="tw"><table id="curTable"></table></div>
+    <p class="tnote">All figures are weighted by assets. LLTV is the liquidation threshold; markets is the average number of markets a vault allocates to.</p>
+  </div>
+  <p>Three curators, Gauntlet, Steakhouse Financial and SparkDAO, hold 84.5% of assets. The remaining nine groups share 15.5%. Fifteen vaults holding $128M list no curator at all; their rate is above the sample average and their share of days with rewards is 11.3% against 0.2% at Gauntlet.</p>
+</section>
+
+<section id="s4">
+  <h2><span class="n">4</span>Rate and its stability</h2>
+  <p>Figure 2 plots the median rate and the interquartile range for the twenty two largest vaults over a year of daily observations.</p>
+  <figure id="fig2">
+    <div class="lines" id="apyBox"></div>
+    <figcaption><b>Figure 2.</b> Median annual rate (dot) and interquartile range (bar) over 365 days. Scale runs from zero to 8% a year.</figcaption>
+  </figure>
+  <p>The median across thirty vaults is 3.40% a year and the median interquartile range is 1.08 points. Dollar vaults of the three large curators sit between 3.16% and 3.93%, a smaller gap than between two bank deposits. Across the year the thirty vaults produced 238 days with a rate above 20% a year; these are moments when utilisation hits its ceiling and they last hours.</p>
+  <p>In Morpho's own accounting rewards are almost absent at the large curators: across the vault-days observed, rewards are present on 0.6% of days at Gauntlet and 1.3% at Steakhouse, and on none at all at SparkDAO. The exception is the two Re7 vaults on World, which carry no curator label in the API: rewards are present on 54.5% of their days and add a median 4.2 points on Re7 USDC and 1.9 points on Re7 WLD.</p>
+</section>
+
+<section id="s5">
+  <h2><span class="n">5</span>Curator fee</h2>
+  <p>The fee ranges from zero to 25% of yield with a median of 10%. Figure 3 sets it against what the curator actually delivers.</p>
+  <figure id="fig3">
+    <div class="bars" id="feeBars"></div>
+    <figcaption><b>Figure 3.</b> Rate delivered to the depositor (upper bar, scale to 8% a year) and curator fee (lower bar, scale to 25%).</figcaption>
+  </figure>
+  <p>Gauntlet charges 1.6% on average and delivers 3.90% a year. Steakhouse charges 12.0% and delivers 3.53%. Anthias Labs and Hakutora charge 15% each and deliver 2.78% and 4.02%. There is no relationship between the size of the fee and the result in this data, while the fee is deducted from the depositor's result directly and permanently.</p>
+</section>
+
+<section id="s6">
+  <h2><span class="n">6</span>Collateral profile</h2>
+  <p>If the rate is nearly identical everywhere, the difference moves to the collateral. Figure 4 shows its composition by curator.</p>
+  <figure id="fig4">
+    <div class="ustack" id="riskStack"></div>
+    <figcaption><b>Figure 4.</b> Collateral composition by curator as a share of assets: blue chips, fixed maturity Pendle tokens, other collateral.</figcaption>
+  </figure>
+  <p>SparkDAO and Hakutora hold 100% of assets against blue chip collateral at rates of 4.00% and 4.02%. Felix, Clearstar and Hyperithm hold none of it at rates of 2.83%, 1.24% and 7.30%, so in two cases out of three the extra collateral risk is not compensated by a higher rate. Five vaults holding $43M keep more than a fifth of their assets behind Pendle tokens, which carry a maturity date and behave differently from a plain asset while looking identical in the interface. Twenty six vaults holding $140M keep less than 20% in blue chips.</p>
+</section>
+
+<section id="s7">
+  <h2><span class="n">7</span>Movement of deposits</h2>
+  <figure id="fig5">
+    <div class="bars" id="flowBars"></div>
+    <figcaption><b>Figure 5.</b> Change in vault assets over 365 days for vaults with a full year of history. The scale is square root and clipped at 400%; exact values are printed on the right.</figcaption>
+  </figure>
+  <p>Of the 26 vaults with a full year of history, 16 lost more than 30% of their assets while several grew several fold. This money did not leave Morpho, it moved inside it: Gauntlet USDC Prime on Base grew from $13M to $419M while the same curator's identically named vault on Ethereum fell from $128M to $26M. The curated model therefore asks the depositor to track not only the curator but which of that curator's vaults is currently working.</p>
+</section>
+
+<section id="s8">
+  <h2><span class="n">8</span>Vaults with an unreadable rate</h2>
+  <p>Collection surfaced a separate category: vaults where the API returns yields in the thousands and hundreds of thousands of per cent a year. None of the six lists a curator.</p>
+  <div class="tbl" id="tab3">
+    <p class="tcap"><b>Table 2.</b> Vaults excluded by the quality filter.</p>
+    <div class="tw"><table id="badTable"></table></div>
+    <p class="tnote">Values are reproduced as returned by the API on 17 September 2026. These vaults are excluded from sections 3 to 7.</p>
+  </div>
+  <p>Together they hold $473M, or 23.6% of all assets in vaults above one million. The largest, Adpend USDC, holds $302M at a curator fee of 50%, double the maximum among the rest. The list includes vaults named Not Gauntlet and Duplicated Key. The vault namespace is not moderated, and what the depositor sees in the interface is a name and a number.</p>
+</section>
+
+<section id="s9">
+  <h2><span class="n">9</span>Limitations</h2>
+  <ul class="plain">
+    <li><b>The curator is taken as of today.</b> Curators change while the rate history stays, so the current curator is attributed to the whole year of a vault's history.</li>
+    <li><b>Idle funds are measured in the snapshot only.</b> Part of a vault's assets may sit unallocated, which dilutes the rate. The yearly history does not track it.</li>
+    <li><b>Risk is measured crudely.</b> Classifying collateral by asset symbol does not separate a sound oracle from a weak one and ignores liquidity depth. This is a first layer of description, not a risk assessment.</li>
+    <li><b>Morpho V2 is excluded,</b> as is collateral held inside isolated markets, so the sample size is not comparable to protocol TVL at aggregators.</li>
+    <li><b>One source.</b> No onchain verification was performed and the net of fee yield is taken as reported.</li>
+  </ul>
+</section>
+
+<section id="s10">
+  <h2><span class="n">10</span>Conclusions</h2>
+  <ol>
+    <li>The curator market is concentrated: three groups hold 84.5% of assets and the remaining nine share a sixth.</li>
+    <li>The rate has stopped being a competitive instrument: the spread of medians among large curators is under one percentage point.</li>
+    <li>The curator fee is unrelated to the result the depositor receives and varies by more than an order of magnitude.</li>
+    <li>The real difference between curators sits in collateral and liquidation thresholds, that is, in what the rate does not express and the interface does not show.</li>
+    <li>Almost a quarter of the assets in large vaults sits in objects whose rate cannot be read from the API and whose curator is not listed.</li>
+  </ol>
+</section>
+
+<section id="refs">
+  <h2>References</h2>
+  <ol class="refs">
+    <li>Morpho. GraphQL API, <code>blue-api.morpho.org/graphql</code>: queries <code>vaults</code>, <code>curators</code>, <code>vaultByAddress.historicalState</code>. Retrieved 17 September 2026.</li>
+    <li>Illia Sharan. Organic yield against token subsidies: decomposing depositor yield at eight lending protocols, September 2026. Morpho Blue ranks second by fees and first by rewards paid in that study.</li>
+  </ol>
+</section>
+
+<section id="data">
+  <h2>Data availability</h2>
+  <div class="files2" id="files"></div>
+</section>
+
+</article>

@@ -1,0 +1,91 @@
+<script id="D" type="application/json">__DATA__</script>
+<script>
+(function(){
+var D=JSON.parse(document.getElementById('D').textContent);
+var num=function(v){return parseFloat(v)||0};
+var el=function(t,c,h){var e=document.createElement(t);if(c)e.className=c;if(h!==undefined)e.innerHTML=h;return e};
+var m$=function(v){return v>=1e9?(v/1e9).toFixed(2)+'B':(v/1e6).toFixed(v>=1e8?0:1)+'M'};
+function table(id,head,rows){var t=document.getElementById(id);if(!t)return;
+ t.innerHTML='<thead><tr>'+head.map(function(h){return '<th>'+h+'</th>'}).join('')+'</tr></thead><tbody>'+
+ rows.map(function(r){return '<tr>'+r.map(function(c){var cl=(c&&c.cl)?' class="'+c.cl+'"':'';var v=(c&&c.v!==undefined)?c.v:c;
+  return '<td'+cl+'>'+v+'</td>'}).join('')+'</tr>'}).join('')+'</tbody>';}
+var CU=D.curators, tot=CU.reduce(function(s,c){return s+num(c.aum_usd)},0);
+
+var box=document.getElementById('curAum');
+CU.forEach(function(c){var sh=num(c.aum_usd)/tot;
+ box.appendChild(el('div','bline','<span class="cname">'+c.curator+'</span>'+
+  '<span class="ctrack"><span class="cfill'+(c.curator==='No curator listed'?' dim':'')+'" style="width:'+(sh*100).toFixed(2)+'%"></span></span>'+
+  '<span class="cval">'+(sh*100).toFixed(1)+'%</span>'));});
+
+table('curTable',['Curator','Vaults','Assets','Rate','Fee','Blue chip','PT Pendle','Other','LLTV','Markets'],
+ CU.map(function(c){return [c.curator,c.vaults,'$'+m$(num(c.aum_usd)),num(c.net_apy).toFixed(2)+'%',
+  {v:num(c.fee_pct).toFixed(1)+'%',cl:num(c.fee_pct)>=12?'neg':''},
+  {v:(num(c.bluechip_share)*100).toFixed(0)+'%',cl:num(c.bluechip_share)>=0.9?'mark':(num(c.bluechip_share)<0.2?'neg':'')},
+  (num(c.pt_share)*100).toFixed(1)+'%',(num(c.other_share)*100).toFixed(0)+'%',num(c.avg_lltv).toFixed(3),c.markets_per_vault]}));
+
+var VH=D.vh.slice(0,22), mxA=8;
+(function(){
+ var rowH=19, padL=170, padR=52, padB=26, W=740, H=VH.length*rowH+padB+8;
+ var xs=function(v){return padL+(Math.min(v,mxA)/mxA)*(W-padL-padR)};
+ var s2='<svg viewBox="0 0 '+W+' '+H+'" role="img" aria-label="median rate and interquartile range by vault">';
+ [0,2,4,6,8].forEach(function(t){
+  s2+='<line x1="'+xs(t).toFixed(1)+'" y1="4" x2="'+xs(t).toFixed(1)+'" y2="'+(H-padB+4)+'" stroke="currentColor" opacity="'+(t===0?'.35':'.14')+'"/>'+
+      '<text x="'+xs(t).toFixed(1)+'" y="'+(H-padB+18)+'" text-anchor="middle">'+t+'%</text>';});
+ VH.forEach(function(v,i){
+  var y=8+i*rowH, med=parseFloat(v.median_apy)||0, iq=parseFloat(v.iqr_apy)||0;
+  var lo=Math.max(0,med-iq/2), hi=Math.min(mxA,med+iq/2);
+  s2+='<text x="'+(padL-10)+'" y="'+(y+3.5)+'" text-anchor="end" style="font-family:var(--sans);fill:var(--ink)">'+
+      v.vault.replace(/;/g,',').slice(0,30)+'</text>';
+  s2+='<line x1="'+xs(lo).toFixed(1)+'" y1="'+y+'" x2="'+xs(hi).toFixed(1)+'" y2="'+y+'" stroke="currentColor" stroke-width="1.2" opacity=".45"/>';
+  s2+='<line x1="'+xs(lo).toFixed(1)+'" y1="'+(y-3)+'" x2="'+xs(lo).toFixed(1)+'" y2="'+(y+3)+'" stroke="currentColor" stroke-width="1" opacity=".45"/>';
+  s2+='<line x1="'+xs(hi).toFixed(1)+'" y1="'+(y-3)+'" x2="'+xs(hi).toFixed(1)+'" y2="'+(y+3)+'" stroke="currentColor" stroke-width="1" opacity=".45"/>';
+  s2+='<circle cx="'+xs(med).toFixed(1)+'" cy="'+y+'" r="3" fill="var(--ink)"/>';
+  s2+='<text x="'+(W-padR+10)+'" y="'+(y+3.5)+'" style="fill:var(--ink)">'+med.toFixed(2)+'%</text>';});
+ document.getElementById('apyBox').innerHTML=s2+'</svg>';
+})();
+var fb=document.getElementById('feeBars'), mxF=25, mxR=8;
+CU.slice().sort(function(a,b){return num(b.fee_pct)-num(a.fee_pct)}).forEach(function(c){
+ fb.appendChild(el('div','bline','<span class="cname">'+c.curator+'</span>'+
+  '<span style="display:flex;flex-direction:column;gap:3px">'+
+  '<span style="display:block;height:7px;width:'+(num(c.net_apy)/mxR*100).toFixed(1)+'%;background:var(--ink)"></span>'+
+  '<span style="display:block;height:7px;width:'+(num(c.fee_pct)/mxF*100).toFixed(1)+'%;background:var(--c1)"></span></span>'+
+  '<span class="cval">'+num(c.net_apy).toFixed(2)+' / '+num(c.fee_pct).toFixed(0)+'</span>'));});
+fb.insertAdjacentHTML('afterend','<div class="legend"><span><i class="sw" style="background:var(--ink)"></i>APY to depositor</span><span><i class="sw" style="background:var(--c1)"></i>curator fee</span></div>');
+
+var rs=document.getElementById('riskStack');
+CU.forEach(function(c){var b=num(c.bluechip_share),p=num(c.pt_share),o=Math.max(0,1-b-p);
+ rs.appendChild(el('div','urow','<span class="cname" style="font-family:var(--sans);font-size:13px">'+c.curator+'</span><span class="ubar">'+
+  (b>0?'<span style="width:'+(b*100).toFixed(1)+'%;background:var(--ink)"></span>':'')+
+  (p>0?'<span style="width:'+(p*100).toFixed(1)+'%;background:var(--c1)"></span>':'')+
+  (o>0?'<span style="width:'+(o*100).toFixed(1)+'%;background:var(--rule-2)"></span>':'')+'</span>'));});
+rs.insertAdjacentHTML('afterend','<div class="legend"><span><i class="sw" style="background:var(--ink)"></i>blue-chip collateral</span><span><i class="sw" style="background:var(--c1)"></i>PT Pendle</span><span><i class="sw" style="background:var(--rule-2)"></i>other collateral</span></div>');
+
+var fl=document.getElementById('flowBars');
+var rows=D.vh.filter(function(v){return v.aum_growth_pct!=='NA'&&v.aum_growth_pct!=='n/a'})
+ .map(function(v){return {n:v.vault.replace(/;/g,','),g:num(v.aum_growth_pct)}}).sort(function(a,b){return b.g-a.g});
+var sc=function(g){var c=Math.max(-100,Math.min(400,g));return Math.sqrt(Math.abs(c))/20*50};
+rows.forEach(function(r){var w=sc(r.g);
+ fl.appendChild(el('div','bline','<span class="cname">'+r.n+'</span>'+
+  '<span class="dz"><span class="zl" style="left:50%"></span>'+
+  '<span class="'+(r.g>=0?'':'m')+'" style="left:'+(r.g>=0?50:50-w)+'%;width:'+w.toFixed(1)+'%"></span></span>'+
+  '<span class="cval">'+(r.g>0?'+':'')+r.g.toFixed(0)+'%</span>'));});
+
+table('badTable',['Vault','Chain','Asset','Assets','Rate per API','Fee','Curator','Markets'],
+ D.bad.map(function(b){return [b.vault,b.chain,b.asset,'$'+m$(num(b.aum_usd)),
+  {v:num(b.reported_net_apy).toLocaleString('en-US')+'%',cl:'neg'},
+  {v:num(b.fee_pct).toFixed(0)+'%',cl:num(b.fee_pct)>=50?'neg':''},'not listed',b.markets]}));
+
+var R='https://github.com/Wandory/research/raw/main/data/';
+document.getElementById('files').innerHTML=[['morpho_vaults.csv','78 vaults: curator, fee, collateral mix, LLTV, utilisation'],
+ ['morpho_curators.csv','the same aggregated by curator'],
+ ['morpho_vault_history.csv','a year of daily rate and assets, thirty largest vaults'],
+ ['morpho_curator_history.csv','the same aggregated by curator'],
+ ['morpho_unreadable_vaults.csv','the six excluded vaults with their reported values']]
+ .map(function(x){return '<a href="'+R+x[0]+'" target="_blank" rel="noopener"><span>'+x[0]+'</span><span>'+x[1]+'</span></a>'}).join('');
+
+document.getElementById('tt').addEventListener('click',function(){
+ var c=document.documentElement.getAttribute('data-theme');
+ if(!c)c=matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light';
+ document.documentElement.setAttribute('data-theme',c==='dark'?'light':'dark');});
+})();
+</script>

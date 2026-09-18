@@ -1,0 +1,94 @@
+<div id="dock"><button id="theme" type="button" aria-label="Switch theme">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
+</button></div>
+
+<header class="sec hero">
+  <p class="kicker">Live panel &middot; yield-bearing stablecoins</p>
+  <h1>The rate that does not hold</h1>
+  <p class="intro">The advertised rate on eight yield-bearing stablecoin issuers, read live every time this page opens, against the published study of what holders actually realised over 30, 90, 180 and 365 days.</p>
+  <div class="statusline">
+    <span id="stat"><i></i> connecting</span>
+    <span id="stamp"></span>
+    <button class="plain" id="refresh" type="button" disabled>Refresh</button>
+  </div>
+  <div id="errbox"></div>
+  <div class="nums" id="hero"></div>
+</header>
+
+<section class="sec" id="sec-drift">
+  <h2>What moved since publication</h2>
+  <p class="note">The hollow marker is the rate the study recorded in its final month, the filled marker is the rate on offer right now. The scale is in per cent a year.</p>
+  <figure>
+    <div id="drift"></div>
+    <div class="ckey" id="drift-lg"></div>
+    <figcaption><b>Figure 1.</b> Advertised rate by issuer, published against live, per cent a year, weighted by pool size. Source: DefiLlama yields API, author's calculation.</figcaption>
+  </figure>
+</section>
+
+<section class="sec" id="sec-live">
+  <h2>Live issuer table</h2>
+  <p class="note">Rate and size are weighted across the issuer's pools. Realised over advertised is the study's result: the median ratio of what a holder actually accrued to what the rate promised on the day of entry, at a one-year horizon. One means the promise was met. Click any heading to sort.</p>
+  <div class="tw"><table class="d wide" id="tlive"></table></div>
+</section>
+
+<section class="sec" id="sec-cr">
+  <h2>Advertised against realised</h2>
+  <p class="note">From the published study, unchanged. Only windows whose entry rate was at least 3% a year are counted, and a horizon with fewer than thirty windows is left blank.</p>
+  <figure>
+    <div id="crbars"></div>
+    <div class="ckey" id="crbars-lg"></div>
+    <figcaption><b>Figure 2.</b> Median ratio of realised to advertised yield at each horizon. The scale runs from 0.6 to 1.05; the dashed line marks one, where the promise is exactly met. Source: DefiLlama yields API, author's panel.</figcaption>
+  </figure>
+</section>
+
+<section class="sec" id="sec-hist">
+  <h2>The baseline series</h2>
+  <p class="note">The published panel, unchanged. Every issuer on the same vertical scale, so the height of one panel against another is the difference in rate.</p>
+  <figure>
+    <div id="hist"></div>
+    <p class="ckey" id="hist-lg"></p>
+    <figcaption><b>Figure 3.</b> Monthly advertised rate by issuer, per cent a year. Gaps are months with no data in the source rather than a zero rate. Source: DefiLlama yields API, author's panel.</figcaption>
+  </figure>
+  <figure>
+    <div id="sizes-chart"></div>
+    <p class="ckey" id="sizes-lg"></p>
+    <figcaption><b>Figure 4.</b> Size by issuer over the same months, in dollars, all panels on one scale. Size follows the rate with a lag, which is what makes a high launch rate an acquisition tool rather than a property of the product. Source: DefiLlama yields API, author's panel.</figcaption>
+  </figure>
+</section>
+
+<section class="sec" id="sec-pools">
+  <h2>Pool explorer</h2>
+  <p class="note">Every live pool behind the numbers above. Twenty five rows a page, largest first.</p>
+  <div class="ctl">
+    <span class="cl">Search</span>
+    <input type="search" id="q" placeholder="symbol, chain or issuer" autocomplete="off">
+    <span class="cl">Minimum size</span>
+    <span class="grp" id="szs"></span>
+    <span class="cnt" id="cnt"></span>
+  </div>
+  <div class="ctl" style="border-bottom:none;padding-bottom:0;margin-top:14px">
+    <span class="cl">Issuer</span>
+    <span class="grp" id="chips"></span>
+  </div>
+  <div class="tw"><table class="d wide" id="tpools"></table></div>
+  <div class="pager">
+    <button class="plain" id="prev" type="button">Previous</button>
+    <button class="plain" id="next" type="button">Next</button>
+    <span class="pg" id="pg"></span>
+  </div>
+</section>
+
+<footer class="foot">
+  <div class="blk">
+    <h4>Method</h4>
+    <p>Realised yield is computed by log-compounding daily rates and annualising, never by averaging them. Windows are stepped every 15 days and discarded when a gap in the series exceeds a quarter of the window length. Only windows whose entry rate was at least 3% a year enter the ratio, that is, the ones a holder would plausibly act on. The live rate is the base rate weighted by pool size across the issuer's pools.</p>
+  </div>
+  <div class="blk">
+    <h4>Sources</h4>
+    <p><a href="https://yields.llama.fi/pools" target="_blank" rel="noopener">yields.llama.fi/pools</a>, fetched by this page at open time. Baseline panel from the study published September 2026, covering 38 pools across eight issuers.</p>
+  </div>
+  <div class="blk">
+    <h4>Limits</h4>
+    <p>Fees and slippage are excluded: the yield here is the product's rate, not the investor's bottom line. Risk is not measured, so depegs, collateral quality and counterparty risk are invisible in this data. History lengths differ between issuers, which is why annual windows do not exist for all of them. Rates come from one aggregator with no reconciliation against issuer contracts.</p>
+  </div>
+</footer>

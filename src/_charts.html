@@ -1,0 +1,97 @@
+<script id="PD" type="application/json">__DATA__</script>
+<script>
+(function(){
+var D=JSON.parse(document.getElementById('PD').textContent);
+function bars(host,rows,opts){
+ opts=opts||{};
+ var box=document.createElement('div');
+ rows.forEach(function(r,i){
+  var w=(r.v/(opts.max||1))*100;
+  box.insertAdjacentHTML('beforeend',
+   '<div class="bline"><span class="cname">'+r.n+'</span>'+
+   '<span class="ctrack"><span class="cfill" style="width:'+w.toFixed(2)+'%"></span>'+
+   (opts.split&&w<99.7?'<span class="cfill dim" style="width:'+(100-w).toFixed(2)+'%"></span>':'')+'</span>'+
+   '<span class="cval">'+r.l+'</span></div>');
+ });
+ host.appendChild(box);
+}
+function table(host,head,rows){
+ host.innerHTML='<thead><tr>'+head.map(function(h){return '<th>'+h+'</th>'}).join('')+'</tr></thead><tbody>'+
+  rows.map(function(r){return '<tr>'+r.map(function(c){
+    var m=(typeof c==='object'&&c.m)?' class="mark"':''; var v=(typeof c==='object')?c.v:c;
+    return '<td'+m+'>'+v+'</td>'}).join('')+'</tr>'}).join('')+'</tbody>';
+}
+/* lending */
+var L=D.lending;
+document.querySelectorAll('[data-chart="lending"]').forEach(function(h){
+ bars(h,L.organic.map(function(x){return {n:x[0],v:x[1],l:x[1].toFixed(2)}}),{max:1,split:true});});
+document.querySelectorAll('[data-table="lending"]').forEach(function(h){
+ table(h,['Protocol','Paid out, $M','Revenue, $M','Dependency','Net margin, % a year'],
+  L.money.map(function(x){return [x[0],x[1].toFixed(1),x[2].toFixed(1),
+   {v:(x[3]===null?'no revenue':x[3].toFixed(3)),m:(x[3]===null||x[3]>1)},
+   {v:(x[4]>0?'+':'')+x[4].toFixed(3),m:x[4]<0}]}));});
+/* morpho */
+var M=D.morpho;
+document.querySelectorAll('[data-chart="morpho"]').forEach(function(h){
+ var tot=M.curators.reduce(function(s,x){return s+x[2]},0);
+ bars(h,M.curators.map(function(x){return {n:x[0],v:x[2]/tot,l:(x[2]/tot*100).toFixed(1)+'%'}}),{max:1});});
+document.querySelectorAll('[data-table="morpho"]').forEach(function(h){
+ table(h,['Curator','Vaults','Assets, $M','Rate','Fee','Blue chip collateral'],
+  M.curators.map(function(x){return [x[0],x[1],(x[2]/1e6).toFixed(0),x[3].toFixed(2)+'%',
+   {v:x[4].toFixed(1)+'%',m:x[4]>=12},{v:(x[5]*100).toFixed(0)+'%',m:x[5]<0.2}]}));});
+/* dex */
+var X=D.dex;
+document.querySelectorAll('[data-chart="dex"]').forEach(function(h){
+ bars(h,X.organic.map(function(x){return {n:x[0],v:x[1],l:x[1].toFixed(2)}}),{max:1,split:true});});
+document.querySelectorAll('[data-table="dex"]').forEach(function(h){
+ table(h,['Group','Events','Reward before','Reward after','Excess TVL, 90 days','Negative'],
+  X.events.map(function(x){return [{v:x[5]?'<b>'+x[0]+'</b>':x[0]},x[1],x[2].toFixed(2)+'%',x[3].toFixed(2)+'%',
+   {v:(x[4]>0?'+':'')+x[4].toFixed(1)+'%',m:Math.abs(x[4])>8},x[6]]}));});
+/* stable lines */
+var S=D.stable;
+document.querySelectorAll('[data-chart="stable"]').forEach(function(h){
+ var W=760,H=260,pad={l:34,r:132,t:12,b:30},hi=40,M2=S.months;
+ var xs=function(i){return pad.l+(i/(M2.length-1))*(W-pad.l-pad.r)};
+ var ys=function(v){return pad.t+(1-Math.min(v,hi)/hi)*(H-pad.t-pad.b)};
+ var s='<svg viewBox="0 0 '+W+' '+H+'" role="img" aria-label="rates by month">';
+ [0,10,20,30,40].forEach(function(g){
+  s+='<line x1="'+pad.l+'" y1="'+ys(g).toFixed(1)+'" x2="'+(W-pad.r)+'" y2="'+ys(g).toFixed(1)+'" stroke="currentColor" opacity=".14"/>'+
+     '<text x="'+(pad.l-7)+'" y="'+(ys(g)+3.4).toFixed(1)+'" text-anchor="end">'+g+'</text>';});
+ [0,12,24].forEach(function(i){if(i<M2.length)s+='<text x="'+xs(i).toFixed(1)+'" y="'+(H-7)+'" text-anchor="middle">'+M2[i]+'</text>';});
+ var labs=[],CP=['var(--c1)','var(--c2)','var(--c3)','var(--c4)','var(--c5)','var(--c6)','var(--c7)','var(--c8)'],leg=[];
+ S.series.forEach(function(ser,si){
+  var segs=[],cur=[];
+  ser.v.forEach(function(v,i){ if(v===null){ if(cur.length){segs.push(cur);cur=[]} return } cur.push([xs(i),ys(v),v]); });
+  if(cur.length)segs.push(cur);
+  var col=CP[si%CP.length]; leg.push('<span><i style="background:'+col+'"></i>'+ser.n+'</span>');
+  segs.forEach(function(g){ if(g.length<2)return;
+   s+='<path d="M'+g.map(function(q){return q[0].toFixed(1)+','+q[1].toFixed(1)}).join('L')+
+     '" fill="none" stroke="'+col+'" stroke-width="1.7" stroke-linejoin="round"/>';});
+  for(var k=1;k<segs.length;k++){ var a=segs[k-1][segs[k-1].length-1], bb=segs[k][0];
+   s+='<line x1="'+a[0].toFixed(1)+'" y1="'+a[1].toFixed(1)+'" x2="'+bb[0].toFixed(1)+'" y2="'+bb[1].toFixed(1)+'" stroke="'+col+'" stroke-width="1" stroke-dasharray="2 4" opacity=".5"/>'; }
+  var lastSeg=segs[segs.length-1];
+  if(lastSeg){var e=lastSeg[lastSeg.length-1];labs.push({x:e[0]+8,y:e[1],t:ser.n+' '+e[2].toFixed(1)+'%',col:col});}
+ });
+ labs.sort(function(a,b){return a.y-b.y});
+ for(var i=1;i<labs.length;i++){ if(labs[i].y-labs[i-1].y<13) labs[i].y=labs[i-1].y+13; }
+ var maxY=H-pad.b-2;
+ for(var i=labs.length-1;i>=0;i--){ if(labs[i].y>maxY){ labs[i].y=maxY; maxY-=13; } }
+ labs.forEach(function(L2){ s+='<text x="'+L2.x.toFixed(1)+'" y="'+(L2.y+3.4).toFixed(1)+'" fill="'+L2.col+'">'+L2.t+'</text>'; });
+ s+='</svg>';
+ h.innerHTML=s+'<div class="slegend">'+leg.join('')+'</div>'+
+  '<p class="snote">A dotted segment means months with no data in the source, not a rate of zero. Midas has a gap from December 2025 to May 2026.</p>';});
+document.querySelectorAll('[data-table="stable"]').forEach(function(h){
+ table(h,['Issuer','30 days','90 days','180 days','365 days','Missed, 30 days','Size now'],
+  S.cr.map(function(x){return [x[0]].concat(x.slice(1,5).map(function(v){
+    return v===null?'&mdash;':{v:v.toFixed(3),m:v<0.9}})).concat([x[5]===null?'&mdash;':x[5]+'%',x[6]])}));});
+
+/* expand / collapse */
+document.querySelectorAll('.srow .shead').forEach(function(btn){
+ btn.addEventListener('click',function(){
+  var row=btn.closest('.srow'), open=row.classList.toggle('open');
+  btn.setAttribute('aria-expanded',open?'true':'false');
+  var lbl=btn.querySelector('.sopen .lbl'); if(lbl) lbl.textContent=open?'Close':'Open';
+ });
+});
+})();
+</script>

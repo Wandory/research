@@ -1,0 +1,577 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Organic yield against token subsidies</title>
+</head>
+<body>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,600;8..60,700&family=Source+Sans+3:wght@400;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+:root{
+  --paper:#FFFFFF; --ink:#111111; --ink-2:#3A3A3A; --ink-3:#6B6B6B;
+  --rule:#D6D6D6; --rule-2:#9A9A9A; --tint:#F4F4F2;
+  --c1:#7A5A1E; --c2:#1F5F55; --c3:#2F4E8F; --c4:#8E3E3C;
+  --c5:#3D6524; --c6:#5B3C86; --c7:#175C6E; --c8:#7E3760;
+  --serif:'Source Serif 4',Georgia,'Times New Roman',serif;
+  --sans:'Source Sans 3',-apple-system,'Segoe UI',Arial,sans-serif;
+  --mono:'IBM Plex Mono',ui-monospace,Consolas,monospace;
+  --measure:37em; --col:48em;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --paper:#121212; --ink:#ECECEA; --ink-2:#C2C2BE; --ink-3:#8E8E8A;
+  --rule:#2C2C2C; --rule-2:#555555; --tint:#1A1A1A;
+  --c1:#C9A16A; --c2:#7FB9AC; --c3:#8AA9E0; --c4:#D7908F;
+  --c5:#9AC07C; --c6:#B694DC; --c7:#6FC2D6; --c8:#C98BB4;
+}}
+:root[data-theme="dark"]{
+  --paper:#121212; --ink:#ECECEA; --ink-2:#C2C2BE; --ink-3:#8E8E8A;
+  --rule:#2C2C2C; --rule-2:#555555; --tint:#1A1A1A;
+  --c1:#C9A16A; --c2:#7FB9AC; --c3:#8AA9E0; --c4:#D7908F;
+  --c5:#9AC07C; --c6:#B694DC; --c7:#6FC2D6; --c8:#C98BB4;
+}
+*{box-sizing:border-box}
+body{margin:0; background:var(--paper); color:var(--ink);
+  font-family:var(--serif); font-size:17px; line-height:1.52;
+  -webkit-font-smoothing:antialiased; hyphens:auto}
+.paper{max-width:var(--col); margin:0 auto; padding:clamp(28px,5vw,64px) clamp(20px,5vw,40px) 96px}
+p{margin:0 0 .85em; max-width:var(--measure)}
+p.wide{max-width:none}
+h1,h2,h3,h4{font-family:var(--sans); font-weight:600; color:var(--ink); margin:0}
+a{color:inherit; text-decoration:underline; text-underline-offset:2px; text-decoration-thickness:.5px;
+  text-decoration-color:var(--rule-2)}
+a:hover{text-decoration-color:var(--ink)}
+ul,ol{margin:0 0 .9em; padding-left:1.15em; max-width:var(--measure)}
+li{margin-bottom:.35em}
+ul.plain{list-style:none; padding-left:0}
+ul.plain li{margin-bottom:.7em}
+b,strong{font-weight:600}
+.mono{font-family:var(--mono); font-variant-numeric:tabular-nums}
+
+/* title block */
+.titleblock{border-bottom:1.5px solid var(--ink); padding-bottom:22px; margin-bottom:26px}
+.kicker{font-family:var(--sans); font-size:12px; font-weight:600; letter-spacing:.11em;
+  text-transform:uppercase; color:var(--ink-3); margin:0 0 14px}
+h1{font-size:clamp(27px,3.4vw,36px); line-height:1.16; letter-spacing:-.015em; max-width:26ch}
+.sub{margin-top:10px; font-size:17px; color:var(--ink-2); max-width:var(--measure)}
+dl.meta{display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:12px 26px;
+  margin:22px 0 0; padding-top:16px; border-top:1px solid var(--rule)}
+dl.meta dt{font-family:var(--sans); font-size:11px; font-weight:600; letter-spacing:.08em;
+  text-transform:uppercase; color:var(--ink-3)}
+dl.meta dd{margin:3px 0 0; font-size:14.5px; color:var(--ink-2); font-family:var(--sans)}
+
+/* abstract and toc */
+.abstract{background:var(--tint); padding:20px 22px; margin-bottom:26px}
+.abstract h2{font-size:12px; letter-spacing:.11em; text-transform:uppercase; color:var(--ink-3); margin-bottom:9px}
+.abstract p{font-size:16px; margin-bottom:.6em}
+.abstract p:last-child{margin-bottom:0}
+nav.toc{margin-bottom:34px; padding-bottom:22px; border-bottom:1px solid var(--rule)}
+nav.toc h2{font-size:12px; letter-spacing:.11em; text-transform:uppercase; color:var(--ink-3); margin-bottom:10px}
+nav.toc ol{list-style:none; padding:0; margin:0; columns:2; column-gap:38px; max-width:none}
+nav.toc li{font-family:var(--sans); font-size:14px; margin-bottom:5px; break-inside:avoid}
+nav.toc a{text-decoration:none; color:var(--ink-2)}
+nav.toc a:hover{color:var(--ink); text-decoration:underline}
+nav.toc .n{display:inline-block; min-width:1.7em; color:var(--ink-3); font-variant-numeric:tabular-nums}
+
+/* sections */
+section{margin-bottom:34px}
+section > h2{font-size:19px; line-height:1.3; margin:34px 0 12px; padding-bottom:6px;
+  border-bottom:1px solid var(--rule); display:flex; gap:.6em; align-items:baseline}
+section > h2 .n{color:var(--ink-3); font-variant-numeric:tabular-nums; flex:none}
+h3{font-size:15.5px; margin:22px 0 8px}
+.lead{font-size:17px; color:var(--ink-2)}
+
+/* figures and tables */
+figure{margin:22px 0 24px}
+figcaption{font-family:var(--sans); font-size:13px; color:var(--ink-2); line-height:1.5; margin-top:10px;
+  padding-top:8px; border-top:1px solid var(--rule); max-width:none}
+figcaption b{font-weight:600; color:var(--ink)}
+.tbl{margin:22px 0 24px}
+.tcap{font-family:var(--sans); font-size:13px; color:var(--ink); line-height:1.5; margin:0 0 8px; max-width:none}
+.tcap b{font-weight:600}
+.tnote{font-family:var(--sans); font-size:12.5px; color:var(--ink-3); line-height:1.5; margin:8px 0 0; max-width:none}
+.tw{overflow-x:auto}
+table{border-collapse:collapse; width:100%; min-width:520px; font-family:var(--sans); font-size:13.5px}
+thead th{font-size:11.5px; font-weight:600; letter-spacing:.04em; text-transform:uppercase; color:var(--ink-2);
+  text-align:right; padding:0 8px 7px; border-bottom:1px solid var(--ink); vertical-align:bottom}
+thead th:first-child{text-align:left; padding-left:0}
+thead th:last-child{padding-right:0}
+tbody td{text-align:right; padding:7px 8px; border-bottom:1px solid var(--rule);
+  font-variant-numeric:tabular-nums; color:var(--ink-2); white-space:nowrap}
+tbody td:first-child{text-align:left; padding-left:0; color:var(--ink); white-space:normal}
+tbody td:last-child{padding-right:0}
+tbody tr:last-child td{border-bottom:1px solid var(--ink)}
+td.mark{color:var(--ink); font-weight:600}
+td.neg{color:var(--c4)}
+
+/* simple charts, print safe */
+.bars{display:grid}
+.bline{display:grid; grid-template-columns:minmax(92px,150px) minmax(0,1fr) 62px; gap:14px; align-items:center;
+  padding:6px 0}
+.bline .cname{font-family:var(--sans); font-size:13px}
+.ctrack{position:relative; height:9px; background:var(--tint); border:1px solid var(--rule)}
+.cfill{position:absolute; inset:0 auto 0 0; background:var(--ink)}
+.cfill.dim{left:auto; right:0; background:var(--rule-2)}
+.cval{font-family:var(--mono); font-size:12.5px; text-align:right; font-variant-numeric:tabular-nums; color:var(--ink-2)}
+.dz{position:relative; height:10px; background:var(--tint); border:1px solid var(--rule)}
+.dz .zl{position:absolute; top:-3px; bottom:-3px; width:1px; background:var(--rule-2)}
+.dz span{position:absolute; top:0; bottom:0; background:var(--ink)}
+.dz span.m{background:var(--c4)}
+.lines svg{display:block; width:100%; height:auto; overflow:visible}
+.lines text{font-family:var(--mono); font-size:9.5px; fill:var(--ink-3)}
+.legend{display:flex; flex-wrap:wrap; gap:8px 20px; margin-top:12px; font-family:var(--sans); font-size:12.5px; color:var(--ink-2)}
+.legend i{display:inline-block; width:15px; height:2px; margin-right:7px; vertical-align:4px}
+.legend i.sw{height:9px; border:1px solid var(--rule)}
+.smallmult{display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:16px 20px}
+@media(max-width:760px){.smallmult{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.sm h4{font-family:var(--sans); font-size:12.5px; font-weight:600; display:flex; justify-content:space-between; gap:8px; margin-bottom:5px}
+.sm h4 span{font-family:var(--mono); font-weight:400; color:var(--ink-3)}
+.sm svg{display:block; width:100%; height:auto; border-bottom:1px solid var(--rule)}
+.sm p{font-family:var(--mono); font-size:10.5px; color:var(--ink-3); margin:5px 0 0; white-space:nowrap}
+.ustack{display:grid}
+.urow{display:grid; grid-template-columns:minmax(92px,150px) minmax(0,1fr); gap:14px; align-items:center; padding:5px 0}
+.ubar{display:flex; height:10px; border:1px solid var(--rule)}
+.ubar span{height:100%}
+
+/* key findings, no bullets, flush left */
+.findings{list-style:none; padding:0; margin:0 0 .9em; max-width:var(--measure)}
+.findings li{margin-bottom:.75em}
+.findings b{font-weight:600}
+
+/* references */
+ol.refs{padding-left:1.4em; max-width:none}
+ol.refs li{font-family:var(--sans); font-size:13.5px; color:var(--ink-2); margin-bottom:.5em}
+ol.refs code{font-family:var(--mono); font-size:12.5px}
+.files2{display:grid; margin-top:6px}
+.files2 a{display:grid; grid-template-columns:minmax(0,22em) minmax(0,1fr); gap:16px; padding:7px 0;
+  border-bottom:1px solid var(--rule); text-decoration:none; font-family:var(--sans); font-size:13px}
+.files2 a span:first-child{font-family:var(--mono); font-size:12.5px; color:var(--ink)}
+.files2 a span:last-child{color:var(--ink-3)}
+.files2 a:hover span:last-child{color:var(--ink-2)}
+@media(max-width:620px){.files2 a{grid-template-columns:1fr; gap:2px}}
+
+/* theme toggle, screen only */
+#tt{position:fixed; right:14px; bottom:14px; z-index:50; appearance:none; cursor:pointer;
+  background:var(--paper); border:1px solid var(--rule-2); color:var(--ink-3);
+  font-family:var(--sans); font-size:11px; letter-spacing:.08em; text-transform:uppercase; padding:7px 11px}
+#tt:hover{color:var(--ink); border-color:var(--ink)}
+@media print{ #tt{display:none} }
+</style>
+
+<button id="tt" type="button">Theme</button>
+<article class="paper">
+
+<header class="titleblock">
+  <p class="kicker">Independent research &middot; DeFi lending</p>
+  <h1>Organic yield against token subsidies</h1>
+  <p class="sub">Splitting depositor yield at eight lending protocols into the part paid by borrowers and the part printed in the protocol's own token, January 2024 to August 2026</p>
+  <dl class="meta">
+    <div><dt>Author</dt><dd>Illia Sharan (Wandor)</dd></div>
+    <div><dt>Date</dt><dd>17 September 2026</dd></div>
+    <div><dt>Version</dt><dd>2.0, rebuilt on a matched scope</dd></div>
+    <div><dt>Sample</dt><dd>8 protocols, 478 pools, 146,866 pool days</dd></div>
+  </dl>
+</header>
+
+<section class="abstract">
+  <h2>Abstract</h2>
+  <p>The yield a depositor sees in a lending protocol is the sum of two things of different nature: interest paid by borrowers, and token rewards printed by the protocol. The interface shows them as one number. This study separates them using daily pool level data for eight protocols over 32 months, prices the rewards in dollars, and compares that spend against what each protocol earns.</p>
+  <p>The share of yield paid by borrowers ranges from 1.00 at SparkLend to 0.45 at Euler v2. Over the period the eight protocols paid out $73.0M in rewards against $288.3M of their own revenue and $2,669.5M of fees paid by borrowers. Four of the eight pay out more than they earn. A difference in differences study of 91 reward switches, netting out each protocol's own trend, finds that turning rewards on buys no additional liquidity, while turning them off costs about 7% of pool TVL. The advertised rate describes a one month horizon and not a one year horizon: the median ratio of received to advertised yield falls to 0.64 at Moonwell.</p>
+</section>
+
+<nav class="toc">
+  <h2>Contents</h2>
+  <ol>
+    <li><a href="#s1"><span class="n">1</span>Question</a></li>
+    <li><a href="#s2"><span class="n">2</span>Data and method</a></li>
+    <li><a href="#s3"><span class="n">3</span>Yield decomposition</a></li>
+    <li><a href="#s4"><span class="n">4</span>Robustness</a></li>
+    <li><a href="#s5"><span class="n">5</span>Cost of the subsidy</a></li>
+    <li><a href="#s6"><span class="n">6</span>Protocol economics</a></li>
+    <li><a href="#s7"><span class="n">7</span>Advertised against received</a></li>
+    <li><a href="#s8"><span class="n">8</span>Event study of rewards</a></li>
+    <li><a href="#s9"><span class="n">9</span>Utilisation decomposition</a></li>
+    <li><a href="#s10"><span class="n">10</span>Structure and concentration</a></li>
+    <li><a href="#s11"><span class="n">11</span>Where revenue goes</a></li>
+    <li><a href="#s12"><span class="n">12</span>Limitations</a></li>
+    <li><a href="#s13"><span class="n">13</span>Conclusions</a></li>
+    <li><a href="#refs"><span class="n">&nbsp;</span>References</a></li>
+    <li><a href="#data"><span class="n">&nbsp;</span>Data availability</a></li>
+  </ol>
+</nav>
+
+<section id="s1">
+  <h2><span class="n">1</span>Question</h2>
+  <p class="lead">Which lending protocols generate durable economic activity, and which depend on token incentives to attract capital?</p>
+  <p>A depositor sees one annual percentage number. Two different sources sit behind it. The first is interest from borrowers: it reflects demand for credit and exists independently of protocol policy. The second is rewards printed in the protocol's own token: they reflect a customer acquisition budget and end when the team decides they end. A protocol showing 5% a year of which 4.5 points are printed, and a protocol showing the same 5% entirely paid by borrowers, are two different businesses behind one identical display.</p>
+  <p>Sample: Aave v3, Compound v3, SparkLend, Morpho Blue, Venus Core Pool, Fluid Lending, Euler v2 and Moonwell. Period January 2024 to August 2026, 32 months.</p>
+</section>
+
+<section id="s2">
+  <h2><span class="n">2</span>Data and method</h2>
+  <h3>2.1 Sources</h3>
+  <p>Three open endpoints, all from DefiLlama [1]. The yields API gives daily series per pool: the interest rate <span class="mono">apyBase</span>, the reward rate <span class="mono">apyReward</span> and pool size <span class="mono">tvlUsd</span>. The protocol API gives daily TVL and borrowed amounts per protocol. The fees API gives five series: fees, revenue, holders revenue, supply side revenue and treasury revenue.</p>
+  <p>478 pools were collected, covering at least 98% of each protocol's current TVL. Five pools failed to load, 1.0% of the sample. Collection ran with three parallel requests, exponential backoff on HTTP 429 and six retries.</p>
+
+  <h3>2.2 Inclusion rule</h3>
+  <p>A pool day counts only when <span class="mono">apyBase</span> is populated. On those same days an empty <span class="mono">apyReward</span> is treated as zero. The rule matters: without it the sample fills with collateral pools that pay no interest at all, and coverage collapses to 9.4% at Compound v3 and 50% at Morpho Blue. The same rule is written in the source project's own methodology [3], which states that Compound III collateral never belongs to base asset supply.</p>
+
+  <h3>2.3 Matched scope</h3>
+  <p>Economics, supply and borrow are all taken for the same protocol identifier. This is what separates version 2.0 from the first pass, where economics came from parent identifiers (<span class="mono">aave</span> instead of <span class="mono">aave-v3</span>, <span class="mono">spark</span> instead of <span class="mono">sparklend</span>, <span class="mono">fluid</span> instead of <span class="mono">fluid-lending</span>), overstating Spark fees by 49% and Aave fees by 25%. Supply is computed as TVL plus borrowed, because the source subtracts borrowed amounts from TVL.</p>
+
+  <h3>2.4 Metrics</h3>
+  <ul class="plain">
+    <li><b>Share of yield paid by borrowers</b> is apyBase divided by the sum of apyBase and apyReward, aggregated across days weighted by TVL.</li>
+    <li><b>Subsidies in dollars</b> are the sum over pool days of apyReward divided by 36,500 and multiplied by tvlUsd. This is the cost of rewards paid to depositors, valued by the source on the day of payment.</li>
+    <li><b>Incentive dependency</b> is subsidies divided by protocol revenue. Above one means the protocol hands out more than it earns.</li>
+    <li><b>Incentive cost of capital</b> is subsidies divided by average supply, annualised.</li>
+    <li><b>Realised yield</b> is computed by log compounding daily rates rather than averaging them.</li>
+  </ul>
+</section>
+
+<section id="s3">
+  <h2><span class="n">3</span>Yield decomposition</h2>
+  <p>Figure 1 shows the share of yield paid by borrowers over the whole period, weighted by TVL. One means the entire depositor yield came from borrowers, zero means all of it was printed.</p>
+  <figure id="fig1">
+    <div class="bars" id="rank"></div>
+    <div class="legend"><span><i class="sw" style="background:var(--ink)"></i>interest from borrowers</span><span><i class="sw" style="background:var(--rule-2)"></i>token rewards</span></div>
+    <figcaption><b>Figure 1.</b> Share of yield paid by borrowers, January 2024 to August 2026, TVL weighted. Source: DefiLlama yields API, author's calculation.</figcaption>
+  </figure>
+  <p>The spread is roughly twofold. SparkLend recorded no reward day at all across 6,454 pool days while averaging $5.2B of supply. Euler v2 displays 4.7% a year in total, of which 2.74 points are rewards, so its interest component sits below Morpho Blue and Compound v3 despite the higher headline.</p>
+  <p>Figure 2 shows how the share moved month by month. Aave v3 ran without rewards until April 2026 and then moved to a state where rewards supply almost half of the displayed rate, which is why its 2026 slice diverges from earlier years.</p>
+  <figure id="fig2">
+    <div class="smallmult" id="mult"></div>
+    <figcaption><b>Figure 2.</b> Monthly share of yield paid by borrowers. The filled area is interest, the gap above it is rewards, the dashed line marks 0.5. The horizontal axis is the same in all eight panels, January 2024 to August 2026 from left to right.</figcaption>
+  </figure>
+</section>
+
+<section id="s4">
+  <h2><span class="n">4</span>Robustness</h2>
+  <p>A single aggregation can produce an accidental result, so the metric was recomputed eight ways: TVL weighting, equal weighting of pools, median across pool months, exclusion of pools below $1M, exclusion of pools with less than 18 months of history, and each calendar year separately. Table 1 reports these, plus the value obtained when the whole panel was collected again a day later in an independent pass.</p>
+  <div class="tbl" id="tab1">
+    <p class="tcap"><b>Table 1.</b> Share of yield paid by borrowers under eight angles, plus an independent re collection.</p>
+    <div class="tw"><table id="angles"></table></div>
+    <p class="tnote">Rank spread is the number of positions a protocol moves across angles. The re collection ran on 17 September 2026 with a different pool list (478 against 476).</p>
+  </div>
+  <p>Seven of the eight protocols are stable: rank moves by no more than three positions. Euler v2 moves six positions out of eight and takes values from 0.41 to 1.00 depending on the angle, so no conclusion is drawn about it. The re collection reproduced six protocols to four decimals; Aave differed by 0.005 and Euler by 0.035, which confirms that the instability belongs to Euler rather than to the method.</p>
+</section>
+
+<section id="s5">
+  <h2><span class="n">5</span>Cost of the subsidy</h2>
+  <p>A share in per cent says nothing about the size of the spend. Table 2 converts rewards into dollars and sets them against protocol revenue.</p>
+  <div class="tbl" id="tab2">
+    <p class="tcap"><b>Table 2.</b> Subsidies, revenue and derived measures over the period.</p>
+    <div class="tw"><table id="tmoney"></table></div>
+    <p class="tnote">Dependency is subsidies divided by protocol revenue. Cost of capital is subsidies over average supply, annualised. Net margin is revenue minus subsidies over supply, also annualised.</p>
+  </div>
+  <p>Four protocols out of eight run a negative net margin. Morpho Blue paid out $30.6M with zero revenue, Fluid $21.8M against $12.9M, Euler v2 $6.6M against $4.7M and Compound v3 $0.54M against $0.39M. Aave v3 earns roughly twenty times what it hands out, and almost all of its handouts fall in the last five months of the period.</p>
+  <figure id="fig3">
+    <div class="bars" id="netmargin"></div>
+    <figcaption><b>Figure 3.</b> Net margin: protocol revenue minus subsidies, relative to average supply, in per cent a year. Bars to the right of the zero line are positive, to the left negative.</figcaption>
+  </figure>
+  <p>The cost of attracted capital is small everywhere. Even for the most generous it is 0.54% a year of supply at Fluid and 0.26% at Euler v2. Subsidy in lending is cheaper than the headline rates suggest, because it is spread across a very large base.</p>
+</section>
+
+<section id="s6">
+  <h2><span class="n">6</span>Protocol economics</h2>
+  <p>Borrowers pay interest, part of it reaches depositors, part stays with the protocol. Table 3 reports these on the matched scope.</p>
+  <div class="tbl" id="tab3">
+    <p class="tcap"><b>Table 3.</b> Fees, the protocol's share and derived ratios.</p>
+    <div class="tw"><table id="take"></table></div>
+    <p class="tnote">Take rate is protocol revenue divided by fees. Borrower rate is fees over average borrowed, annualised. Revenue to supply and revenue to borrow are annualised as well.</p>
+  </div>
+  <p>Take rate ranges from 0.00% at Morpho Blue to 21.47% at Moonwell. Morpho Blue kept nothing out of $338M of fees across 31 months; that is a protocol parameter, not a data defect. Compound v3 held revenue at zero for fifteen observed months and switched it on in May 2026: $19.7k in May, $75.3k in June, $112.3k in July and $180.3k in August (figure 4). No public governance record could be matched to that month, so it is reported here as an observation in the data rather than as a decision retold.</p>
+  <figure id="fig4">
+    <div class="lines" id="switch"></div>
+    <figcaption><b>Figure 4.</b> Monthly protocol revenue of Compound v3, in thousands of dollars. Fifteen observed months sit at exactly zero and are drawn as ticks on the baseline; revenue is switched on in May 2026.</figcaption>
+  </figure>
+  <p>Correction to the first version. It substituted treasury revenue for total revenue on some protocols, which made the Venus take rate look like 0.84% instead of 17.82%. Table 3 is rebuilt on one definition for all eight.</p>
+</section>
+
+<section id="s7">
+  <h2><span class="n">7</span>Advertised against received</h2>
+  <p>Nine per cent a year displayed on 1 January does not mean a depositor earned nine per cent over that year. For every entry day the displayed total rate was recorded and compared with what actually accrued over the next 30, 90, 180 and 365 days, compounded daily. Windows are taken every 15 days and dropped when a gap in the series exceeds a quarter of the window length.</p>
+  <figure id="fig5">
+    <div class="lines" id="ratio"></div>
+    <figcaption><b>Figure 5.</b> Median ratio of received to advertised yield across four horizons. Only windows where the displayed rate on entry was at least 3% a year are included.</figcaption>
+  </figure>
+  <div class="tbl" id="tab4">
+    <p class="tcap"><b>Table 4.</b> Received divided by advertised, by horizon.</p>
+    <div class="tw"><table id="crt"></table></div>
+    <p class="tnote">SparkLend has fewer than thirty windows at 365 days, so the cell is not computed. A 1% threshold was also tested: direction and ordering hold, only levels change.</p>
+  </div>
+  <p>At the one month horizon the ratio is close to one for all eight. At one year the median falls to 0.64 at Moonwell and 0.74 at Euler v2, so the depositor received about two thirds of what was displayed. The protocols with the largest reward share fall the furthest.</p>
+</section>
+
+<section id="s8">
+  <h2><span class="n">8</span>Event study of rewards</h2>
+  <p>91 sharp reward switches were identified at pool level. A switch on is a move of the 14 day average reward from below 0.15% to above 1% a year; a switch off is a fall from above 1% to a quarter of that level or less. Each event requires pool TVL of at least $300k and 45 days of data on each side, with at least 60 days between consecutive events in the same pool. For every event the change in pool TVL is measured net of the change in the protocol's own supply over the same days, otherwise a rising market is easily mistaken for an effect of rewards.</p>
+  <div class="tbl" id="tab5">
+    <p class="tcap"><b>Table 5.</b> TVL around reward switches, net of the protocol trend.</p>
+    <div class="tw"><table id="evt"></table></div>
+    <p class="tnote">Per protocol rows are shown where at least three events exist. Excess is the change in pool TVL minus the change in protocol supply over the same days.</p>
+  </div>
+  <p>Across 50 switch ons the median excess at 90 days is minus 0.6%, indistinguishable from zero: pools with rewards did not grow faster than their protocol. Across 41 switch offs the median excess is minus 7.4% with 56% of cases negative. Moonwell is the exception: 13 switch offs, median excess minus 24.3%, negative in 69% of cases. Morpho Blue shows a positive excess of plus 128.7%, most likely selection rather than effect, since rewards were switched off in vaults that were already scaling. Per protocol samples run from 3 to 14 events, so only descriptive statements are made about them. One caveat on the pooled row: 27 of the 50 switch ons are Morpho Blue pools, so the pooled median for switch ons is effectively Morpho's median and the two rows coincide to the decimal. The null result on switch ons is therefore established for Morpho Blue and is only weakly supported for the other four protocols.</p>
+</section>
+
+<section id="s9">
+  <h2><span class="n">9</span>Utilisation decomposition</h2>
+  <p>Utilisation is borrowed divided by supply. It rises both when borrowers arrive and when depositors leave, so every monthly change is decomposed in logs into a borrow contribution and a supply contribution. A contribution is called dominant when it exceeds the other by a factor of two. Thresholds were chosen after inspecting the distribution: the median monthly change in utilisation is 1.13 percentage points, so changes below one point are classified as no movement.</p>
+  <figure id="fig6">
+    <div class="ustack" id="ustack"></div>
+    <figcaption><b>Figure 6.</b> Distribution of months by the driver of the utilisation change, as a share of each protocol's observed months.</figcaption>
+  </figure>
+  <p>In 44% of months utilisation did not move by more than one point. A clean supply exit against rising utilisation appears in 2.5% of months, six cases across eight protocols over the whole period. Euler v2 is the only protocol with a clear trend: utilisation rose from 0.42 to 0.62 over a year with supply falling faster than borrowing. Moonwell has 11 months out of 32 in the category where both sides decline.</p>
+</section>
+
+<section id="s10">
+  <h2><span class="n">10</span>Structure and concentration</h2>
+  <p>Covering 98% of TVL takes nine pools at SparkLend and 232 at Morpho Blue. These are differently built markets even though they sit next to each other in summary tables.</p>
+  <div class="tbl" id="tab6">
+    <p class="tcap"><b>Table 6.</b> Pool concentration and share of total rewards.</p>
+    <div class="tw"><table id="tconc"></table></div>
+    <p class="tnote">HHI is the sum of squared pool shares; closer to one means more concentrated. Pool counts are taken on the collection date.</p>
+  </div>
+  <p>The practical meaning is where the risk sits. At SparkLend 63% of TVL is in a single pool and that risk is legible. At Morpho Blue risk is spread across 232 vaults run by different managers, which moves the question from the protocol to the individual curator. Morpho also holds 42% of all rewards paid in the sample.</p>
+</section>
+
+<section id="s11">
+  <h2><span class="n">11</span>Where revenue goes</h2>
+  <p>Protocol revenue can accrue to a treasury or reach token holders through buybacks and staking. Table 7 shows the split.</p>
+  <div class="tbl" id="tab7">
+    <p class="tcap"><b>Table 7.</b> Protocol revenue and the share flowing to token holders.</p>
+    <div class="tw"><table id="tok"></table></div>
+    <p class="tnote">The two series are not nested. In eight protocol months, five at SparkLend and three at Fluid, the source reports more holders revenue than total revenue, which an accounting split cannot do. The share is therefore an indicator of where revenue is directed and not an exact payout. It does identify the month a buyback begins.</p>
+  </div>
+  <p>At Aave v3 holders revenue appears in April 2025 and immediately amounts to $3.03M for the month. The Aave DAO approved a $1M weekly buyback on 7 April 2025 and started it on 9 April [2]. That month level agreement is the single point in this study where the data source was verified against an independent one. Venus sends 94.5% of its revenue to holders, and a separate treasury line appears there only from December 2025.</p>
+</section>
+
+<section id="s12">
+  <h2><span class="n">12</span>Limitations</h2>
+  <ul class="plain">
+    <li><b>Subsidies are measured on the depositor side only.</b> Borrower side rewards, which Moonwell and Venus both run, do not appear in the supply pool reward rate, so actual payouts are higher than measured, and Moonwell is understated the most.</li>
+    <li><b>The dollar valuation inherits the source.</b> It uses the token price of the day and the advertised rate. Rewards that were advertised but never paid are indistinguishable from paid ones here.</li>
+    <li><b>The pooled switch on row is one protocol.</b> Morpho Blue supplies 27 of the 50 switch ons, so the pooled median reproduces Morpho's median exactly. The pooled figure should not be read as a cross protocol average.</li>
+    <li><b>The event sample is small.</b> 41 switch offs and 50 switch ons across eight protocols, and 3 to 14 events per protocol.</li>
+    <li><b>The Morpho Blue aggregate averages curators.</b> There the rate is set by the manager of each vault rather than by the protocol, and 232 vaults have different managers.</li>
+    <li><b>Euler v2 is not described.</b> Its rank spread is six positions out of eight and the re collection confirmed it. Any statement about Euler would depend on the chosen aggregation.</li>
+    <li><b>Almost everything rests on one source.</b> One point was verified externally, the Aave buyback in April 2025. The rest is cross checked only between endpoints of the same provider. Token unlock schedules were not collected.</li>
+    <li><b>There is no causal identification.</b> The event study nets out the protocol trend but does not separate the decision to switch rewards off from the reason it was taken. This is correlation adjusted for a common trend, not an experiment.</li>
+  </ul>
+</section>
+
+<section id="s13">
+  <h2><span class="n">13</span>Conclusions</h2>
+  <ol>
+    <li>The share of yield paid by borrowers splits the sample in two: SparkLend, Venus, Aave v3, Compound v3 and Morpho Blue rest mainly on borrowing demand, while Fluid, Moonwell and Euler v2 rest substantially on printing.</li>
+    <li>Subsidies in lending are cheap relative to the asset base, yet for half of the sample they exceed the protocol's own revenue, meaning they are not funded from operations.</li>
+    <li>Switching rewards on does not buy liquidity at a level distinguishable from zero. Switching them off costs about 7% of pool TVL, and only one protocol in the sample shows a strong dependence.</li>
+    <li>The advertised rate is informative over a month and misleading over a year, and the gap widens with the reward share.</li>
+  </ol>
+</section>
+
+<section id="refs">
+  <h2>References</h2>
+  <ol class="refs">
+    <li>DefiLlama. Yields API, <code>yields.llama.fi/pools</code> and <code>yields.llama.fi/chart/{pool}</code>; Protocol API, <code>api.llama.fi/protocol/{slug}</code>; Fees API, <code>api.llama.fi/summary/fees/{slug}</code>. Retrieved 16 and 17 September 2026.</li>
+    <li>Aave DAO. Approval of a $1M weekly AAVE buyback, vote 7 April 2025, start 9 April 2025. Reported by CryptoSlate, <code>cryptoslate.com/aave-dao-greenlights-1-million-weekly-token-buyback-amid-market-decline</code>.</li>
+    <li>Project methodology of defi-lending-economics: <code>docs/methodology.md</code>, <code>docs/metric_definitions.md</code>, <code>docs/HISTORICAL_ACTIVITY_BLOCKERS.md</code>, which records the stop condition against combining global economics with partial activity scopes.</li>
+  </ol>
+</section>
+
+<section id="data">
+  <h2>Data availability</h2>
+  <p>Every number in this study is reproducible from the intermediate tables without going back to the network.</p>
+  <div class="files2" id="files"></div>
+</section>
+
+</article>
+
+<script id="D" type="application/json">{"name":{"aave-v3":"Aave v3","compound-v3":"Compound v3","euler-v2":"Euler v2","fluid-lending":"Fluid","moonwell-lending":"Moonwell","morpho-blue":"Morpho Blue","sparklend":"SparkLend","venus-core-pool":"Venus"},"months":["2024-01","2024-02","2024-03","2024-04","2024-05","2024-06","2024-07","2024-08","2024-09","2024-10","2024-11","2024-12","2025-01","2025-02","2025-03","2025-04","2025-05","2025-06","2025-07","2025-08","2025-09","2025-10","2025-11","2025-12","2026-01","2026-02","2026-03","2026-04","2026-05","2026-06","2026-07","2026-08"],"series":{"aave-v3":[{"inc":0,"rev":1697932,"fees":13139970,"sup":7455966811,"bor":2646359155,"util":0.3549,"org":1.0,"hold":0},{"inc":0,"rev":1944273,"fees":15259172,"sup":8974169443,"bor":3266816503,"util":0.364,"org":1.0,"hold":0},{"inc":4315,"rev":4050939,"fees":33796048,"sup":13180950338,"bor":4751972307,"util":0.3605,"org":0.9983,"hold":0},{"inc":24934,"rev":4148789,"fees":31536036,"sup":13569074234,"bor":4932992689,"util":0.3635,"org":0.9931,"hold":0},{"inc":24202,"rev":3775870,"fees":26463905,"sup":14883702805,"bor":5384749469,"util":0.3618,"org":0.994,"hold":0},{"inc":3902,"rev":5682158,"fees":36857999,"sup":17880795557,"bor":7069099961,"util":0.3953,"org":0.9991,"hold":0},{"inc":0,"rev":4886450,"fees":33849274,"sup":18603574927,"bor":7543235370,"util":0.4055,"org":1.0,"hold":0},{"inc":0,"rev":5236914,"fees":39934025,"sup":17446394743,"bor":7022829084,"util":0.4025,"org":1.0,"hold":0},{"inc":0,"rev":3577849,"fees":23628216,"sup":17822405310,"bor":7248809541,"util":0.4067,"org":1.0,"hold":0},{"inc":0,"rev":4329073,"fees":30529192,"sup":20025450083,"bor":8279565143,"util":0.4135,"org":1.0,"hold":0},{"inc":0,"rev":6877381,"fees":48625674,"sup":26513688122,"bor":10704662513,"util":0.4037,"org":1.0,"hold":0},{"inc":0,"rev":12536561,"fees":91575592,"sup":34820764784,"bor":14516397727,"util":0.4169,"org":1.0,"hold":0},{"inc":0,"rev":10355920,"fees":77427537,"sup":35044897378,"bor":14475091078,"util":0.413,"org":1.0,"hold":0},{"inc":0,"rev":9134360,"fees":70183954,"sup":32149519401,"bor":12868982951,"util":0.4003,"org":1.0,"hold":0},{"inc":0,"rev":6247076,"fees":43173483,"sup":28740782579,"bor":11130695250,"util":0.3873,"org":1.0,"hold":0},{"inc":0,"rev":5202349,"fees":37491928,"sup":28451870517,"bor":10706898428,"util":0.3763,"org":1.0,"hold":3030637},{"inc":0,"rev":6471160,"fees":45764370,"sup":37491687163,"bor":14537021507,"util":0.3877,"org":1.0,"hold":4467515},{"inc":0,"rev":7713867,"fees":54582673,"sup":40984470526,"bor":16341751716,"util":0.3987,"org":1.0,"hold":4063855},{"inc":0,"rev":10635214,"fees":75070467,"sup":49955769108,"bor":20292697647,"util":0.4062,"org":1.0,"hold":3659464},{"inc":0,"rev":15264443,"fees":107753988,"sup":63966354979,"bor":26867708481,"util":0.42,"org":1.0,"hold":3893658},{"inc":0,"rev":15335717,"fees":113032137,"sup":69530001319,"bor":28993158093,"util":0.417,"org":1.0,"hold":3852694},{"inc":0,"rev":15012641,"fees":114663890,"sup":67404868488,"bor":27199367096,"util":0.4035,"org":1.0,"hold":3807209},{"inc":0,"rev":12011840,"fees":95782744,"sup":53967910194,"bor":22620449895,"util":0.4191,"org":1.0,"hold":3288105},{"inc":0,"rev":8675051,"fees":70140245,"sup":52283982641,"bor":21490132296,"util":0.411,"org":1.0,"hold":2735258},{"inc":0,"rev":10072762,"fees":80861986,"sup":55573803434,"bor":23019414135,"util":0.4142,"org":1.0,"hold":2844382},{"inc":0,"rev":8644900,"fees":68890470,"sup":43863258044,"bor":17913386727,"util":0.4084,"org":1.0,"hold":413512},{"inc":0,"rev":6201318,"fees":47350166,"sup":41395992326,"bor":16901578356,"util":0.4083,"org":1.0,"hold":6155965},{"inc":780828,"rev":8201577,"fees":63078118,"sup":36902178720,"bor":16001745358,"util":0.4336,"org":0.8552,"hold":20188},{"inc":2580215,"rev":6479702,"fees":51827230,"sup":25026434322,"bor":11226504984,"util":0.4486,"org":0.5462,"hold":135368},{"inc":3073830,"rev":4933720,"fees":39812574,"sup":21922339848,"bor":9833804383,"util":0.4486,"org":0.5756,"hold":576548},{"inc":3486044,"rev":3777704,"fees":29051259,"sup":23716567369,"bor":10407601317,"util":0.4388,"org":0.5646,"hold":0},{"inc":1905044,"rev":4423235,"fees":32386035,"sup":26704394762,"bor":11489283375,"util":0.4302,"org":0.7048,"hold":0}],"compound-v3":[null,null,null,null,null,null,null,null,null,null,null,null,null,{"inc":46918,"rev":0,"fees":2224136,"sup":2948539896,"bor":900264665,"util":0.3053,"org":0.8976,"hold":0},{"inc":78494,"rev":0,"fees":3126719,"sup":2609066274,"bor":786440631,"util":0.3014,"org":0.9048,"hold":0},{"inc":72681,"rev":0,"fees":2593628,"sup":2466052691,"bor":728089106,"util":0.2952,"org":0.8956,"hold":0},{"inc":45009,"rev":0,"fees":2981084,"sup":2918154320,"bor":861112475,"util":0.2951,"org":0.8926,"hold":0},{"inc":36704,"rev":0,"fees":3074467,"sup":2943754350,"bor":876659910,"util":0.2978,"org":0.8842,"hold":0},{"inc":26846,"rev":0,"fees":4600104,"sup":3264232009,"bor":970666681,"util":0.2974,"org":0.9245,"hold":0},{"inc":30421,"rev":0,"fees":3991858,"sup":3320601628,"bor":1005906470,"util":0.3029,"org":0.9167,"hold":0},{"inc":25394,"rev":0,"fees":4079581,"sup":3329729794,"bor":1049045995,"util":0.3151,"org":0.9336,"hold":0},{"inc":24984,"rev":0,"fees":3807052,"sup":3319946424,"bor":1071228703,"util":0.3227,"org":0.9343,"hold":0},{"inc":24459,"rev":0,"fees":2988007,"sup":2583347308,"bor":869637407,"util":0.3366,"org":0.9235,"hold":0},{"inc":22052,"rev":0,"fees":2602246,"sup":2478225666,"bor":833108802,"util":0.3362,"org":0.9244,"hold":0},{"inc":13409,"rev":0,"fees":2676997,"sup":2517991982,"bor":836498634,"util":0.3322,"org":0.9559,"hold":0},{"inc":18601,"rev":0,"fees":1468925,"sup":1865612869,"bor":590156125,"util":0.3163,"org":0.9557,"hold":0},{"inc":18714,"rev":0,"fees":1472023,"sup":1831752834,"bor":535491217,"util":0.2923,"org":0.9614,"hold":0},{"inc":15621,"rev":0,"fees":1788662,"sup":1916408647,"bor":573066727,"util":0.299,"org":0.9622,"hold":0},{"inc":11258,"rev":19702,"fees":1821272,"sup":1847092180,"bor":584358553,"util":0.3164,"org":0.9623,"hold":0},{"inc":8581,"rev":75325,"fees":1590264,"sup":1612489197,"bor":547336131,"util":0.3394,"org":0.9685,"hold":0},{"inc":8208,"rev":112265,"fees":1804022,"sup":1695610455,"bor":558934737,"util":0.3296,"org":0.9701,"hold":0},{"inc":7391,"rev":180260,"fees":2142174,"sup":1812039419,"bor":580373345,"util":0.3203,"org":0.972,"hold":0}],"euler-v2":[null,null,null,null,null,null,null,{"inc":0,"rev":1,"fees":11,"sup":3512983,"bor":2650,"util":0.0008,"org":null,"hold":0},{"inc":0,"rev":176,"fees":2092,"sup":5868297,"bor":1292764,"util":0.2203,"org":1.0,"hold":0},{"inc":0,"rev":869,"fees":11225,"sup":11419030,"bor":3887993,"util":0.3405,"org":1.0,"hold":95},{"inc":0,"rev":6301,"fees":73478,"sup":55558590,"bor":20049243,"util":0.3609,"org":1.0,"hold":3374},{"inc":0,"rev":26415,"fees":409798,"sup":118729272,"bor":48586158,"util":0.4092,"org":1.0,"hold":18712},{"inc":0,"rev":43657,"fees":1055918,"sup":238208769,"bor":100691772,"util":0.4227,"org":1.0,"hold":39074},{"inc":0,"rev":38872,"fees":898255,"sup":352987134,"bor":146791336,"util":0.4159,"org":1.0,"hold":27728},{"inc":0,"rev":86327,"fees":1902940,"sup":804984070,"bor":366366145,"util":0.4551,"org":1.0,"hold":64265},{"inc":0,"rev":120181,"fees":2454285,"sup":1213220431,"bor":558105960,"util":0.46,"org":1.0,"hold":98852},{"inc":37101,"rev":213598,"fees":4383468,"sup":1705383411,"bor":814159682,"util":0.4774,"org":0.81,"hold":173564},{"inc":33056,"rev":217224,"fees":5080274,"sup":2049372525,"bor":995060241,"util":0.4855,"org":0.8545,"hold":165730},{"inc":25748,"rev":301095,"fees":7247310,"sup":2428053953,"bor":1289858878,"util":0.5312,"org":0.886,"hold":238619},{"inc":16085,"rev":345778,"fees":8479473,"sup":2740967442,"bor":1426414160,"util":0.5204,"org":0.9185,"hold":243452},{"inc":16292,"rev":643722,"fees":9875314,"sup":3094940639,"bor":1510307914,"util":0.488,"org":0.8985,"hold":495289},{"inc":299921,"rev":818808,"fees":11612861,"sup":3554960124,"bor":1734774697,"util":0.488,"org":0.3949,"hold":712649},{"inc":687176,"rev":534021,"fees":8547831,"sup":2415416491,"bor":1302601250,"util":0.5393,"org":0.3383,"hold":360064},{"inc":1086135,"rev":303777,"fees":4983098,"sup":2141697989,"bor":1119352348,"util":0.5226,"org":0.2605,"hold":169496},{"inc":1230137,"rev":233523,"fees":3928885,"sup":1829685736,"bor":966631190,"util":0.5283,"org":0.2632,"hold":115955},{"inc":1060135,"rev":160464,"fees":2815175,"sup":1296710874,"bor":764102717,"util":0.5893,"org":0.3053,"hold":130983},{"inc":882255,"rev":153394,"fees":2679023,"sup":1292585265,"bor":781388860,"util":0.6045,"org":0.319,"hold":88310},{"inc":540914,"rev":155335,"fees":2716086,"sup":1227651575,"bor":783452652,"util":0.6382,"org":0.3969,"hold":46891},{"inc":295362,"rev":99753,"fees":2335444,"sup":1092590754,"bor":737559594,"util":0.6751,"org":0.4248,"hold":0},{"inc":95300,"rev":62281,"fees":2069923,"sup":936766869,"bor":660475864,"util":0.7051,"org":0.5663,"hold":0},{"inc":160410,"rev":68053,"fees":2195210,"sup":897153015,"bor":592174031,"util":0.6601,"org":0.5961,"hold":0},{"inc":177016,"rev":51840,"fees":1634857,"sup":950432776,"bor":591311992,"util":0.6222,"org":0.6632,"hold":1}],"fluid-lending":[null,{"inc":0,"rev":990,"fees":6129,"sup":40265704,"bor":20964207,"util":0.5206,"org":null,"hold":0},{"inc":0,"rev":2475,"fees":604534,"sup":160576114,"bor":89297803,"util":0.5561,"org":null,"hold":0},{"inc":0,"rev":69631,"fees":3952111,"sup":344702852,"bor":199275506,"util":0.5781,"org":null,"hold":0},{"inc":0,"rev":319314,"fees":3785545,"sup":595746633,"bor":285613299,"util":0.4794,"org":1.0,"hold":0},{"inc":0,"rev":322053,"fees":3751646,"sup":753540741,"bor":350670442,"util":0.4654,"org":1.0,"hold":0},{"inc":0,"rev":165373,"fees":1585091,"sup":690792959,"bor":319449878,"util":0.4624,"org":1.0,"hold":0},{"inc":0,"rev":110154,"fees":1145756,"sup":664084442,"bor":298530523,"util":0.4495,"org":1.0,"hold":0},{"inc":0,"rev":101950,"fees":1011258,"sup":737810121,"bor":342350848,"util":0.464,"org":1.0,"hold":0},{"inc":333179,"rev":123300,"fees":1195066,"sup":746415787,"bor":335106110,"util":0.449,"org":0.7394,"hold":0},{"inc":847234,"rev":334115,"fees":2349690,"sup":970978443,"bor":475540372,"util":0.4898,"org":0.6501,"hold":0},{"inc":1225664,"rev":568423,"fees":3973410,"sup":1317842452,"bor":646456418,"util":0.4905,"org":0.7007,"hold":0},{"inc":1271422,"rev":430392,"fees":4010852,"sup":1490460928,"bor":721016118,"util":0.4838,"org":0.713,"hold":0},{"inc":1167178,"rev":459019,"fees":3228031,"sup":1570224164,"bor":713012675,"util":0.4541,"org":0.6494,"hold":0},{"inc":1107328,"rev":213858,"fees":2196782,"sup":1428641043,"bor":631133524,"util":0.4418,"org":0.583,"hold":0},{"inc":1166344,"rev":207020,"fees":1836337,"sup":1327065905,"bor":570310398,"util":0.4298,"org":0.5066,"hold":0},{"inc":1261807,"rev":340069,"fees":4381562,"sup":1727715447,"bor":800996375,"util":0.4636,"org":0.5574,"hold":0},{"inc":1096381,"rev":367531,"fees":4207197,"sup":1969159961,"bor":980259063,"util":0.4978,"org":0.6536,"hold":0},{"inc":1458149,"rev":560565,"fees":4125921,"sup":2302842276,"bor":1137055913,"util":0.4938,"org":0.6347,"hold":0},{"inc":1814293,"rev":672553,"fees":5575804,"sup":2763713509,"bor":1408118904,"util":0.5095,"org":0.6478,"hold":0},{"inc":1771146,"rev":967603,"fees":6254614,"sup":3067340807,"bor":1558941226,"util":0.5082,"org":0.6795,"hold":0},{"inc":1850671,"rev":1058161,"fees":8734804,"sup":4202494430,"bor":2021537305,"util":0.481,"org":0.6163,"hold":1650393},{"inc":1227671,"rev":889808,"fees":7496852,"sup":3370995699,"bor":1608317112,"util":0.4771,"org":0.6745,"hold":892451},{"inc":929992,"rev":725449,"fees":5366650,"sup":3087103213,"bor":1493633048,"util":0.4838,"org":0.7177,"hold":669961},{"inc":859084,"rev":821420,"fees":5101906,"sup":3018653436,"bor":1450958033,"util":0.4807,"org":0.7219,"hold":729271},{"inc":581136,"rev":576679,"fees":3121325,"sup":2230426978,"bor":1014023533,"util":0.4546,"org":0.713,"hold":319207},{"inc":589038,"rev":445100,"fees":2765345,"sup":1826225713,"bor":879050000,"util":0.4813,"org":0.7268,"hold":484025},{"inc":448523,"rev":492542,"fees":3165847,"sup":1579515987,"bor":817015120,"util":0.5173,"org":0.827,"hold":0},{"inc":395602,"rev":412770,"fees":3044015,"sup":1632740051,"bor":825535744,"util":0.5056,"org":0.8156,"hold":0},{"inc":304312,"rev":372590,"fees":2976355,"sup":1271359264,"bor":673165958,"util":0.5295,"org":0.8656,"hold":0},{"inc":90567,"rev":360441,"fees":3267646,"sup":1380987094,"bor":740969604,"util":0.5366,"org":0.9592,"hold":0},{"inc":50561,"rev":388962,"fees":3284157,"sup":1479638932,"bor":785552679,"util":0.5309,"org":0.9772,"hold":0}],"moonwell-lending":[null,null,null,null,null,{"inc":163018,"rev":175622,"fees":860708,"sup":277484891,"bor":153549447,"util":0.5534,"org":0.3543,"hold":10226},{"inc":140423,"rev":259678,"fees":1042104,"sup":241503767,"bor":131115477,"util":0.5429,"org":0.5402,"hold":0},{"inc":40781,"rev":266488,"fees":974092,"sup":180111225,"bor":93609514,"util":0.5197,"org":0.7866,"hold":0},{"inc":32357,"rev":178208,"fees":707767,"sup":187919294,"bor":99606688,"util":0.5301,"org":0.8337,"hold":0},{"inc":81483,"rev":199497,"fees":865251,"sup":277063720,"bor":155182039,"util":0.5601,"org":0.7177,"hold":0},{"inc":147755,"rev":241221,"fees":1395829,"sup":457815825,"bor":280659835,"util":0.613,"org":0.5227,"hold":0},{"inc":92874,"rev":377006,"fees":2063508,"sup":512988027,"bor":302363255,"util":0.5894,"org":0.5142,"hold":0},{"inc":68959,"rev":331156,"fees":1734267,"sup":435436809,"bor":252286545,"util":0.5794,"org":0.4397,"hold":0},{"inc":31870,"rev":418846,"fees":1699004,"sup":341110557,"bor":193525359,"util":0.5673,"org":0.507,"hold":0},{"inc":30329,"rev":136928,"fees":670330,"sup":266526911,"bor":144491707,"util":0.5421,"org":0.5265,"hold":0},{"inc":29159,"rev":166006,"fees":744170,"sup":249753830,"bor":137670598,"util":0.5512,"org":0.5505,"hold":0},{"inc":54137,"rev":124028,"fees":737849,"sup":350062060,"bor":198043334,"util":0.5657,"org":0.5033,"hold":0},{"inc":34339,"rev":132761,"fees":795158,"sup":378709599,"bor":217500817,"util":0.5743,"org":0.4892,"hold":0},{"inc":56365,"rev":121863,"fees":821717,"sup":414955214,"bor":231922675,"util":0.5589,"org":0.5207,"hold":0},{"inc":53599,"rev":266511,"fees":1336844,"sup":411941054,"bor":208841950,"util":0.507,"org":0.5513,"hold":0},{"inc":35933,"rev":169221,"fees":953291,"sup":355525879,"bor":167289653,"util":0.4705,"org":0.6165,"hold":0},{"inc":33786,"rev":557294,"fees":2162143,"sup":307554401,"bor":135386184,"util":0.4402,"org":0.5656,"hold":0},{"inc":22682,"rev":180067,"fees":836971,"sup":192192448,"bor":79754215,"util":0.415,"org":0.6923,"hold":0},{"inc":14865,"rev":60901,"fees":312284,"sup":154393743,"bor":66809166,"util":0.4327,"org":0.6678,"hold":0},{"inc":12578,"rev":99793,"fees":412097,"sup":151287816,"bor":63458105,"util":0.4195,"org":0.6814,"hold":0},{"inc":6753,"rev":356428,"fees":1285580,"sup":94666566,"bor":37974185,"util":0.4011,"org":0.7523,"hold":0},{"inc":6697,"rev":55774,"fees":219214,"sup":80782259,"bor":31912882,"util":0.395,"org":0.7609,"hold":0},{"inc":6603,"rev":50486,"fees":196096,"sup":79571346,"bor":32523323,"util":0.4087,"org":0.7344,"hold":0},{"inc":6838,"rev":29047,"fees":130921,"sup":82709152,"bor":33976752,"util":0.4108,"org":0.6566,"hold":0},{"inc":4011,"rev":44796,"fees":201182,"sup":75629234,"bor":29928857,"util":0.3957,"org":0.6355,"hold":0},{"inc":3672,"rev":23361,"fees":145894,"sup":79903966,"bor":31673844,"util":0.3964,"org":0.6903,"hold":0},{"inc":2093,"rev":68027,"fees":405604,"sup":76771206,"bor":32579130,"util":0.4244,"org":0.908,"hold":0}],"morpho-blue":[null,{"inc":55878,"rev":0,"fees":98602,"sup":104914090,"bor":41750426,"util":0.3979,"org":0.6242,"hold":0},{"inc":221589,"rev":0,"fees":940461,"sup":247389306,"bor":92185343,"util":0.3726,"org":0.7583,"hold":0},{"inc":124389,"rev":0,"fees":6698319,"sup":933444520,"bor":337347185,"util":0.3614,"org":0.8064,"hold":0},{"inc":113982,"rev":0,"fees":5002338,"sup":1220825515,"bor":437109694,"util":0.358,"org":0.937,"hold":0},{"inc":54270,"rev":0,"fees":5594876,"sup":1628166809,"bor":615204527,"util":0.3779,"org":0.9718,"hold":0},{"inc":70877,"rev":0,"fees":4567405,"sup":1680570978,"bor":619207351,"util":0.3685,"org":0.9607,"hold":0},{"inc":42457,"rev":0,"fees":4036182,"sup":1568428855,"bor":568834994,"util":0.3627,"org":0.9643,"hold":0},{"inc":16950,"rev":0,"fees":2735512,"sup":1514889718,"bor":560196878,"util":0.3698,"org":0.9882,"hold":0},{"inc":39406,"rev":0,"fees":2638407,"sup":1636041322,"bor":606714233,"util":0.3708,"org":0.9777,"hold":0},{"inc":11796,"rev":0,"fees":5933055,"sup":2285576162,"bor":853302927,"util":0.3733,"org":0.9924,"hold":0},{"inc":0,"rev":0,"fees":11805155,"sup":4147905044,"bor":1581808558,"util":0.3814,"org":1.0,"hold":0},{"inc":546965,"rev":0,"fees":10925567,"sup":5556916576,"bor":2174422319,"util":0.3913,"org":0.8878,"hold":0},{"inc":905005,"rev":0,"fees":10041446,"sup":5586984301,"bor":2128779019,"util":0.381,"org":0.7728,"hold":0},{"inc":578795,"rev":0,"fees":7093291,"sup":4775831347,"bor":1784689723,"util":0.3737,"org":0.8373,"hold":0},{"inc":305569,"rev":0,"fees":5623976,"sup":4347953311,"bor":1696235083,"util":0.3901,"org":0.8874,"hold":0},{"inc":597432,"rev":0,"fees":6348073,"sup":4952875409,"bor":1749728787,"util":0.3533,"org":0.8469,"hold":0},{"inc":352924,"rev":0,"fees":8119317,"sup":6089457547,"bor":2150601030,"util":0.3532,"org":0.9257,"hold":0},{"inc":666207,"rev":0,"fees":12155427,"sup":7748420378,"bor":2686058011,"util":0.3467,"org":0.9065,"hold":0},{"inc":1044353,"rev":0,"fees":19058274,"sup":9672757562,"bor":3258013255,"util":0.3368,"org":0.896,"hold":0},{"inc":715208,"rev":0,"fees":22810859,"sup":11818313627,"bor":4185803413,"util":0.3542,"org":0.9363,"hold":0},{"inc":419610,"rev":0,"fees":24149110,"sup":11540731392,"bor":4037789554,"util":0.3499,"org":0.9651,"hold":0},{"inc":713199,"rev":0,"fees":22933674,"sup":10111327413,"bor":3479636142,"util":0.3441,"org":0.9396,"hold":0},{"inc":571951,"rev":0,"fees":12251372,"sup":8675050391,"bor":3031159112,"util":0.3494,"org":0.9384,"hold":0},{"inc":836430,"rev":0,"fees":15646433,"sup":9900015515,"bor":3489384571,"util":0.3525,"org":0.9198,"hold":0},{"inc":1214710,"rev":0,"fees":17736154,"sup":8842619424,"bor":3153590469,"util":0.3566,"org":0.8522,"hold":0},{"inc":2601297,"rev":0,"fees":11341144,"sup":10301533817,"bor":3752045465,"util":0.3642,"org":0.7698,"hold":0},{"inc":2438364,"rev":0,"fees":14551230,"sup":10764532898,"bor":3803106317,"util":0.3533,"org":0.8058,"hold":0},{"inc":2297757,"rev":0,"fees":15284204,"sup":11182210185,"bor":3807078292,"util":0.3405,"org":0.8173,"hold":0},{"inc":2509271,"rev":0,"fees":18769112,"sup":10307735444,"bor":3580784343,"util":0.3474,"org":0.8043,"hold":0},{"inc":3701548,"rev":0,"fees":14886554,"sup":11146141109,"bor":3880758640,"util":0.3482,"org":0.7659,"hold":0},{"inc":6811764,"rev":0,"fees":18420464,"sup":12904211330,"bor":4471507138,"util":0.3465,"org":0.6739,"hold":0}],"sparklend":[null,null,null,null,null,null,{"inc":0,"rev":58096,"fees":6399059,"sup":4543445976,"bor":1635441920,"util":0.36,"org":1.0,"hold":0},{"inc":0,"rev":313918,"fees":9829270,"sup":4066667189,"bor":1554908358,"util":0.3824,"org":1.0,"hold":0},{"inc":0,"rev":72405,"fees":6672738,"sup":3797819019,"bor":1483191616,"util":0.3905,"org":1.0,"hold":0},{"inc":0,"rev":70422,"fees":6456437,"sup":3863848527,"bor":1489621899,"util":0.3855,"org":1.0,"hold":0},{"inc":0,"rev":99522,"fees":9977870,"sup":5819582658,"bor":2185824002,"util":0.3756,"org":1.0,"hold":0},{"inc":0,"rev":135017,"fees":18596707,"sup":7449866336,"bor":2765221392,"util":0.3712,"org":1.0,"hold":0},{"inc":0,"rev":108576,"fees":14603809,"sup":5734624414,"bor":2051607703,"util":0.3578,"org":1.0,"hold":0},{"inc":0,"rev":118184,"fees":9464781,"sup":4723769230,"bor":1719775170,"util":0.3641,"org":1.0,"hold":0},{"inc":0,"rev":86076,"fees":6546499,"sup":3864138329,"bor":1485438296,"util":0.3844,"org":1.0,"hold":0},{"inc":0,"rev":205296,"fees":6165792,"sup":3414025766,"bor":1333920070,"util":0.3907,"org":1.0,"hold":0},{"inc":0,"rev":89761,"fees":5240706,"sup":4365238136,"bor":1487981732,"util":0.3409,"org":1.0,"hold":0},{"inc":0,"rev":287097,"fees":5168099,"sup":4952294577,"bor":1641849474,"util":0.3315,"org":1.0,"hold":0},{"inc":0,"rev":588223,"fees":6897341,"sup":6149207633,"bor":2011471984,"util":0.3271,"org":1.0,"hold":0},{"inc":0,"rev":653499,"fees":7638691,"sup":7270871758,"bor":2252433243,"util":0.3098,"org":1.0,"hold":0},{"inc":0,"rev":625879,"fees":7227841,"sup":7501340428,"bor":2230098838,"util":0.2973,"org":1.0,"hold":0},{"inc":0,"rev":677782,"fees":9583290,"sup":8342613213,"bor":2482411032,"util":0.2976,"org":1.0,"hold":0},{"inc":0,"rev":452234,"fees":6636420,"sup":6711260028,"bor":2016394155,"util":0.3004,"org":1.0,"hold":0},{"inc":0,"rev":262507,"fees":4241481,"sup":4665786262,"bor":1334470874,"util":0.286,"org":1.0,"hold":0},{"inc":0,"rev":318455,"fees":4803631,"sup":4984777536,"bor":1483214756,"util":0.2975,"org":1.0,"hold":0},{"inc":0,"rev":257254,"fees":3671317,"sup":3760476832,"bor":1284652831,"util":0.3416,"org":1.0,"hold":0},{"inc":0,"rev":176210,"fees":2865898,"sup":3066490244,"bor":982000678,"util":0.3202,"org":1.0,"hold":487032},{"inc":0,"rev":202479,"fees":3739971,"sup":3696610132,"bor":1201216374,"util":0.325,"org":1.0,"hold":383472},{"inc":0,"rev":236863,"fees":4696269,"sup":4993773100,"bor":1621808055,"util":0.3248,"org":1.0,"hold":325189},{"inc":0,"rev":361401,"fees":4547207,"sup":4994098083,"bor":1603218381,"util":0.321,"org":1.0,"hold":600282},{"inc":0,"rev":418292,"fees":4842293,"sup":5374038132,"bor":1780118944,"util":0.3312,"org":1.0,"hold":192897},{"inc":0,"rev":430266,"fees":5051418,"sup":5947886008,"bor":1910818790,"util":0.3213,"org":1.0,"hold":892383}],"venus-core-pool":[{"inc":35405,"rev":2276585,"fees":10673339,"sup":1538748534,"bor":595402015,"util":0.3869,"org":0.9829,"hold":2276585},{"inc":32357,"rev":2063213,"fees":10166859,"sup":1668564823,"bor":612825296,"util":0.3673,"org":0.9849,"hold":2063213},{"inc":45661,"rev":1840627,"fees":11161893,"sup":2325316034,"bor":760296269,"util":0.327,"org":0.9709,"hold":1840627},{"inc":36227,"rev":3210342,"fees":14716599,"sup":2500259032,"bor":856239357,"util":0.3425,"org":0.9822,"hold":3210342},{"inc":30517,"rev":972597,"fees":5751542,"sup":2479316751,"bor":796382829,"util":0.3212,"org":0.9808,"hold":972597},{"inc":24882,"rev":1025673,"fees":5953628,"sup":2547535339,"bor":830700645,"util":0.3261,"org":0.984,"hold":1025673},{"inc":22439,"rev":400474,"fees":3330234,"sup":2231068619,"bor":645370466,"util":0.2893,"org":0.9705,"hold":400474},{"inc":23101,"rev":576348,"fees":3828597,"sup":2162409755,"bor":637997832,"util":0.295,"org":0.977,"hold":576348},{"inc":10812,"rev":600203,"fees":3805265,"sup":2237711044,"bor":619772843,"util":0.277,"org":0.9904,"hold":600203},{"inc":0,"rev":736995,"fees":4678584,"sup":2261657065,"bor":569341434,"util":0.2517,"org":1.0,"hold":736995},{"inc":0,"rev":1098321,"fees":6856244,"sup":2446035943,"bor":637158091,"util":0.2605,"org":1.0,"hold":1098321},{"inc":0,"rev":1488106,"fees":8186163,"sup":2573405155,"bor":731332655,"util":0.2842,"org":1.0,"hold":1488106},{"inc":0,"rev":1286749,"fees":7016278,"sup":2600450889,"bor":784637004,"util":0.3017,"org":1.0,"hold":1286749},{"inc":0,"rev":590461,"fees":4159031,"sup":2517461749,"bor":717608791,"util":0.2851,"org":1.0,"hold":590461},{"inc":0,"rev":727026,"fees":4402144,"sup":2344183629,"bor":691947301,"util":0.2952,"org":1.0,"hold":727026},{"inc":0,"rev":531968,"fees":3401332,"sup":2274100136,"bor":660725664,"util":0.2905,"org":1.0,"hold":531968},{"inc":0,"rev":350601,"fees":2693390,"sup":2367332557,"bor":657538392,"util":0.2778,"org":1.0,"hold":350601},{"inc":0,"rev":300830,"fees":2081440,"sup":2251623711,"bor":652710936,"util":0.2899,"org":1.0,"hold":300830},{"inc":0,"rev":390702,"fees":2490403,"sup":2508437816,"bor":737130427,"util":0.2939,"org":1.0,"hold":390702},{"inc":0,"rev":382857,"fees":2713147,"sup":2697608305,"bor":796664498,"util":0.2953,"org":1.0,"hold":382857},{"inc":0,"rev":426840,"fees":2848036,"sup":2813009836,"bor":876161664,"util":0.3115,"org":1.0,"hold":426806},{"inc":0,"rev":602128,"fees":3164035,"sup":3069960727,"bor":1026784473,"util":0.3345,"org":1.0,"hold":601760},{"inc":0,"rev":387082,"fees":2097484,"sup":2468942746,"bor":789640646,"util":0.3198,"org":1.0,"hold":387082},{"inc":0,"rev":279247,"fees":1711284,"sup":2221120869,"bor":715168528,"util":0.322,"org":1.0,"hold":111696},{"inc":0,"rev":281062,"fees":1868205,"sup":2422986759,"bor":769088185,"util":0.3174,"org":1.0,"hold":112422},{"inc":0,"rev":161728,"fees":1101531,"sup":1872515781,"bor":543898195,"util":0.2905,"org":1.0,"hold":64684},{"inc":0,"rev":171838,"fees":1121741,"sup":1762716227,"bor":512482722,"util":0.2907,"org":1.0,"hold":68731},{"inc":0,"rev":146152,"fees":949955,"sup":1663170196,"bor":474558301,"util":0.2853,"org":1.0,"hold":58455},{"inc":0,"rev":160491,"fees":926179,"sup":1647843538,"bor":462094550,"util":0.2804,"org":1.0,"hold":60823},{"inc":0,"rev":350760,"fees":1016985,"sup":1440336120,"bor":400063304,"util":0.2778,"org":1.0,"hold":98977},{"inc":0,"rev":200198,"fees":856382,"sup":1415372742,"bor":381080137,"util":0.2692,"org":1.0,"hold":73475},{"inc":0,"rev":345853,"fees":1031574,"sup":1546750483,"bor":413652232,"util":0.2674,"org":1.0,"hold":109952}]},"summary":{"sparklend":{"months":26.0,"supply_avg_musd":5155.9442,"fees_musd":181.5648,"revenue_musd":7.3057,"incentives_musd":0.0,"take_rate_pct":4.0237,"inc_dependency":0.0,"inc_cost_of_capital_pct":0.0,"rev_to_supply_pct":0.0659,"net_margin_pct":0.0659,"organic_share":1.0},"venus-core-pool":{"months":32.0,"supply_avg_musd":2214.936,"fees_musd":136.7595,"revenue_musd":24.3641,"incentives_musd":0.2614,"take_rate_pct":17.8153,"inc_dependency":0.0107,"inc_cost_of_capital_pct":0.0044,"rev_to_supply_pct":0.4122,"net_margin_pct":0.4078,"organic_share":0.9914},"aave-v3":{"months":32.0,"supply_avg_musd":32695.4381,"fees_musd":1743.5204,"revenue_musd":233.5387,"incentives_musd":11.8833,"take_rate_pct":13.3947,"inc_dependency":0.0509,"inc_cost_of_capital_pct":0.0136,"rev_to_supply_pct":0.2679,"net_margin_pct":0.2543,"organic_share":0.9451},"moonwell-lending":{"months":27.0,"supply_avg_musd":248.6804,"fees_musd":23.7099,"revenue_musd":5.091,"incentives_musd":1.214,"take_rate_pct":21.4721,"inc_dependency":0.2385,"inc_cost_of_capital_pct":0.2168,"rev_to_supply_pct":0.909,"net_margin_pct":0.6923,"organic_share":0.5827},"compound-v3":{"months":19.0,"supply_avg_musd":2488.4552,"fees_musd":50.8332,"revenue_musd":0.3876,"incentives_musd":0.5357,"take_rate_pct":0.7624,"inc_dependency":1.3824,"inc_cost_of_capital_pct":0.0139,"rev_to_supply_pct":0.01,"net_margin_pct":-0.0038,"organic_share":0.9288},"euler-v2":{"months":25.0,"supply_avg_musd":1298.3543,"fees_musd":87.3922,"revenue_musd":4.6855,"incentives_musd":6.643,"take_rate_pct":5.3614,"inc_dependency":1.4178,"inc_cost_of_capital_pct":0.2583,"rev_to_supply_pct":0.1822,"net_margin_pct":-0.0761,"organic_share":0.4164},"fluid-lending":{"months":31.0,"supply_avg_musd":1604.8407,"fees_musd":107.5022,"revenue_musd":12.8803,"incentives_musd":21.8473,"take_rate_pct":11.9814,"inc_dependency":1.6962,"inc_cost_of_capital_pct":0.5395,"rev_to_supply_pct":0.3181,"net_margin_pct":-0.2214,"organic_share":0.7169},"morpho-blue":{"months":31.0,"supply_avg_musd":6232.0571,"fees_musd":338.196,"revenue_musd":0.0,"incentives_musd":30.58,"take_rate_pct":0.0,"inc_dependency":null,"inc_cost_of_capital_pct":0.1928,"rev_to_supply_pct":0.0,"net_margin_pct":-0.1928,"organic_share":0.8494}},"econ":{"moonwell-lending":{"months":27.0,"supply_avg":248680399.96296,"borrow_avg":131245760.59259,"util_avg":0.52777,"fees_total":23709875.0,"rev_total":5091014.0,"take_rate":21.47213,"passthru":78.5279,"holders_total":10226.0,"holders_share_of_rev":0.20086,"rev_to_supply":0.90904,"rev_to_borrow":1.72242,"fees_to_borrow":8.02167},"venus-core-pool":{"months":32.0,"supply_avg":2214936028.4375,"borrow_avg":667389240.0625,"util_avg":0.30131,"fees_total":136759503.0,"rev_total":24364057.0,"take_rate":17.81526,"passthru":82.18495,"holders_total":23025541.0,"holders_share_of_rev":94.50619,"rev_to_supply":0.41221,"rev_to_borrow":1.36806,"fees_to_borrow":7.67913},"fluid-lending":{"months":31.0,"supply_avg":1604840680.16129,"borrow_avg":780447023.80645,"util_avg":0.48631,"fees_total":107502238.0,"rev_total":12880310.0,"take_rate":11.98143,"passthru":87.13937,"holders_total":4745308.0,"holders_share_of_rev":36.84157,"rev_to_supply":0.31807,"rev_to_borrow":0.65406,"fees_to_borrow":5.45893},"aave-v3":{"months":32.0,"supply_avg":32695438133.59375,"borrow_avg":13365148829.21875,"util_avg":0.40878,"fees_total":1743520357.0,"rev_total":233538745.0,"take_rate":13.39467,"passthru":86.60533,"holders_total":42944358.0,"holders_share_of_rev":18.38854,"rev_to_supply":0.26795,"rev_to_borrow":0.65549,"fees_to_borrow":4.89365},"euler-v2":{"months":25.0,"supply_avg":1298354320.56,"borrow_avg":692616003.64,"util_avg":0.53346,"fees_total":87392234.0,"rev_total":4685465.0,"take_rate":5.36142,"passthru":94.63746,"holders_total":3193103.0,"holders_share_of_rev":68.14912,"rev_to_supply":0.18219,"rev_to_borrow":0.34152,"fees_to_borrow":6.36993},"sparklend":{"months":26.0,"supply_avg":5155944213.30769,"borrow_avg":1731888867.96154,"util_avg":0.3359,"fees_total":181564835.0,"rev_total":7305714.0,"take_rate":4.02375,"passthru":95.9762,"holders_total":2881255.0,"holders_share_of_rev":39.43838,"rev_to_supply":0.06588,"rev_to_borrow":0.19614,"fees_to_borrow":4.87455},"compound-v3":{"months":19.0,"supply_avg":2488455154.89474,"borrow_avg":776756648.10526,"util_avg":0.31214,"fees_total":50833221.0,"rev_total":387552.0,"take_rate":0.7624,"passthru":99.23759,"holders_total":0.0,"holders_share_of_rev":0.0,"rev_to_supply":0.01003,"rev_to_borrow":0.03212,"fees_to_borrow":4.21282},"morpho-blue":{"months":31.0,"supply_avg":6232057138.54839,"borrow_avg":2213381703.19355,"util_avg":0.35516,"fees_total":338195993.0,"rev_total":0.0,"take_rate":0.0,"passthru":100.0,"holders_total":0.0,"holders_share_of_rev":null,"rev_to_supply":0.0,"rev_to_borrow":0.0,"fees_to_borrow":6.00329}},"conc":{"aave-v3":{"pools_used":68.0,"hhi":0.1059,"top1_share":0.2118,"top5_share":0.6454,"total_tvl_now":16789079077.0,"total_incentives_usd":14279728.0,"avg_reward_apy":0.1},"compound-v3":{"pools_used":5.0,"hhi":0.3053,"top1_share":0.3932,"top5_share":1.0,"total_tvl_now":118249776.0,"total_incentives_usd":1878441.0,"avg_reward_apy":0.428},"sparklend":{"pools_used":9.0,"hhi":0.4157,"top1_share":0.6267,"top5_share":0.9059,"total_tvl_now":5105011997.0,"total_incentives_usd":0.0,"avg_reward_apy":0.0},"morpho-blue":{"pools_used":232.0,"hhi":0.0555,"top1_share":0.2048,"top5_share":0.3473,"total_tvl_now":14034535212.0,"total_incentives_usd":35277032.0,"avg_reward_apy":0.875},"venus-core-pool":{"pools_used":15.0,"hhi":0.1913,"top1_share":0.286,"top5_share":0.8184,"total_tvl_now":1220923000.0,"total_incentives_usd":1796277.0,"avg_reward_apy":0.031},"fluid-lending":{"pools_used":50.0,"hhi":0.0806,"top1_share":0.1726,"top5_share":0.5561,"total_tvl_now":1200132445.0,"total_incentives_usd":21872557.0,"avg_reward_apy":0.755},"euler-v2":{"pools_used":47.0,"hhi":0.2276,"top1_share":0.4321,"top5_share":0.7831,"total_tvl_now":147540237.0,"total_incentives_usd":6723583.0,"avg_reward_apy":2.928},"moonwell-lending":{"pools_used":18.0,"hhi":0.1216,"top1_share":0.2265,"top5_share":0.689,"total_tvl_now":14622177.0,"total_incentives_usd":2042046.0,"avg_reward_apy":0.82}},"angles":{"sparklend":{"A1_tvl_weighted":1.0,"A2_equal_weighted":1.0,"A3_median_pool_month":1.0,"A4_tvl_over_1m_pools":1.0,"A5_pools_18m_plus":1.0,"A6a_2024":1.0,"A6b_2025":1.0,"A6c_2026":1.0,"min":1.0,"max":1.0,"spread":0.0,"rank_A1":1.0},"venus-core-pool":{"A1_tvl_weighted":0.9914,"A2_equal_weighted":0.9865,"A3_median_pool_month":1.0,"A4_tvl_over_1m_pools":0.9914,"A5_pools_18m_plus":0.9913,"A6a_2024":0.9856,"A6b_2025":1.0,"A6c_2026":1.0,"min":0.9856,"max":1.0,"spread":0.0144,"rank_A1":2.0},"aave-v3":{"A1_tvl_weighted":0.9402,"A2_equal_weighted":0.8885,"A3_median_pool_month":1.0,"A4_tvl_over_1m_pools":0.9402,"A5_pools_18m_plus":0.9784,"A6a_2024":0.9986,"A6b_2025":1.0,"A6c_2026":0.7898,"min":0.7898,"max":1.0,"spread":0.2102,"rank_A1":3.0},"compound-v3":{"A1_tvl_weighted":0.8984,"A2_equal_weighted":0.8683,"A3_median_pool_month":0.8784,"A4_tvl_over_1m_pools":0.8984,"A5_pools_18m_plus":0.8984,"A6a_2024":0.8595,"A6b_2025":0.9082,"A6c_2026":0.9627,"min":0.8595,"max":0.9627,"spread":0.1032,"rank_A1":4.0},"morpho-blue":{"A1_tvl_weighted":0.852,"A2_equal_weighted":0.8728,"A3_median_pool_month":0.9872,"A4_tvl_over_1m_pools":0.852,"A5_pools_18m_plus":0.937,"A6a_2024":0.955,"A6b_2025":0.9131,"A6c_2026":0.7858,"min":0.7858,"max":0.9872,"spread":0.2014,"rank_A1":5.0},"fluid-lending":{"A1_tvl_weighted":0.7153,"A2_equal_weighted":0.6807,"A3_median_pool_month":1.0,"A4_tvl_over_1m_pools":0.7153,"A5_pools_18m_plus":0.7136,"A6a_2024":0.8101,"A6b_2025":0.6445,"A6c_2026":0.8226,"min":0.6445,"max":1.0,"spread":0.3555,"rank_A1":6.0},"moonwell-lending":{"A1_tvl_weighted":0.5062,"A2_equal_weighted":0.589,"A3_median_pool_month":0.5223,"A4_tvl_over_1m_pools":0.7775,"A5_pools_18m_plus":0.5012,"A6a_2024":0.4749,"A6b_2025":0.543,"A6c_2026":0.734,"min":0.4749,"max":0.7775,"spread":0.3026,"rank_A1":7.0},"euler-v2":{"A1_tvl_weighted":0.4516,"A2_equal_weighted":0.8053,"A3_median_pool_month":1.0,"A4_tvl_over_1m_pools":0.4165,"A5_pools_18m_plus":0.9296,"A6a_2024":1.0,"A6b_2025":0.5177,"A6c_2026":0.4094,"min":0.4094,"max":1.0,"spread":0.5906,"rank_A1":8.0}},"check":{"aave-v3":{"run2":0.9448,"run1":0.9402,"diff":0.0046},"compound-v3":{"run2":0.8984,"run1":0.8984,"diff":0.0},"euler-v2":{"run2":0.4167,"run1":0.4516,"diff":0.0349},"fluid-lending":{"run2":0.7153,"run1":0.7153,"diff":0.0},"moonwell-lending":{"run2":0.5062,"run1":0.5062,"diff":0.0},"morpho-blue":{"run2":0.852,"run1":0.852,"diff":0.0},"sparklend":{"run2":1.0,"run1":1.0,"diff":0.0},"venus-core-pool":{"run2":0.9914,"run1":0.9914,"diff":0.0}},"cr":[{"project":"aave-v3","window_days":180,"min_claimed":1,"n":628,"med_claimed":2.87,"med_realized":3.33,"med_ratio":1.04,"share_below":0.443,"med_claimed_base":2.86,"med_realized_base":3.29},{"project":"aave-v3","window_days":30,"min_claimed":1,"n":823,"med_claimed":3.03,"med_realized":3.24,"med_ratio":1.013,"share_below":0.464,"med_claimed_base":2.66,"med_realized_base":2.86},{"project":"aave-v3","window_days":365,"min_claimed":1,"n":487,"med_claimed":3.11,"med_realized":3.59,"med_ratio":1.023,"share_below":0.476,"med_claimed_base":3.03,"med_realized_base":3.59},{"project":"aave-v3","window_days":90,"min_claimed":1,"n":737,"med_claimed":2.9,"med_realized":3.25,"med_ratio":1.024,"share_below":0.464,"med_claimed_base":2.72,"med_realized_base":3.01},{"project":"compound-v3","window_days":180,"min_claimed":1,"n":299,"med_claimed":3.72,"med_realized":4.09,"med_ratio":1.038,"share_below":0.462,"med_claimed_base":3.11,"med_realized_base":3.42},{"project":"compound-v3","window_days":30,"min_claimed":1,"n":349,"med_claimed":3.41,"med_realized":3.57,"med_ratio":1.032,"share_below":0.378,"med_claimed_base":3.0,"med_realized_base":3.11},{"project":"compound-v3","window_days":365,"min_claimed":1,"n":239,"med_claimed":4.0,"med_realized":4.04,"med_ratio":0.985,"share_below":0.523,"med_claimed_base":3.19,"med_realized_base":3.57},{"project":"compound-v3","window_days":90,"min_claimed":1,"n":329,"med_claimed":3.58,"med_realized":3.71,"med_ratio":1.048,"share_below":0.435,"med_claimed_base":3.05,"med_realized_base":3.2},{"project":"euler-v2","window_days":180,"min_claimed":1,"n":208,"med_claimed":4.23,"med_realized":4.13,"med_ratio":0.893,"share_below":0.611,"med_claimed_base":3.24,"med_realized_base":2.67},{"project":"euler-v2","window_days":30,"min_claimed":1,"n":384,"med_claimed":4.14,"med_realized":4.36,"med_ratio":1.027,"share_below":0.432,"med_claimed_base":3.08,"med_realized_base":3.28},{"project":"euler-v2","window_days":365,"min_claimed":1,"n":91,"med_claimed":4.23,"med_realized":2.87,"med_ratio":0.791,"share_below":0.648,"med_claimed_base":4.23,"med_realized_base":2.84},{"project":"euler-v2","window_days":90,"min_claimed":1,"n":303,"med_claimed":4.16,"med_realized":4.4,"med_ratio":0.983,"share_below":0.528,"med_claimed_base":3.08,"med_realized_base":2.81},{"project":"fluid-lending","window_days":180,"min_claimed":1,"n":480,"med_claimed":4.64,"med_realized":5.08,"med_ratio":1.023,"share_below":0.473,"med_claimed_base":2.21,"med_realized_base":2.71},{"project":"fluid-lending","window_days":30,"min_claimed":1,"n":648,"med_claimed":4.63,"med_realized":4.99,"med_ratio":1.026,"share_below":0.418,"med_claimed_base":2.38,"med_realized_base":2.75},{"project":"fluid-lending","window_days":365,"min_claimed":1,"n":280,"med_claimed":6.11,"med_realized":5.99,"med_ratio":0.939,"share_below":0.618,"med_claimed_base":2.35,"med_realized_base":3.03},{"project":"fluid-lending","window_days":90,"min_claimed":1,"n":586,"med_claimed":4.55,"med_realized":4.95,"med_ratio":1.021,"share_below":0.471,"med_claimed_base":2.25,"med_realized_base":2.84},{"project":"moonwell-lending","window_days":180,"min_claimed":1,"n":417,"med_claimed":3.11,"med_realized":2.57,"med_ratio":0.844,"share_below":0.65,"med_claimed_base":0.95,"med_realized_base":0.9},{"project":"moonwell-lending","window_days":30,"min_claimed":1,"n":432,"med_claimed":3.02,"med_realized":3.05,"med_ratio":0.981,"share_below":0.528,"med_claimed_base":0.99,"med_realized_base":1.03},{"project":"moonwell-lending","window_days":365,"min_claimed":1,"n":321,"med_claimed":3.72,"med_realized":2.33,"med_ratio":0.701,"share_below":0.769,"med_claimed_base":0.94,"med_realized_base":0.92},{"project":"moonwell-lending","window_days":90,"min_claimed":1,"n":452,"med_claimed":3.05,"med_realized":2.8,"med_ratio":0.923,"share_below":0.595,"med_claimed_base":0.97,"med_realized_base":0.88},{"project":"morpho-blue","window_days":180,"min_claimed":1,"n":1189,"med_claimed":4.61,"med_realized":4.56,"med_ratio":0.987,"share_below":0.516,"med_claimed_base":4.01,"med_realized_base":4.15},{"project":"morpho-blue","window_days":30,"min_claimed":1,"n":2095,"med_claimed":4.33,"med_realized":4.4,"med_ratio":1.03,"share_below":0.435,"med_claimed_base":3.9,"med_realized_base":3.96},{"project":"morpho-blue","window_days":365,"min_claimed":1,"n":585,"med_claimed":5.04,"med_realized":4.93,"med_ratio":0.896,"share_below":0.602,"med_claimed_base":4.48,"med_realized_base":4.27},{"project":"morpho-blue","window_days":90,"min_claimed":1,"n":1681,"med_claimed":4.45,"med_realized":4.46,"med_ratio":1.017,"share_below":0.475,"med_claimed_base":3.98,"med_realized_base":4.01},{"project":"sparklend","window_days":180,"min_claimed":1,"n":128,"med_claimed":2.09,"med_realized":2.01,"med_ratio":1.001,"share_below":0.5,"med_claimed_base":2.09,"med_realized_base":2.01},{"project":"sparklend","window_days":30,"min_claimed":1,"n":163,"med_claimed":2.17,"med_realized":2.19,"med_ratio":1.015,"share_below":0.405,"med_claimed_base":2.17,"med_realized_base":2.19},{"project":"sparklend","window_days":365,"min_claimed":1,"n":82,"med_claimed":1.93,"med_realized":1.91,"med_ratio":1.031,"share_below":0.488,"med_claimed_base":1.93,"med_realized_base":1.91},{"project":"sparklend","window_days":90,"min_claimed":1,"n":148,"med_claimed":2.18,"med_realized":2.15,"med_ratio":0.985,"share_below":0.52,"med_claimed_base":2.18,"med_realized_base":2.15},{"project":"venus-core-pool","window_days":180,"min_claimed":1,"n":295,"med_claimed":3.1,"med_realized":3.14,"med_ratio":0.84,"share_below":0.566,"med_claimed_base":2.79,"med_realized_base":2.95},{"project":"venus-core-pool","window_days":30,"min_claimed":1,"n":325,"med_claimed":2.74,"med_realized":2.99,"med_ratio":0.978,"share_below":0.523,"med_claimed_base":2.64,"med_realized_base":2.86},{"project":"venus-core-pool","window_days":365,"min_claimed":1,"n":260,"med_claimed":3.54,"med_realized":4.13,"med_ratio":0.835,"share_below":0.569,"med_claimed_base":3.23,"med_realized_base":3.94},{"project":"venus-core-pool","window_days":90,"min_claimed":1,"n":312,"med_claimed":2.86,"med_realized":3.01,"med_ratio":0.865,"share_below":0.583,"med_claimed_base":2.66,"med_realized_base":2.82},{"project":"aave-v3","window_days":180,"min_claimed":3,"n":302,"med_claimed":4.41,"med_realized":4.56,"med_ratio":0.928,"share_below":0.579,"med_claimed_base":4.39,"med_realized_base":4.56},{"project":"aave-v3","window_days":30,"min_claimed":3,"n":419,"med_claimed":4.41,"med_realized":4.54,"med_ratio":0.988,"share_below":0.525,"med_claimed_base":3.91,"med_realized_base":3.96},{"project":"aave-v3","window_days":365,"min_claimed":3,"n":251,"med_claimed":4.61,"med_realized":4.78,"med_ratio":0.896,"share_below":0.622,"med_claimed_base":4.58,"med_realized_base":4.78},{"project":"aave-v3","window_days":90,"min_claimed":3,"n":359,"med_claimed":4.45,"med_realized":4.39,"med_ratio":0.919,"share_below":0.591,"med_claimed_base":4.17,"med_realized_base":4.14},{"project":"compound-v3","window_days":180,"min_claimed":3,"n":202,"med_claimed":4.79,"med_realized":4.62,"med_ratio":0.899,"share_below":0.594,"med_claimed_base":3.87,"med_realized_base":4.0},{"project":"compound-v3","window_days":30,"min_claimed":3,"n":213,"med_claimed":4.54,"med_realized":4.74,"med_ratio":1.017,"share_below":0.465,"med_claimed_base":3.71,"med_realized_base":4.02},{"project":"compound-v3","window_days":365,"min_claimed":3,"n":168,"med_claimed":5.14,"med_realized":4.81,"med_ratio":0.895,"share_below":0.667,"med_claimed_base":4.21,"med_realized_base":4.14},{"project":"compound-v3","window_days":90,"min_claimed":3,"n":207,"med_claimed":4.57,"med_realized":4.73,"med_ratio":0.973,"share_below":0.541,"med_claimed_base":3.78,"med_realized_base":4.02},{"project":"euler-v2","window_days":180,"min_claimed":3,"n":132,"med_claimed":5.47,"med_realized":5.36,"med_ratio":0.85,"share_below":0.697,"med_claimed_base":4.67,"med_realized_base":4.55},{"project":"euler-v2","window_days":30,"min_claimed":3,"n":259,"med_claimed":5.05,"med_realized":5.46,"med_ratio":1.02,"share_below":0.452,"med_claimed_base":4.29,"med_realized_base":4.57},{"project":"euler-v2","window_days":365,"min_claimed":3,"n":57,"med_claimed":4.92,"med_realized":5.62,"med_ratio":0.736,"share_below":0.789,"med_claimed_base":4.8,"med_realized_base":5.42},{"project":"euler-v2","window_days":90,"min_claimed":3,"n":202,"med_claimed":5.09,"med_realized":5.48,"med_ratio":0.944,"share_below":0.574,"med_claimed_base":4.29,"med_realized_base":4.47},{"project":"fluid-lending","window_days":180,"min_claimed":3,"n":300,"med_claimed":6.64,"med_realized":6.45,"med_ratio":0.945,"share_below":0.533,"med_claimed_base":3.52,"med_realized_base":3.62},{"project":"fluid-lending","window_days":30,"min_claimed":3,"n":411,"med_claimed":6.05,"med_realized":6.13,"med_ratio":1.026,"share_below":0.416,"med_claimed_base":3.69,"med_realized_base":3.87},{"project":"fluid-lending","window_days":365,"min_claimed":3,"n":186,"med_claimed":8.12,"med_realized":6.46,"med_ratio":0.806,"share_below":0.731,"med_claimed_base":4.13,"med_realized_base":3.83},{"project":"fluid-lending","window_days":90,"min_claimed":3,"n":365,"med_claimed":6.16,"med_realized":6.12,"med_ratio":1.0,"share_below":0.504,"med_claimed_base":3.55,"med_realized_base":3.75},{"project":"moonwell-lending","window_days":180,"min_claimed":3,"n":216,"med_claimed":6.32,"med_realized":5.84,"med_ratio":0.855,"share_below":0.644,"med_claimed_base":2.43,"med_realized_base":1.77},{"project":"moonwell-lending","window_days":30,"min_claimed":3,"n":216,"med_claimed":6.26,"med_realized":6.3,"med_ratio":0.983,"share_below":0.509,"med_claimed_base":2.81,"med_realized_base":2.46},{"project":"moonwell-lending","window_days":365,"min_claimed":3,"n":179,"med_claimed":6.73,"med_realized":5.41,"med_ratio":0.637,"share_below":0.81,"med_claimed_base":2.26,"med_realized_base":1.18},{"project":"moonwell-lending","window_days":90,"min_claimed":3,"n":229,"med_claimed":6.26,"med_realized":5.85,"med_ratio":0.952,"share_below":0.55,"med_claimed_base":2.43,"med_realized_base":2.09},{"project":"morpho-blue","window_days":180,"min_claimed":3,"n":924,"med_claimed":5.37,"med_realized":5.15,"med_ratio":0.919,"share_below":0.587,"med_claimed_base":4.65,"med_realized_base":4.62},{"project":"morpho-blue","window_days":30,"min_claimed":3,"n":1598,"med_claimed":5.08,"med_realized":5.21,"med_ratio":1.014,"share_below":0.472,"med_claimed_base":4.48,"med_realized_base":4.49},{"project":"morpho-blue","window_days":365,"min_claimed":3,"n":464,"med_claimed":5.92,"med_realized":5.49,"med_ratio":0.845,"share_below":0.659,"med_claimed_base":5.03,"med_realized_base":5.1},{"project":"morpho-blue","window_days":90,"min_claimed":3,"n":1293,"med_claimed":5.16,"med_realized":5.09,"med_ratio":0.966,"share_below":0.546,"med_claimed_base":4.53,"med_realized_base":4.53},{"project":"sparklend","window_days":180,"min_claimed":3,"n":49,"med_claimed":4.62,"med_realized":7.22,"med_ratio":0.998,"share_below":0.51,"med_claimed_base":4.62,"med_realized_base":7.22},{"project":"sparklend","window_days":30,"min_claimed":3,"n":58,"med_claimed":5.2,"med_realized":5.3,"med_ratio":1.02,"share_below":0.379,"med_claimed_base":5.2,"med_realized_base":5.3},{"project":"sparklend","window_days":90,"min_claimed":3,"n":55,"med_claimed":5.02,"med_realized":6.05,"med_ratio":0.984,"share_below":0.527,"med_claimed_base":5.02,"med_realized_base":6.05},{"project":"venus-core-pool","window_days":180,"min_claimed":3,"n":149,"med_claimed":5.93,"med_realized":6.81,"med_ratio":0.84,"share_below":0.597,"med_claimed_base":5.74,"med_realized_base":6.75},{"project":"venus-core-pool","window_days":30,"min_claimed":3,"n":150,"med_claimed":5.93,"med_realized":6.26,"med_ratio":0.988,"share_below":0.513,"med_claimed_base":5.74,"med_realized_base":6.19},{"project":"venus-core-pool","window_days":365,"min_claimed":3,"n":139,"med_claimed":6.36,"med_realized":5.82,"med_ratio":0.774,"share_below":0.619,"med_claimed_base":6.26,"med_realized_base":5.77},{"project":"venus-core-pool","window_days":90,"min_claimed":3,"n":149,"med_claimed":5.93,"med_realized":6.73,"med_ratio":0.851,"share_below":0.604,"med_claimed_base":5.74,"med_realized_base":6.71}],"ev":[{"group":"start","n":50,"med_reward_before":0.0,"med_reward_after":1.09,"med_pool_d90":19.5,"med_protocol_d90":6.6,"med_excess_d30":5.8,"med_excess_d90":-0.6,"share_excess_negative_90d":0.52},{"group":"start aave-v3","n":8,"med_reward_before":0.0,"med_reward_after":1.07,"med_pool_d90":-56.3,"med_protocol_d90":-38.3,"med_excess_d30":-26.3,"med_excess_d90":-18.0,"share_excess_negative_90d":0.63},{"group":"start euler-v2","n":8,"med_reward_before":0.0,"med_reward_after":1.07,"med_pool_d90":50.5,"med_protocol_d90":54.8,"med_excess_d30":34.2,"med_excess_d90":-4.3,"share_excess_negative_90d":0.63},{"group":"start fluid-lending","n":3,"med_reward_before":0.0,"med_reward_after":1.14,"med_pool_d90":49.4,"med_protocol_d90":40.4,"med_excess_d30":11.4,"med_excess_d90":9.0,"share_excess_negative_90d":0.33},{"group":"start moonwell-lending","n":4,"med_reward_before":0.0,"med_reward_after":1.11,"med_pool_d90":39.2,"med_protocol_d90":28.9,"med_excess_d30":-11.7,"med_excess_d90":10.3,"share_excess_negative_90d":0.25},{"group":"start morpho-blue","n":27,"med_reward_before":0.0,"med_reward_after":1.09,"med_pool_d90":0.4,"med_protocol_d90":6.6,"med_excess_d30":5.8,"med_excess_d90":-0.6,"share_excess_negative_90d":0.52},{"group":"stop","n":41,"med_reward_before":1.89,"med_reward_after":0.41,"med_pool_d90":-12.5,"med_protocol_d90":1.1,"med_excess_d30":-6.0,"med_excess_d90":-7.4,"share_excess_negative_90d":0.56},{"group":"stop euler-v2","n":4,"med_reward_before":1.71,"med_reward_after":0.34,"med_pool_d90":3.6,"med_protocol_d90":11.0,"med_excess_d30":75.6,"med_excess_d90":-7.4,"share_excess_negative_90d":0.75},{"group":"stop fluid-lending","n":9,"med_reward_before":2.0,"med_reward_after":0.47,"med_pool_d90":-12.5,"med_protocol_d90":-9.0,"med_excess_d30":-14.1,"med_excess_d90":-8.3,"share_excess_negative_90d":0.67},{"group":"stop moonwell-lending","n":13,"med_reward_before":1.89,"med_reward_after":0.41,"med_pool_d90":-47.4,"med_protocol_d90":-25.4,"med_excess_d30":-14.0,"med_excess_d90":-24.3,"share_excess_negative_90d":0.69},{"group":"stop morpho-blue","n":14,"med_reward_before":2.2,"med_reward_after":0.31,"med_pool_d90":188.2,"med_protocol_d90":25.0,"med_excess_d30":75.8,"med_excess_d90":128.7,"share_excess_negative_90d":0.29}],"util":{"stable":107,"mixed":55,"both declining":42,"supply inflow":13,"borrow driven down":11,"borrow driven up":8,"supply exit":6},"utilByP":{"aave-v3":{"stable":19,"mixed":6,"both declining":4,"borrow driven down":2,"supply exit":1},"compound-v3":{"stable":16,"mixed":6,"both declining":3,"borrow driven up":3,"supply exit":2,"borrow driven down":2},"euler-v2":{"mixed":8,"stable":5,"both declining":5,"supply inflow":2,"borrow driven up":1,"supply exit":1,"borrow driven down":1},"fluid-lending":{"mixed":10,"stable":10,"both declining":7,"supply inflow":2},"moonwell-lending":{"mixed":13,"both declining":11,"stable":6,"borrow driven down":2},"morpho-blue":{"stable":21,"mixed":4,"supply inflow":3,"borrow driven down":1,"both declining":1},"sparklend":{"stable":16,"both declining":7,"mixed":4,"supply inflow":3,"borrow driven up":1,"supply exit":1},"venus-core-pool":{"stable":14,"mixed":4,"both declining":4,"supply inflow":3,"borrow driven down":3,"borrow driven up":3,"supply exit":1}},"totals":{"fees":2669478256.0,"revenue":288252857.0,"incentives":72964697.0,"supply_side":2380279390.0,"holders":76799791.0}}</script>
+<script>
+(function(){
+var D=JSON.parse(document.getElementById('D').textContent);
+var N=D.name,S=D.series,A=D.angles,U=D.summary,E=D.econ,C=D.conc,M=D.months;
+var order=Object.keys(A).sort(function(a,b){return A[b].A1_tvl_weighted-A[a].A1_tvl_weighted});
+var f=function(v,d){return v===null||v===undefined||isNaN(v)?'n/a':(+v).toFixed(d===undefined?2:d)};
+var m$=function(v){return (v/1e6).toFixed(v>=1e8?0:1)};
+var el=function(t,c,h){var e=document.createElement(t);if(c)e.className=c;if(h!==undefined)e.innerHTML=h;return e};
+function table(id,head,rows){var t=document.getElementById(id);if(!t)return;
+ t.innerHTML='<thead><tr>'+head.map(function(h){return '<th>'+h+'</th>'}).join('')+'</tr></thead><tbody>'+
+ rows.map(function(r){return '<tr>'+r.map(function(c){var cl=(c&&c.cl)?' class="'+c.cl+'"':'';var v=(c&&c.v!==undefined)?c.v:c;
+   return '<td'+cl+'>'+v+'</td>'}).join('')+'</tr>'}).join('')+'</tbody>';}
+
+/* fig 1 */
+var rank=document.getElementById('rank');
+order.forEach(function(p){var o=A[p].A1_tvl_weighted,sub=1-o;
+ rank.appendChild(el('div','bline','<span class="cname">'+N[p]+'</span>'+
+  '<span class="ctrack"><span class="cfill" style="width:'+(o*100).toFixed(2)+'%"></span>'+
+  (sub>0.002?'<span class="cfill dim" style="width:'+(sub*100).toFixed(2)+'%"></span>':'')+'</span>'+
+  '<span class="cval">'+f(o)+'</span>'));});
+
+/* fig 2 */
+var mult=document.getElementById('mult'),W=200,H=54,SP=2.6;
+order.forEach(function(p){var s=S[p],pts=[],seg=[];
+ for(var i=0;i<M.length;i++){if(!s[i]||s[i].org===null){if(seg.length){pts.push(seg);seg=[]}continue}
+  seg.push([(i/(M.length-1))*W,SP+(1-s[i].org)*(H-2*SP)])}
+ if(seg.length)pts.push(seg);
+ var area='',line='';
+ pts.forEach(function(g){if(g.length<2)return;
+  line+='M'+g.map(function(q){return q[0].toFixed(1)+','+q[1].toFixed(1)}).join('L');
+  area+='M'+g[0][0].toFixed(1)+','+H+'L'+g.map(function(q){return q[0].toFixed(1)+','+q[1].toFixed(1)}).join('L')+'L'+g[g.length-1][0].toFixed(1)+','+H+'Z'});
+ mult.appendChild(el('div','sm','<h4>'+N[p]+'<span>'+f(A[p].A1_tvl_weighted)+'</span></h4>'+
+  '<svg viewBox="0 0 '+W+' '+H+'" preserveAspectRatio="none" role="img" aria-label="'+N[p]+'">'+
+  '<line x1="0" y1="'+(H/2)+'" x2="'+W+'" y2="'+(H/2)+'" stroke="currentColor" stroke-width="0.7" stroke-dasharray="2 3" opacity=".35"/>'+
+  '<path d="'+area+'" fill="currentColor" opacity=".14"/>'+
+  '<path d="'+line+'" fill="none" stroke="currentColor" stroke-width="1.3" vector-effect="non-scaling-stroke" stroke-linejoin="round"/></svg>'+
+  '<p>paid out $'+(U[p].incentives_musd<1?U[p].incentives_musd.toFixed(2):U[p].incentives_musd.toFixed(1))+'M</p>'));});
+
+/* table 1 */
+var cols=[['A1_tvl_weighted','A1 TVL'],['A2_equal_weighted','A2 equal'],['A3_median_pool_month','A3 median'],
+ ['A4_tvl_over_1m_pools','A4 &gt;$1M'],['A5_pools_18m_plus','A5 18m+'],['A6a_2024','2024'],['A6b_2025','2025'],['A6c_2026','2026'],['spread','spread']];
+var RS={'sparklend':1,'venus-core-pool':2,'aave-v3':3,'compound-v3':3,'morpho-blue':2,'fluid-lending':3,'moonwell-lending':2,'euler-v2':6};
+table('angles',['Protocol'].concat(cols.map(function(c){return c[1]})).concat(['rank &plusmn;','re run']),
+ order.map(function(p){return [N[p]].concat(cols.map(function(c){var v=A[p][c[0]];
+   return {v:f(v,c[0]==='spread'?3:2),cl:(c[0]==='spread'?(v>0.4?'neg':''):(v<0.6?'neg':(v>0.985?'mark':'')))};
+  })).concat([{v:RS[p],cl:RS[p]>=5?'neg':''},{v:f(D.check[p].run2),cl:D.check[p].diff>0.01?'neg':''}]);}));
+
+/* table 2 + fig 3 */
+var mo=order.slice().sort(function(a,b){var x=U[a].inc_dependency,y=U[b].inc_dependency;x=(x===null?99:x);y=(y===null?99:y);return x-y});
+table('tmoney',['Protocol','Paid out, $M','Revenue, $M','Dependency','Cost of capital, % a year','Net margin, % a year'],
+ mo.map(function(p){var d=U[p];
+  return [N[p],m$(d.incentives_musd*1e6),m$(d.revenue_musd*1e6),
+   {v:d.inc_dependency===null?'no revenue':f(d.inc_dependency,3),cl:(d.inc_dependency===null||d.inc_dependency>1)?'neg':'mark'},
+   f(d.inc_cost_of_capital_pct,3),{v:f(d.net_margin_pct,3),cl:d.net_margin_pct<0?'neg':'mark'}];}));
+var nm=document.getElementById('netmargin'),mx=Math.max.apply(null,order.map(function(p){return Math.abs(U[p].net_margin_pct)}));
+order.slice().sort(function(a,b){return U[b].net_margin_pct-U[a].net_margin_pct}).forEach(function(p){
+ var v=U[p].net_margin_pct,w=Math.abs(v)/mx*50;
+ nm.appendChild(el('div','bline','<span class="cname">'+N[p]+'</span>'+
+  '<span class="dz"><span class="zl" style="left:50%"></span>'+
+  '<span class="'+(v>=0?'':'m')+'" style="left:'+(v>=0?50:50-w)+'%;width:'+w+'%"></span></span>'+
+  '<span class="cval">'+f(v,3)+'%</span>'));});
+
+/* table 3 + fig 4 */
+var eo=order.slice().sort(function(a,b){return E[b].take_rate-E[a].take_rate});
+table('take',['Protocol','Fees, $M','Take rate','To depositors','Borrower rate, % a year','Revenue to supply','Revenue to borrow'],
+ eo.map(function(p){var e=E[p];
+  return [N[p],m$(e.fees_total),{v:f(e.take_rate)+'%',cl:e.take_rate<1?'neg':'mark'},f(e.passthru,1)+'%',
+   f(e.fees_to_borrow),f(e.rev_to_supply,3)+'%',f(e.rev_to_borrow,3)+'%'];}));
+(function(){
+ var obs=[],i;
+ for(i=0;i<M.length;i++){var r=S['compound-v3'][i]; if(r) obs.push({m:M[i],v:r.rev||0});}
+ var W=740,H=190,pl=52,pr=14,pt=12,pb=26,mr=Math.max.apply(null,obs.map(function(o){return o.v}));
+ var step=(W-pl-pr)/obs.length, bw=Math.min(16,step*0.62);
+ var ys=function(v){return pt+(1-v/mr)*(H-pt-pb)};
+ var g='<svg viewBox="0 0 '+W+' '+H+'" role="img" aria-label="monthly protocol revenue of Compound v3">';
+ [0,50000,100000,150000,200000].forEach(function(t){ if(t>mr*1.05) return;
+  g+='<line x1="'+pl+'" y1="'+ys(t).toFixed(1)+'" x2="'+(W-pr)+'" y2="'+ys(t).toFixed(1)+'" stroke="currentColor" opacity="'+(t?'.13':'.45')+'"/>'+
+     '<text x="'+(pl-8)+'" y="'+(ys(t)+3.5).toFixed(1)+'" text-anchor="end">'+(t?(t/1000)+'k':'0')+'</text>';});
+ obs.forEach(function(o,k){ var x=pl+step*k+(step-bw)/2;
+  if(o.v>0){ g+='<rect x="'+x.toFixed(1)+'" y="'+ys(o.v).toFixed(1)+'" width="'+bw.toFixed(1)+'" height="'+(ys(0)-ys(o.v)).toFixed(1)+'" fill="var(--ink)"><title>'+o.m+': $'+Math.round(o.v).toLocaleString('en-US')+'</title></rect>'; }
+  else { g+='<rect x="'+x.toFixed(1)+'" y="'+(ys(0)-2).toFixed(1)+'" width="'+bw.toFixed(1)+'" height="2" fill="var(--rule-2)"><title>'+o.m+': $0</title></rect>'; }
+ });
+ [0,Math.floor(obs.length/2),obs.length-1].forEach(function(k){
+  g+='<text x="'+(pl+step*k+step/2).toFixed(1)+'" y="'+(H-8)+'" text-anchor="middle">'+obs[k].m+'</text>';});
+ var on=-1; for(i=0;i<obs.length;i++){ if(obs[i].v>0){on=i;break;} }
+ if(on>=0){ var xo=pl+step*on+step/2;
+  g+='<line x1="'+xo.toFixed(1)+'" y1="'+pt+'" x2="'+xo.toFixed(1)+'" y2="'+ys(0).toFixed(1)+'" stroke="currentColor" stroke-dasharray="2 3" opacity=".45"/>'+
+     '<text x="'+(xo-6).toFixed(1)+'" y="'+(pt+9)+'" text-anchor="end">revenue switched on</text>';}
+ document.getElementById('switch').innerHTML=g+'</svg>';
+})();
+
+/* fig 5 + table 4 */
+var CR=D.cr.filter(function(r){return r.min_claimed===3}),byP={};
+CR.forEach(function(r){(byP[r.project]=byP[r.project]||{})[r.window_days]=r});
+var WD=[30,90,180,365],rw=740,rh=230,pad={l:38,r:132,t:12,b:26},lo=0.6,hi=1.08;
+var xs=function(i){return pad.l+(i/(WD.length-1))*(rw-pad.l-pad.r)};
+var ys=function(v){return pad.t+(1-(v-lo)/(hi-lo))*(rh-pad.t-pad.b)};
+var CP=['var(--c1)','var(--c2)','var(--c3)','var(--c4)','var(--c5)','var(--c6)','var(--c7)','var(--c8)'],labs=[];
+var svg='<svg viewBox="0 0 '+rw+' '+rh+'" role="img" aria-label="realised against advertised">';
+[0.7,0.8,0.9,1.0].forEach(function(g){
+ svg+='<line x1="'+pad.l+'" y1="'+ys(g).toFixed(1)+'" x2="'+(rw-pad.r)+'" y2="'+ys(g).toFixed(1)+'" stroke="currentColor" opacity="'+(g===1?'.5':'.16')+'"'+(g===1?' stroke-dasharray="3 3"':'')+'/>'+
+  '<text x="'+(pad.l-7)+'" y="'+(ys(g)+3.4).toFixed(1)+'" text-anchor="end">'+g.toFixed(1)+'</text>';});
+WD.forEach(function(w,i){svg+='<text x="'+xs(i).toFixed(1)+'" y="'+(rh-8)+'" text-anchor="middle">'+w+'d</text>';});
+order.forEach(function(p,pi){var pts=[];
+ WD.forEach(function(w,i){var r=byP[p]&&byP[p][w];if(r)pts.push([xs(i),ys(Math.max(lo,Math.min(hi,r.med_ratio))),r.med_ratio]);});
+ if(pts.length<2)return;var col=CP[pi%CP.length];
+ svg+='<path d="M'+pts.map(function(q){return q[0].toFixed(1)+','+q[1].toFixed(1)}).join('L')+'" fill="none" stroke="'+col+'" stroke-width="1.6" stroke-linejoin="round"/>';
+ pts.forEach(function(q){svg+='<circle cx="'+q[0].toFixed(1)+'" cy="'+q[1].toFixed(1)+'" r="2.3" fill="'+col+'"/>'});
+ var e2=pts[pts.length-1];
+ if(e2[0]<xs(WD.length-1)-1){ svg+='<line x1="'+e2[0].toFixed(1)+'" y1="'+e2[1].toFixed(1)+'" x2="'+xs(WD.length-1).toFixed(1)+'" y2="'+e2[1].toFixed(1)+'" stroke="'+col+'" stroke-width="1" stroke-dasharray="2 4" opacity=".55"/>'; }
+ labs.push({x:xs(WD.length-1)+8,y:e2[1],t:N[p]+' '+e2[2].toFixed(2)+(e2[0]<xs(WD.length-1)-1?' (180d)':''),col:col});});
+labs.sort(function(a,b){return a.y-b.y});
+for(var i=1;i<labs.length;i++){if(labs[i].y-labs[i-1].y<12)labs[i].y=labs[i-1].y+12}
+var mxY=rh-pad.b-2;for(var i=labs.length-1;i>=0;i--){if(labs[i].y>mxY){labs[i].y=mxY;mxY-=12}}
+labs.forEach(function(L){svg+='<text x="'+L.x.toFixed(1)+'" y="'+(L.y+3.4).toFixed(1)+'" fill="'+L.col+'">'+L.t+'</text>'});
+document.getElementById('ratio').innerHTML=svg+'</svg>';
+table('crt',['Protocol','30 days','90 days','180 days','365 days','Below advertised, 365d','Windows'],
+ order.map(function(p){var b=byP[p]||{},r365=b[365];
+  return [N[p]].concat(WD.map(function(w){var r=b[w];
+   return r?{v:f(r.med_ratio),cl:r.med_ratio<0.85?'neg':(r.med_ratio>=0.99?'mark':'')}:'n/a'}))
+   .concat([r365?f(r365.share_below*100,0)+'%':'n/a',Object.keys(b).reduce(function(s,k){return s+b[k].n},0)]);}));
+
+/* table 5 */
+table('evt',['Group','Events','Reward before','Reward after','Pool TVL, 90d','Protocol, 90d','Excess, 30d','Excess, 90d','Share negative'],
+ D.ev.map(function(r){
+  var isTot=r.group.indexOf(' ')<0;
+  var nm2=isTot?(r.group==='stop'?'All switch offs':'All switch ons'):((r.group.indexOf('stop')===0?'switch off, ':'switch on, ')+N[r.group.split(' ')[1]]);
+  return [{v:isTot?'<b>'+nm2+'</b>':nm2},r.n,f(r.med_reward_before)+'%',f(r.med_reward_after)+'%',
+   f(r.med_pool_d90,1)+'%',f(r.med_protocol_d90,1)+'%',
+   {v:f(r.med_excess_d30,1)+'%',cl:r.med_excess_d30<-5?'neg':''},
+   {v:f(r.med_excess_d90,1)+'%',cl:r.med_excess_d90<-5?'neg':(r.med_excess_d90>20?'mark':'')},
+   f(r.share_excess_negative_90d*100,0)+'%'];}));
+
+/* fig 6 */
+var UK=[['stable','no movement','var(--rule)'],['mixed','mixed','var(--rule-2)'],['both declining','both declining','var(--ink-3)'],['borrow','borrow driven','var(--ink)'],['supply','supply driven','var(--c4)']];
+var us=document.getElementById('ustack');
+order.forEach(function(p){var raw=D.utilByP[p]||{},g={stable:0,mixed:0,'both declining':0,borrow:0,supply:0},tot=0;
+ Object.keys(raw).forEach(function(k){var n2=raw[k];tot+=n2;
+  if(k==='stable')g.stable+=n2;else if(k==='mixed')g.mixed+=n2;else if(k==='both declining')g['both declining']+=n2;
+  else if(k.indexOf('borrow')===0)g.borrow+=n2;else g.supply+=n2;});
+ var bar=UK.map(function(u){var v=g[u[0]];return v?'<span style="width:'+(v/tot*100).toFixed(2)+'%;background:'+u[2]+'" title="'+u[1]+': '+v+'"></span>':''}).join('');
+ us.appendChild(el('div','urow','<span class="cname" style="font-family:var(--sans);font-size:13px">'+N[p]+'</span><span class="ubar">'+bar+'</span>'));});
+us.insertAdjacentHTML('afterend','<div class="legend">'+UK.map(function(u){return '<span><i class="sw" style="background:'+u[2]+'"></i>'+u[1]+'</span>'}).join('')+'</div>');
+
+/* table 6 */
+var co=order.slice().sort(function(a,b){return C[a].pools_used-C[b].pools_used});
+var totInc=order.reduce(function(s,p){return s+U[p].incentives_musd},0);
+table('tconc',['Protocol','Pools for 98% of TVL','HHI','Largest pool','Top 5','TVL now, $M','Share of all rewards'],
+ co.map(function(p){var c=C[p];
+  return [N[p],c.pools_used,f(c.hhi,3),f(c.top1_share*100,0)+'%',f(c.top5_share*100,0)+'%',Math.round(c.total_tvl_now/1e6).toLocaleString('en-US'),
+   {v:f(U[p].incentives_musd/totInc*100,1)+'%',cl:U[p].incentives_musd/totInc>0.3?'neg':''}];}));
+
+/* table 7 */
+var to=order.slice().sort(function(a,b){return (E[b].holders_share_of_rev||0)-(E[a].holders_share_of_rev||0)});
+table('tok',['Protocol','Revenue, $M','To holders, $M','Holders share','First month paid'],
+ to.map(function(p){var e=E[p],s=S[p],first=null;
+  for(var i=0;i<M.length;i++){if(s[i]&&s[i].hold>0){first=M[i];break}}
+  return [N[p],m$(e.rev_total),m$(e.holders_total),
+   {v:e.holders_share_of_rev===null?'no revenue':f(e.holders_share_of_rev,1)+'%',cl:e.holders_share_of_rev>60?'mark':''},
+   first||'never'];}));
+
+/* files */
+var R='../data/';
+var FL=[['incentives_month.csv','monthly reward rate and subsidy in dollars, per protocol'],
+ ['protocol_month.csv','daily supply and borrow aggregated to months'],
+ ['fees_month.csv','five revenue series on one matched scope'],
+ ['full_month.csv','the merged panel every ratio is computed from'],
+ ['claimed_vs_realized.csv','advertised against received yield, four horizons'],
+ ['event_study_summary.csv','91 reward switches, net of the protocol trend'],
+ ['util_decomposition.csv','monthly utilisation decomposition'],
+ ['organic_share_angles.csv','the headline metric under eight angles'],
+ ['organic_check.csv','the re collection against the first pass']];
+document.getElementById('files').innerHTML=FL.map(function(x){
+ return '<a href="'+R+x[0]+'" target="_blank" rel="noopener"><span>'+x[0]+'</span><span>'+x[1]+'</span></a>'}).join('');
+
+/* theme */
+document.getElementById('tt').addEventListener('click',function(){
+ var c=document.documentElement.getAttribute('data-theme');
+ if(!c)c=matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light';
+ document.documentElement.setAttribute('data-theme',c==='dark'?'light':'dark');});
+})();
+</script>
+
+</body>
+</html>

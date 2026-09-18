@@ -1,0 +1,7 @@
+vault,chain,asset,aum_usd,reported_net_apy,fee_pct,curator,markets,bluechip_share
+Adpend USDC,1,USDC,301797905,5359.8,50,нет,3,0.00
+1337 USDC,1,USDC,160980624,297995.8,0,нет,2,0.00
+Not Gauntlet,42161,USDC,6266109,297995.8,0,нет,2,0.00
+Lulo USDC,1,USDC,1797137,4645.0,0,нет,2,0.00
+Duplicated Key,1,USDC,1347289,297995.8,0,нет,1,0.00
+frobUSDC,42161,USDC,1062463,297951.8,0,нет,3,0.00

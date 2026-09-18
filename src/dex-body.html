@@ -1,0 +1,91 @@
+<div id="dock"><button id="theme" type="button" aria-label="Switch theme">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
+</button></div>
+
+<header class="sec hero">
+  <p class="kicker">Live panel &middot; decentralised exchanges</p>
+  <h1>Mercenary liquidity</h1>
+  <p class="intro">What share of a liquidity provider's yield is trading fees and what share is exchange-token emissions, recomputed on live pools every time this page opens, against the published study covering January 2024 to September 2026.</p>
+  <div class="statusline">
+    <span id="stat"><i></i> connecting</span>
+    <span id="stamp"></span>
+    <button class="plain" id="refresh" type="button" disabled>Refresh</button>
+  </div>
+  <div id="errbox"></div>
+  <div class="nums" id="hero"></div>
+</header>
+
+<section class="sec" id="sec-drift">
+  <h2>What moved since publication</h2>
+  <p class="note">The hollow marker is the fee share the study published, the filled marker is the same calculation on today's pools. Pools below a hundred thousand dollars are excluded from the live figure.</p>
+  <figure>
+    <div id="drift"></div>
+    <div class="ckey" id="drift-lg"></div>
+    <figcaption><b>Figure 1.</b> Fee share of liquidity-provider yield, published baseline against live. One means the whole return came from trading fees, zero means all of it was emissions. Source: DefiLlama yields API, author's calculation.</figcaption>
+  </figure>
+</section>
+
+<section class="sec" id="sec-live">
+  <h2>Live venue economics</h2>
+  <p class="note">Rates are weighted by pool size across pools that publish a fee rate. The reward rate is reported as a percentage rather than converted into dollars, because annualising a concentrated liquidity reward rate produces a figure the venue will never pay: liquidity moves long before a year is out.</p>
+  <p class="note">The last column counts pools currently quoting a reward rate above a thousand per cent a year. These are the venue's own published rates rather than errors in this page, and they are the reason the figures above use a median across venues instead of one pooled average. Click any heading to sort.</p>
+  <div class="tw"><table class="d wide" id="tlive"></table></div>
+</section>
+
+<section class="sec" id="sec-hist">
+  <h2>The baseline series</h2>
+  <p class="note">The published panel, unchanged. Each venue gets its own panel rather than several lines in one frame.</p>
+  <figure>
+    <div id="hist"></div>
+    <p class="ckey" id="hist-lg"></p>
+    <figcaption><b>Figure 2.</b> Monthly fee share of yield, weighted by TVL within each venue month. Gaps are months with no readable rate rather than zero. Source: DefiLlama yields API, author's panel.</figcaption>
+  </figure>
+  <figure>
+    <div id="subs"></div>
+    <p class="ckey" id="subs-lg"></p>
+    <figcaption><b>Figure 3.</b> Cumulative emissions paid to liquidity providers, in dollars, priced as the reward rate applied to pool size on each day and accumulated. All panels share one vertical scale. Source: DefiLlama yields API, author's panel.</figcaption>
+  </figure>
+</section>
+
+<section class="sec" id="sec-ev">
+  <h2>Event study of emissions</h2>
+  <p class="note">Sixty pool-level switch-ons and switch-offs from the published study, each measured net of the venue's own TVL trend over the same days. The final two rows repeat the lending study for comparison.</p>
+  <div class="tw"><table class="d wide" id="tev"></table></div>
+</section>
+
+<section class="sec" id="sec-pools">
+  <h2>Pool explorer</h2>
+  <p class="note">Every live pool behind the numbers above, sortable by fee share. Twenty five rows a page, largest first.</p>
+  <div class="ctl">
+    <span class="cl">Search</span>
+    <input type="search" id="q" placeholder="symbol, chain or venue" autocomplete="off">
+    <span class="cl">Minimum size</span>
+    <span class="grp" id="sizes"></span>
+    <span class="cnt" id="cnt"></span>
+  </div>
+  <div class="ctl" style="border-bottom:none;padding-bottom:0;margin-top:14px">
+    <span class="cl">Venue</span>
+    <span class="grp" id="chips"></span>
+  </div>
+  <div class="tw"><table class="d wide" id="tpools"></table></div>
+  <div class="pager">
+    <button class="plain" id="prev" type="button">Previous</button>
+    <button class="plain" id="next" type="button">Next</button>
+    <span class="pg" id="pg"></span>
+  </div>
+</section>
+
+<footer class="foot">
+  <div class="blk">
+    <h4>Method</h4>
+    <p>Fee share is the fee rate divided by the sum of fee and reward rate, weighted by pool size. A pool enters only when the fee rate is non null; on those pools a missing reward rate counts as zero. Emissions in the baseline are the reward rate divided by 36,500, multiplied by pool size, summed over days. The live aggregate applies a floor of one hundred thousand dollars per pool; the explorer below lets that floor be moved.</p>
+  </div>
+  <div class="blk">
+    <h4>Sources</h4>
+    <p><a href="https://yields.llama.fi/pools" target="_blank" rel="noopener">yields.llama.fi/pools</a>, fetched by this page at open time. Baseline panel from the study published September 2026, covering 143 pools and 65,727 pool days across seven venues.</p>
+  </div>
+  <div class="blk">
+    <h4>Limits</h4>
+    <p>Impermanent loss is not accounted for anywhere here. The fee rate in the source is fees over TVL and excludes any change in the value of the position, so this page describes what the advertised yield is made of and not whether a liquidity provider made money. Vote-escrow emissions are not decomposed: at Curve, Aerodrome and Velodrome part of the payout is bought by third parties and still appears as a reward from the venue. Venues whose pools currently publish no fee rate show as no live data rather than zero.</p>
+  </div>
+</footer>

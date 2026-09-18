@@ -1,0 +1,626 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Lending yield, live</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Schibsted+Grotesk:wght@400;500;600;700&family=Instrument+Serif:ital@0;1&family=Geist+Mono:wght@400;500&display=swap">
+<style>
+/* ===================== TOKENS ===================== */
+:root{
+  --bg:#08090A; --card:#111315; --card-2:#16191B;
+  --fg:#EFEFED; --fg-2:#A8ABA9; --fg-3:#6E7273;
+  --line:#1E2224; --line-2:#2C3134;
+  --accent:#EFEFED; --accent-fg:#C7CBC9; --on-accent:#08090A;
+  --neg:#D7908F;
+  --sans:'Schibsted Grotesk',-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;
+  --serif:'Instrument Serif',Georgia,'Times New Roman',serif;
+  --mono:'Geist Mono',ui-monospace,'SF Mono',Menlo,Consolas,monospace;
+  --maxw:1060px;
+  --pad:clamp(20px,4vw,40px);
+  --secpad:clamp(46px,5.2vw,74px);
+  --measure:70ch;
+  --ease:cubic-bezier(.16,.84,.34,1);
+}
+:root[data-theme="light"]{
+  --bg:#FBFBFA; --card:#FFFFFF; --card-2:#F7F7F5;
+  --fg:#0B0C0D; --fg-2:#4A4E50; --fg-3:#84898B;
+  --line:#E4E5E2; --line-2:#D2D4D0;
+  --accent:#0B0C0D; --accent-fg:#3A3E40; --on-accent:#FBFBFA;
+  --neg:#8E3E3C;
+}
+@media (prefers-color-scheme: light){
+  :root:not([data-theme="dark"]){
+    --bg:#FBFBFA; --card:#FFFFFF; --card-2:#F7F7F5;
+    --fg:#0B0C0D; --fg-2:#4A4E50; --fg-3:#84898B;
+    --line:#E4E5E2; --line-2:#D2D4D0;
+    --accent:#0B0C0D; --accent-fg:#3A3E40; --on-accent:#FBFBFA;
+    --neg:#8E3E3C;
+  }
+}
+
+/* ===================== BASE ===================== */
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0; background:var(--bg); color:var(--fg);
+  font-family:var(--sans); font-size:16px; line-height:1.6; letter-spacing:-.005em;
+  -webkit-font-smoothing:antialiased; overflow-x:hidden}
+p{margin:0}
+ul,ol{margin:0; padding:0; list-style:none}
+a{color:inherit; text-decoration:none}
+h1,h2,h3,h4{margin:0; font-weight:600; letter-spacing:-.03em; line-height:1.1; text-wrap:balance}
+:focus-visible{outline:2px solid var(--accent); outline-offset:3px; border-radius:3px}
+table{border-collapse:collapse}
+.kicker{font-family:var(--mono); font-size:11px; letter-spacing:.16em; text-transform:uppercase; color:var(--fg-3)}
+
+/* ===================== SECTIONS ===================== */
+.sec{max-width:var(--maxw); margin-inline:auto; padding:var(--secpad) var(--pad); border-bottom:1px solid var(--line)}
+.sec:last-of-type{border-bottom:none}
+.sec > h2{font-size:clamp(21px,2.6vw,27px); letter-spacing:-.035em}
+.sec > .note{margin-top:16px; font-size:15px; color:var(--fg-2); line-height:1.6; max-width:72ch}
+.sec > .note b{color:var(--fg); font-weight:600}
+.sec > .note + .note{margin-top:10px}
+
+/* ===================== HERO ===================== */
+.hero{padding-block:clamp(46px,5.5vw,78px) clamp(30px,3.6vw,46px)}
+.hero h1{font-size:clamp(30px,4.4vw,50px); font-weight:600; letter-spacing:-.04em; line-height:1.06; margin-top:16px}
+.hero p.intro{margin-top:18px; font-size:clamp(16px,1.6vw,18px); color:var(--fg-2); line-height:1.6; max-width:62ch}
+.statusline{margin-top:20px; display:flex; flex-wrap:wrap; align-items:center; gap:10px 20px;
+  font-family:var(--mono); font-size:12px; letter-spacing:.04em; color:var(--fg-3)}
+.statusline i{display:inline-block; width:6px; height:6px; border-radius:50%; background:var(--fg-3); flex:none}
+.statusline i.live{background:var(--accent)}
+.statusline i.off{background:var(--neg)}
+button.plain{appearance:none; background:none; border:0; padding:0; cursor:pointer;
+  font-family:var(--mono); font-size:12px; letter-spacing:.1em; text-transform:uppercase;
+  color:var(--fg-3); transition:color .22s var(--ease)}
+button.plain:hover{color:var(--fg)}
+button.plain[disabled]{opacity:.4; cursor:default}
+button.plain.on{color:var(--fg)}
+
+.nums{display:grid; grid-template-columns:repeat(auto-fit,minmax(170px,1fr)); gap:26px 30px;
+  margin-top:clamp(30px,3.6vw,44px); padding-top:26px; border-top:1px solid var(--line)}
+.num b{display:block; font-family:var(--mono); font-size:clamp(25px,3vw,33px); font-weight:500;
+  letter-spacing:-.04em; font-variant-numeric:tabular-nums; line-height:1.05}
+.num .lb{display:block; font-family:var(--mono); font-size:10.5px; letter-spacing:.13em;
+  text-transform:uppercase; color:var(--fg-3); margin-bottom:11px}
+.num span.sub{display:block; margin-top:9px; font-size:13px; color:var(--fg-3); line-height:1.45}
+.num span.sub b{display:inline; font-family:var(--mono); font-size:13px; font-weight:400; color:var(--fg-2); letter-spacing:0}
+.num .skel{color:var(--fg-3)}
+
+
+/* ===================== CHARTS ===================== */
+.bline{display:grid; grid-template-columns:minmax(92px,150px) minmax(0,1fr) 108px; gap:clamp(10px,2vw,20px);
+  align-items:center; padding-block:10px; border-bottom:1px solid var(--line)}
+.bline:first-child{border-top:1px solid var(--line)}
+.bline .cname{font-size:13.5px; letter-spacing:-.01em}
+.trk{position:relative; height:20px}
+.trk .base{position:absolute; left:0; right:0; top:9px; height:1px; background:var(--line-2)}
+.trk .seg{position:absolute; top:9px; height:2px; background:var(--accent)}
+.trk .pt{position:absolute; top:4px; width:11px; height:11px; border-radius:50%; margin-left:-5.5px}
+.trk .pt.now{background:var(--accent); border:2px solid var(--bg)}
+.trk .pt.then{background:transparent; border:1.5px solid var(--fg-3)}
+.cval{font-family:var(--mono); font-size:13px; text-align:right; font-variant-numeric:tabular-nums; color:var(--fg-2)}
+.cval .d{color:var(--fg-3)}
+.cval .dn{color:var(--neg)}
+.ckey{display:flex; flex-wrap:wrap; gap:16px; margin-top:16px; font-size:12.5px; color:var(--fg-3)}
+.ckey i{display:inline-block; width:11px; height:11px; border-radius:50%; margin-right:8px; vertical-align:-1px}
+.ckey i.now{background:var(--accent)}
+.ckey i.then{border:1.5px solid var(--fg-3)}
+
+figure{margin:26px 0 0}
+figcaption{margin-top:16px; padding-top:11px; border-top:1px solid var(--line);
+  font-size:12.5px; color:var(--fg-3); line-height:1.55; max-width:84ch}
+figcaption b{color:var(--fg-2); font-weight:600}
+
+/* small multiples, one series per panel, no categorical colour needed */
+.sm-grid{display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:26px 24px}
+@media(max-width:900px){.sm-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:520px){.sm-grid{grid-template-columns:minmax(0,1fr)}}
+.sm h4{display:flex; align-items:baseline; justify-content:space-between; gap:10px;
+  font-size:13px; font-weight:600; letter-spacing:-.02em; margin-bottom:9px}
+.sm .smn{min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap}
+.sm .smv{font-family:var(--mono); font-weight:400; font-size:12.5px; color:var(--fg-2);
+  font-variant-numeric:tabular-nums; flex:none}
+.sm .smc{position:relative}
+.sm .smc svg{display:block; width:100%; height:auto; border-bottom:1px solid var(--line-2)}
+.sm .smc svg rect.smhit{cursor:crosshair}
+.sm .smf{margin-top:8px; font-family:var(--mono); font-size:10.5px; color:var(--fg-3); line-height:1.4}
+.smaxis{display:flex; justify-content:space-between; margin-top:16px;
+  font-family:var(--mono); font-size:10.5px; letter-spacing:.05em; color:var(--fg-3)}
+.gridline{stroke:var(--line-2); stroke-width:1}
+
+.tip{position:absolute; pointer-events:none; opacity:0; transition:opacity .14s var(--ease);
+  background:var(--card); border:1px solid var(--line-2); border-radius:4px; padding:9px 11px;
+  font-size:12.5px; box-shadow:0 8px 28px rgba(0,0,0,.3); z-index:9; white-space:nowrap}
+.tip.on{opacity:1}
+.tip .tt{font-family:var(--mono); font-size:10px; letter-spacing:.12em; text-transform:uppercase;
+  color:var(--fg-3); margin-bottom:5px}
+.tip .tv{font-family:var(--mono); font-variant-numeric:tabular-nums; color:var(--fg)}
+
+/* ===================== TABLES ===================== */
+.tw{overflow-x:auto; margin-top:26px}
+table.d{width:100%; table-layout:auto; font-size:13px}
+table.d th,table.d td{text-align:right; padding:11px 9px; border-bottom:1px solid var(--line); white-space:nowrap}
+table.d th:first-child,table.d td:first-child{text-align:left; padding-left:2px; padding-right:18px; white-space:normal}
+table.d th:last-child,table.d td:last-child{padding-right:2px}
+table.d.wide{min-width:820px}
+table.d thead th{font-family:var(--mono); font-size:10px; letter-spacing:.09em; text-transform:uppercase;
+  color:var(--fg-3); font-weight:400; border-bottom:1px solid var(--line-2); vertical-align:bottom;
+  cursor:pointer; user-select:none; transition:color .2s var(--ease)}
+table.d thead th:hover{color:var(--fg-2)}
+table.d thead th[aria-sort]{color:var(--fg)}
+table.d thead th[aria-sort="descending"]::after{content:" \25BE"}
+table.d thead th[aria-sort="ascending"]::after{content:" \25B4"}
+table.d tbody td{font-family:var(--mono); color:var(--fg-2); font-variant-numeric:tabular-nums}
+table.d tbody td:first-child{font-family:var(--sans); color:var(--fg); font-size:13.5px}
+table.d tbody tr:hover td{color:var(--fg)}
+table.d td.mark{color:var(--fg)}
+table.d td.neg{color:var(--neg)}
+table.d td.empty{font-family:var(--sans); color:var(--fg-3); text-align:left}
+
+/* ===================== CONTROLS ===================== */
+.ctl{display:flex; flex-wrap:wrap; gap:14px 26px; align-items:baseline; margin-top:26px;
+  padding-bottom:16px; border-bottom:1px solid var(--line)}
+.ctl .cl{font-family:var(--mono); font-size:10.5px; letter-spacing:.13em; text-transform:uppercase; color:var(--fg-3)}
+.ctl input[type=search]{appearance:none; background:transparent; border:0; border-bottom:1px solid var(--line-2);
+  color:var(--fg); font-family:var(--sans); font-size:14px; padding:4px 2px; min-width:200px}
+.ctl input[type=search]::placeholder{color:var(--fg-3)}
+.ctl input[type=search]:focus{outline:0; border-bottom-color:var(--fg)}
+.ctl .grp{display:flex; flex-wrap:wrap; gap:16px}
+.cnt{margin-left:auto; font-family:var(--mono); font-size:11.5px; color:var(--fg-3); letter-spacing:.04em}
+.pager{display:flex; flex-wrap:wrap; align-items:baseline; gap:18px; margin-top:20px}
+.pager .pg{font-family:var(--mono); font-size:11.5px; color:var(--fg-3); letter-spacing:.06em; margin-left:auto}
+
+/* ===================== NOTICE / FOOT ===================== */
+.err{margin-top:22px; padding-left:15px; border-left:1px solid var(--neg);
+  font-size:14px; color:var(--fg-2); line-height:1.6; max-width:76ch}
+.err b{color:var(--fg); font-weight:600}
+.foot{max-width:var(--maxw); margin-inline:auto; padding:var(--secpad) var(--pad) clamp(60px,7vw,96px)}
+.foot h4{font-family:var(--mono); font-size:11px; font-weight:500; letter-spacing:.13em;
+  text-transform:uppercase; color:var(--accent-fg); margin-bottom:12px}
+.foot p{font-size:13.5px; color:var(--fg-3); line-height:1.6; max-width:80ch}
+.foot .blk + .blk{margin-top:26px}
+.foot a{color:var(--fg-2); transition:color .22s var(--ease)}
+.foot a:hover{color:var(--fg)}
+
+#dock{position:fixed; right:16px; bottom:calc(16px + env(safe-area-inset-bottom,0px)); z-index:900}
+#theme{appearance:none; cursor:pointer; background:var(--card); border:1px solid var(--line-2); border-radius:4px;
+  color:var(--fg-3); width:38px; height:38px; display:grid; place-items:center;
+  box-shadow:0 8px 28px rgba(0,0,0,.28); transition:color .25s var(--ease), border-color .25s var(--ease)}
+#theme svg{width:16px; height:16px}
+#theme:hover{color:var(--accent); border-color:var(--accent)}
+
+@media(max-width:700px){
+  .bline{grid-template-columns:minmax(0,1fr) 104px; grid-template-areas:"nm vals" "trk trk"; row-gap:8px}
+  .bline .cname{grid-area:nm} .bline .cval{grid-area:vals} .bline .trk{grid-area:trk}
+  .cnt{margin-left:0; width:100%}
+}
+</style>
+</head>
+<body>
+<div id="dock"><button id="theme" type="button" aria-label="Switch theme">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
+</button></div>
+
+<header class="sec hero">
+  <p class="kicker">Live panel &middot; DeFi lending</p>
+  <h1>Organic yield against token subsidies</h1>
+  <p class="intro">The metric from the September 2026 study, recomputed on live data every time this page opens. Eight lending protocols, every pool with a readable base rate, set against the published 32 month baseline.</p>
+  <div class="statusline">
+    <span id="stat"><i></i> connecting</span>
+    <span id="stamp"></span>
+    <button class="plain" id="refresh" type="button" disabled>Refresh</button>
+  </div>
+  <div id="errbox"></div>
+  <div class="nums" id="hero"></div>
+</header>
+
+<section class="sec" id="sec-drift">
+  <h2>What moved since publication</h2>
+  <p class="note">The hollow marker is the figure the study published, the filled marker is the same calculation on today's pools, and the bar between them is the distance travelled.</p>
+  <figure>
+    <div id="drift"></div>
+    <div class="ckey" id="drift-lg"></div>
+    <figcaption><b>Figure 1.</b> Share of yield paid by borrowers, published baseline against live. One means every cent of depositor yield came from interest, zero means all of it was printed. The live figure is weighted by TVL across all pools returned with a non null base rate.</figcaption>
+  </figure>
+</section>
+
+<section class="sec" id="sec-live">
+  <h2>Live protocol economics</h2>
+  <p class="note">Rates and deposits come from the yields endpoint, fees and revenue from the fees endpoint, both read directly by your browser. Subsidy run rate annualises today's reward rate, so it is a forward projection and not comparable with realised spend. Dependency is that run rate over annualised revenue; above one means the protocol hands out more than it earns. Click any heading to sort.</p>
+  <div class="tw"><table class="d wide" id="tlive"></table></div>
+</section>
+
+<section class="sec" id="sec-hist">
+  <h2>The baseline series</h2>
+  <p class="note">Thirty two months of the published panel, unchanged. This is the part of the page that does not move: it is the record the live numbers are compared against. Each protocol gets its own panel rather than eight lines in one frame, because eight lines that cross cannot be told apart reliably.</p>
+  <figure>
+    <div id="hist"></div>
+    <p class="ckey" id="hist-lg"></p>
+    <figcaption><b>Figure 2.</b> Monthly share of yield paid by borrowers, January 2024 to August 2026, weighted by TVL within each protocol month. Gaps are months with no readable rate rather than zero. Source: DefiLlama yields API, author's panel.</figcaption>
+  </figure>
+  <figure>
+    <div id="subs"></div>
+    <p class="ckey" id="subs-lg"></p>
+    <figcaption><b>Figure 3.</b> Cumulative subsidies paid to depositors, in dollars, priced as the reward rate applied to pool size on each day and accumulated. All eight panels share one vertical scale, so the filled area is proportional to what each protocol actually spent. Source: DefiLlama yields API, author's panel.</figcaption>
+  </figure>
+</section>
+
+<section class="sec" id="sec-pools">
+  <h2>Pool explorer</h2>
+  <p class="note">Every live pool behind the numbers above, sortable by the same ratio. A pool counts only when the base rate is populated, which keeps collateral only pools from diluting the result. Nearly 300 of the 1,200 pools hold less than a hundred thousand dollars, so the view starts at one million, the cut the study used as one of its eight robustness angles. Twenty five rows a page, largest first.</p>
+  <div class="ctl">
+    <span class="cl">Search</span>
+    <input type="search" id="q" placeholder="symbol, chain or protocol" autocomplete="off">
+    <span class="cl">Minimum size</span>
+    <span class="grp" id="sizes"></span>
+    <span class="cnt" id="cnt"></span>
+  </div>
+  <div class="ctl" style="border-bottom:none;padding-bottom:0;margin-top:14px">
+    <span class="cl">Protocol</span>
+    <span class="grp" id="chips"></span>
+  </div>
+  <div class="tw"><table class="d wide" id="tpools"></table></div>
+  <div class="pager">
+    <button class="plain" id="prev" type="button">Previous</button>
+    <button class="plain" id="next" type="button">Next</button>
+    <span class="pg" id="pg"></span>
+  </div>
+</section>
+
+<footer class="foot">
+  <div class="blk">
+    <h4>Method</h4>
+    <p>Share of yield paid by borrowers is the base rate divided by the sum of base and reward rate, weighted by pool size. A pool enters only when the base rate is non null; on those pools a missing reward rate counts as zero. Subsidies are the reward rate divided by 36,500, multiplied by pool size, summed over days; the live figure annualises the current day instead. Protocol scopes are matched between the yields and fees endpoints, so Aave v3 is read as aave-v3 and not as the Aave parent.</p>
+  </div>
+  <div class="blk">
+    <h4>Sources</h4>
+    <p><a href="https://yields.llama.fi/pools" target="_blank" rel="noopener">yields.llama.fi/pools</a> and <a href="https://api.llama.fi/summary/fees/aave-v3" target="_blank" rel="noopener">api.llama.fi/summary/fees/{slug}</a>, fetched by this page at open time. Baseline panel from the study published September 2026, which covers January 2024 to August 2026 across 478 pools and 146,866 pool days.</p>
+  </div>
+  <div class="blk">
+    <h4>Limits</h4>
+    <p>The live column is a snapshot of one moment and is noisier than the monthly panel. Reward rates are as published by the protocol and priced at the aggregator's token price, and announced rewards cannot be told apart from paid ones. Borrower side rewards are not in supply pool rates, so real subsidies are higher than shown, most of all at Moonwell and Venus.</p>
+  </div>
+</footer>
+
+<script id="BL" type="application/json">{"months":["2024-01","2024-02","2024-03","2024-04","2024-05","2024-06","2024-07","2024-08","2024-09","2024-10","2024-11","2024-12","2025-01","2025-02","2025-03","2025-04","2025-05","2025-06","2025-07","2025-08","2025-09","2025-10","2025-11","2025-12","2026-01","2026-02","2026-03","2026-04","2026-05","2026-06","2026-07","2026-08"],"name":{"aave-v3":"Aave v3","compound-v3":"Compound v3","euler-v2":"Euler v2","fluid-lending":"Fluid","moonwell-lending":"Moonwell","morpho-blue":"Morpho Blue","sparklend":"SparkLend","venus-core-pool":"Venus"},"order":["sparklend","venus-core-pool","aave-v3","compound-v3","morpho-blue","fluid-lending","moonwell-lending","euler-v2"],"proto":{"sparklend":{"org":[null,null,null,null,null,null,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0],"inc":[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],"rev":[0,0,0,0,0,0,58096,313918,72405,70422,99522,135017,108576,118184,86076,205296,89761,287097,588223,653499,625879,677782,452234,262507,318455,257254,176210,202479,236863,361401,418292,430266],"fees":[0,0,0,0,0,0,6399059,9829270,6672738,6456437,9977870,18596707,14603809,9464781,6546499,6165792,5240706,5168099,6897341,7638691,7227841,9583290,6636420,4241481,4803631,3671317,2865898,3739971,4696269,4547207,4842293,5051418],"sup":[0,0,0,0,0,0,4543445976,4066667189,3797819019,3863848527,5819582658,7449866336,5734624414,4723769230,3864138329,3414025766,4365238136,4952294577,6149207633,7270871758,7501340428,8342613213,6711260028,4665786262,4984777536,3760476832,3066490244,3696610132,4993773100,4994098083,5374038132,5947886008],"util":[null,null,null,null,null,null,0.36,0.3824,0.3905,0.3855,0.3756,0.3712,0.3578,0.3641,0.3844,0.3907,0.3409,0.3315,0.3271,0.3098,0.2973,0.2976,0.3004,0.286,0.2975,0.3416,0.3202,0.325,0.3248,0.321,0.3312,0.3213],"base_org":1.0,"inc_musd":0.0,"rev_musd":7.306,"dep":0.0,"coc":0.0,"nm":0.0659,"take":4.0237,"pass":95.976,"fees_total":181564835,"pools98":9.0,"hhi":0.4157,"tvl_then":5105011997},"venus-core-pool":{"org":[0.9829,0.9849,0.9709,0.9822,0.9808,0.984,0.9705,0.977,0.9904,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0],"inc":[35405,32357,45661,36227,30517,24882,22439,23101,10812,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],"rev":[2276585,2063213,1840627,3210342,972597,1025673,400474,576348,600203,736995,1098321,1488106,1286749,590461,727026,531968,350601,300830,390702,382857,426840,602128,387082,279247,281062,161728,171838,146152,160491,350760,200198,345853],"fees":[10673339,10166859,11161893,14716599,5751542,5953628,3330234,3828597,3805265,4678584,6856244,8186163,7016278,4159031,4402144,3401332,2693390,2081440,2490403,2713147,2848036,3164035,2097484,1711284,1868205,1101531,1121741,949955,926179,1016985,856382,1031574],"sup":[1538748534,1668564823,2325316034,2500259032,2479316751,2547535339,2231068619,2162409755,2237711044,2261657065,2446035943,2573405155,2600450889,2517461749,2344183629,2274100136,2367332557,2251623711,2508437816,2697608305,2813009836,3069960727,2468942746,2221120869,2422986759,1872515781,1762716227,1663170196,1647843538,1440336120,1415372742,1546750483],"util":[0.3869,0.3673,0.327,0.3425,0.3212,0.3261,0.2893,0.295,0.277,0.2517,0.2605,0.2842,0.3017,0.2851,0.2952,0.2905,0.2778,0.2899,0.2939,0.2953,0.3115,0.3345,0.3198,0.322,0.3174,0.2905,0.2907,0.2853,0.2804,0.2778,0.2692,0.2674],"base_org":0.9914,"inc_musd":0.261,"rev_musd":24.364,"dep":0.0107,"coc":0.0044,"nm":0.4078,"take":17.8153,"pass":82.185,"fees_total":136759503,"pools98":15.0,"hhi":0.1913,"tvl_then":1220923000},"aave-v3":{"org":[1.0,1.0,0.9983,0.9931,0.994,0.9991,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,0.8552,0.5462,0.5756,0.5646,0.7048],"inc":[0,0,4315,24934,24202,3902,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,780828,2580215,3073830,3486044,1905044],"rev":[1697932,1944273,4050939,4148789,3775870,5682158,4886450,5236914,3577849,4329073,6877381,12536561,10355920,9134360,6247076,5202349,6471160,7713867,10635214,15264443,15335717,15012641,12011840,8675051,10072762,8644900,6201318,8201577,6479702,4933720,3777704,4423235],"fees":[13139970,15259172,33796048,31536036,26463905,36857999,33849274,39934025,23628216,30529192,48625674,91575592,77427537,70183954,43173483,37491928,45764370,54582673,75070467,107753988,113032137,114663890,95782744,70140245,80861986,68890470,47350166,63078118,51827230,39812574,29051259,32386035],"sup":[7455966811,8974169443,13180950338,13569074234,14883702805,17880795557,18603574927,17446394743,17822405310,20025450083,26513688122,34820764784,35044897378,32149519401,28740782579,28451870517,37491687163,40984470526,49955769108,63966354979,69530001319,67404868488,53967910194,52283982641,55573803434,43863258044,41395992326,36902178720,25026434322,21922339848,23716567369,26704394762],"util":[0.3549,0.364,0.3605,0.3635,0.3618,0.3953,0.4055,0.4025,0.4067,0.4135,0.4037,0.4169,0.413,0.4003,0.3873,0.3763,0.3877,0.3987,0.4062,0.42,0.417,0.4035,0.4191,0.411,0.4142,0.4084,0.4083,0.4336,0.4486,0.4486,0.4388,0.4302],"base_org":0.9402,"inc_musd":11.883,"rev_musd":233.539,"dep":0.0509,"coc":0.0136,"nm":0.2543,"take":13.3947,"pass":86.605,"fees_total":1743520357,"pools98":68.0,"hhi":0.1059,"tvl_then":16789079077},"compound-v3":{"org":[null,null,null,null,null,null,null,null,null,null,null,null,null,0.8976,0.9048,0.8956,0.8926,0.8842,0.9245,0.9167,0.9336,0.9343,0.9235,0.9244,0.9559,0.9557,0.9614,0.9622,0.9623,0.9685,0.9701,0.972],"inc":[0,0,0,0,0,0,0,0,0,0,0,0,0,46918,78494,72681,45009,36704,26846,30421,25394,24984,24459,22052,13409,18601,18714,15621,11258,8581,8208,7391],"rev":[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,19702,75325,112265,180260],"fees":[0,0,0,0,0,0,0,0,0,0,0,0,0,2224136,3126719,2593628,2981084,3074467,4600104,3991858,4079581,3807052,2988007,2602246,2676997,1468925,1472023,1788662,1821272,1590264,1804022,2142174],"sup":[0,0,0,0,0,0,0,0,0,0,0,0,0,2948539896,2609066274,2466052691,2918154320,2943754350,3264232009,3320601628,3329729794,3319946424,2583347308,2478225666,2517991982,1865612869,1831752834,1916408647,1847092180,1612489197,1695610455,1812039419],"util":[null,null,null,null,null,null,null,null,null,null,null,null,null,0.3053,0.3014,0.2952,0.2951,0.2978,0.2974,0.3029,0.3151,0.3227,0.3366,0.3362,0.3322,0.3163,0.2923,0.299,0.3164,0.3394,0.3296,0.3203],"base_org":0.8984,"inc_musd":0.536,"rev_musd":0.388,"dep":1.3824,"coc":0.0139,"nm":-0.0038,"take":0.7624,"pass":99.238,"fees_total":50833221,"pools98":5.0,"hhi":0.3053,"tvl_then":118249776},"morpho-blue":{"org":[null,0.6242,0.7583,0.8064,0.937,0.9718,0.9607,0.9643,0.9882,0.9777,0.9924,1.0,0.8878,0.7728,0.8373,0.8874,0.8469,0.9257,0.9065,0.896,0.9363,0.9651,0.9396,0.9384,0.9198,0.8522,0.7698,0.8058,0.8173,0.8043,0.7659,0.6739],"inc":[0,55878,221589,124389,113982,54270,70877,42457,16950,39406,11796,0,546965,905005,578795,305569,597432,352924,666207,1044353,715208,419610,713199,571951,836430,1214710,2601297,2438364,2297757,2509271,3701548,6811764],"rev":[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],"fees":[0,98602,940461,6698319,5002338,5594876,4567405,4036182,2735512,2638407,5933055,11805155,10925567,10041446,7093291,5623976,6348073,8119317,12155427,19058274,22810859,24149110,22933674,12251372,15646433,17736154,11341144,14551230,15284204,18769112,14886554,18420464],"sup":[0,104914090,247389306,933444520,1220825515,1628166809,1680570978,1568428855,1514889718,1636041322,2285576162,4147905044,5556916576,5586984301,4775831347,4347953311,4952875409,6089457547,7748420378,9672757562,11818313627,11540731392,10111327413,8675050391,9900015515,8842619424,10301533817,10764532898,11182210185,10307735444,11146141109,12904211330],"util":[null,0.3979,0.3726,0.3614,0.358,0.3779,0.3685,0.3627,0.3698,0.3708,0.3733,0.3814,0.3913,0.381,0.3737,0.3901,0.3533,0.3532,0.3467,0.3368,0.3542,0.3499,0.3441,0.3494,0.3525,0.3566,0.3642,0.3533,0.3405,0.3474,0.3482,0.3465],"base_org":0.852,"inc_musd":30.58,"rev_musd":0.0,"dep":null,"coc":0.1928,"nm":-0.1928,"take":0.0,"pass":100.0,"fees_total":338195993,"pools98":232.0,"hhi":0.0555,"tvl_then":14034535212},"fluid-lending":{"org":[null,null,null,null,1.0,1.0,1.0,1.0,1.0,0.7394,0.6501,0.7007,0.713,0.6494,0.583,0.5066,0.5574,0.6536,0.6347,0.6478,0.6795,0.6163,0.6745,0.7177,0.7219,0.713,0.7268,0.827,0.8156,0.8656,0.9592,0.9772],"inc":[0,0,0,0,0,0,0,0,0,333179,847234,1225664,1271422,1167178,1107328,1166344,1261807,1096381,1458149,1814293,1771146,1850671,1227671,929992,859084,581136,589038,448523,395602,304312,90567,50561],"rev":[0,990,2475,69631,319314,322053,165373,110154,101950,123300,334115,568423,430392,459019,213858,207020,340069,367531,560565,672553,967603,1058161,889808,725449,821420,576679,445100,492542,412770,372590,360441,388962],"fees":[0,6129,604534,3952111,3785545,3751646,1585091,1145756,1011258,1195066,2349690,3973410,4010852,3228031,2196782,1836337,4381562,4207197,4125921,5575804,6254614,8734804,7496852,5366650,5101906,3121325,2765345,3165847,3044015,2976355,3267646,3284157],"sup":[0,40265704,160576114,344702852,595746633,753540741,690792959,664084442,737810121,746415787,970978443,1317842452,1490460928,1570224164,1428641043,1327065905,1727715447,1969159961,2302842276,2763713509,3067340807,4202494430,3370995699,3087103213,3018653436,2230426978,1826225713,1579515987,1632740051,1271359264,1380987094,1479638932],"util":[null,0.5206,0.5561,0.5781,0.4794,0.4654,0.4624,0.4495,0.464,0.449,0.4898,0.4905,0.4838,0.4541,0.4418,0.4298,0.4636,0.4978,0.4938,0.5095,0.5082,0.481,0.4771,0.4838,0.4807,0.4546,0.4813,0.5173,0.5056,0.5295,0.5366,0.5309],"base_org":0.7153,"inc_musd":21.847,"rev_musd":12.88,"dep":1.6962,"coc":0.5395,"nm":-0.2214,"take":11.9814,"pass":87.139,"fees_total":107502238,"pools98":50.0,"hhi":0.0806,"tvl_then":1200132445},"moonwell-lending":{"org":[null,null,null,null,null,0.3543,0.5402,0.7866,0.8337,0.7177,0.5227,0.5142,0.4397,0.507,0.5265,0.5505,0.5033,0.4892,0.5207,0.5513,0.6165,0.5656,0.6923,0.6678,0.6814,0.7523,0.7609,0.7344,0.6566,0.6355,0.6903,0.908],"inc":[0,0,0,0,0,163018,140423,40781,32357,81483,147755,92874,68959,31870,30329,29159,54137,34339,56365,53599,35933,33786,22682,14865,12578,6753,6697,6603,6838,4011,3672,2093],"rev":[0,0,0,0,0,175622,259678,266488,178208,199497,241221,377006,331156,418846,136928,166006,124028,132761,121863,266511,169221,557294,180067,60901,99793,356428,55774,50486,29047,44796,23361,68027],"fees":[0,0,0,0,0,860708,1042104,974092,707767,865251,1395829,2063508,1734267,1699004,670330,744170,737849,795158,821717,1336844,953291,2162143,836971,312284,412097,1285580,219214,196096,130921,201182,145894,405604],"sup":[0,0,0,0,0,277484891,241503767,180111225,187919294,277063720,457815825,512988027,435436809,341110557,266526911,249753830,350062060,378709599,414955214,411941054,355525879,307554401,192192448,154393743,151287816,94666566,80782259,79571346,82709152,75629234,79903966,76771206],"util":[null,null,null,null,null,0.5534,0.5429,0.5197,0.5301,0.5601,0.613,0.5894,0.5794,0.5673,0.5421,0.5512,0.5657,0.5743,0.5589,0.507,0.4705,0.4402,0.415,0.4327,0.4195,0.4011,0.395,0.4087,0.4108,0.3957,0.3964,0.4244],"base_org":0.5062,"inc_musd":1.214,"rev_musd":5.091,"dep":0.2385,"coc":0.2168,"nm":0.6923,"take":21.4721,"pass":78.528,"fees_total":23709875,"pools98":18.0,"hhi":0.1216,"tvl_then":14622177},"euler-v2":{"org":[null,null,null,null,null,null,null,null,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,0.81,0.8545,0.886,0.9185,0.8985,0.3949,0.3383,0.2605,0.2632,0.3053,0.319,0.3969,0.4248,0.5663,0.5961,0.6632],"inc":[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,37101,33056,25748,16085,16292,299921,687176,1086135,1230137,1060135,882255,540914,295362,95300,160410,177016],"rev":[0,0,0,0,0,0,0,1,176,869,6301,26415,43657,38872,86327,120181,213598,217224,301095,345778,643722,818808,534021,303777,233523,160464,153394,155335,99753,62281,68053,51840],"fees":[0,0,0,0,0,0,0,11,2092,11225,73478,409798,1055918,898255,1902940,2454285,4383468,5080274,7247310,8479473,9875314,11612861,8547831,4983098,3928885,2815175,2679023,2716086,2335444,2069923,2195210,1634857],"sup":[0,0,0,0,0,0,0,3512983,5868297,11419030,55558590,118729272,238208769,352987134,804984070,1213220431,1705383411,2049372525,2428053953,2740967442,3094940639,3554960124,2415416491,2141697989,1829685736,1296710874,1292585265,1227651575,1092590754,936766869,897153015,950432776],"util":[null,null,null,null,null,null,null,0.0008,0.2203,0.3405,0.3609,0.4092,0.4227,0.4159,0.4551,0.46,0.4774,0.4855,0.5312,0.5204,0.488,0.488,0.5393,0.5226,0.5283,0.5893,0.6045,0.6382,0.6751,0.7051,0.6601,0.6222],"base_org":0.4516,"inc_musd":6.643,"rev_musd":4.686,"dep":1.4178,"coc":0.2583,"nm":-0.0761,"take":5.3614,"pass":94.637,"fees_total":87392234,"pools98":47.0,"hhi":0.2276,"tvl_then":147540237}}}</script>
+<script>
+(function(){
+"use strict";
+var BL=JSON.parse(document.getElementById('BL').textContent);
+var ORDER=BL.order, NAME=BL.name, MONTHS=BL.months, P=BL.proto, SLUG=ORDER.slice();
+var $=function(id){return document.getElementById(id)};
+var el=function(t,c,h){var e=document.createElement(t);if(c)e.className=c;if(h!==undefined)e.innerHTML=h;return e};
+var num=function(v){var n=parseFloat(v);return isFinite(n)?n:0};
+var f2=function(v,d){return v.toFixed(d===undefined?2:d)};
+var pct=function(v,d){return (v*100).toFixed(d===undefined?1:d)+'%'};
+var usd=function(v){var a=Math.abs(v);
+  if(a>=1e9)return '$'+(v/1e9).toFixed(2)+'B';
+  if(a>=1e6)return '$'+(v/1e6).toFixed(a>=1e8?0:1)+'M';
+  if(a>=1e3)return '$'+(v/1e3).toFixed(0)+'k';
+  return '$'+v.toFixed(0);};
+var esc=function(s){return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')};
+
+var LIVE=null, POOLS=[], FEES={};
+
+/* ---------- fetch ---------- */
+function timeout(ms){return new Promise(function(_,rej){setTimeout(function(){rej(new Error('timeout'))},ms)})}
+function getJSON(u,ms){return Promise.race([fetch(u,{cache:'no-store'}).then(function(r){
+  if(!r.ok)throw new Error('HTTP '+r.status); return r.json();}), timeout(ms||25000)]);}
+function loadPools(){
+  return getJSON('https://yields.llama.fi/pools',30000).then(function(j){
+    POOLS=((j&&j.data)||[]).filter(function(p){
+      return SLUG.indexOf(p.project)>=0 && p.apyBase!==null && p.apyBase!==undefined;})
+      .map(function(p){return {project:p.project, sym:p.symbol||'', chain:p.chain||'',
+        tvl:num(p.tvlUsd), base:num(p.apyBase), rew:num(p.apyReward)};});
+    return POOLS;});
+}
+function loadFees(){
+  var jobs=[];
+  SLUG.forEach(function(s){['dailyFees','dailyRevenue'].forEach(function(dt){
+    jobs.push(getJSON('https://api.llama.fi/summary/fees/'+s+'?dataType='+dt+
+      '&excludeTotalDataChart=true&excludeTotalDataChartBreakdown=true',20000)
+      .then(function(j){(FEES[s]=FEES[s]||{})[dt]={d30:num(j.total30d)};})
+      .catch(function(){(FEES[s]=FEES[s]||{})[dt]=null;}));
+  });});
+  return Promise.all(jobs);
+}
+function aggregate(){
+  var by={};
+  POOLS.forEach(function(p){
+    var o=by[p.project]||(by[p.project]={n:0,tvl:0,wb:0,wr:0,sub:0});
+    o.n++;o.tvl+=p.tvl;o.wb+=p.base*p.tvl;o.wr+=p.rew*p.tvl;o.sub+=(p.rew/100)*p.tvl;});
+  var agg={};
+  SLUG.forEach(function(s){var o=by[s]; if(!o||!o.tvl){agg[s]=null;return}
+    var den=o.wb+o.wr;
+    agg[s]={pools:o.n,tvl:o.tvl,org:den>0?o.wb/den:1,base:o.wb/o.tvl,rew:o.wr/o.tvl,sub:o.sub};});
+  return agg;
+}
+
+/* ---------- hero ---------- */
+function renderHero(agg){
+  var tvl=0,wb=0,wr=0,sub=0,np=0;
+  SLUG.forEach(function(s){var a=agg&&agg[s];if(!a)return;
+    tvl+=a.tvl;wb+=a.base*a.tvl;wr+=a.rew*a.tvl;sub+=a.sub;np+=a.pools;});
+  var orgNow=(wb+wr)>0?wb/(wb+wr):null;
+  var bw=0,bt=0,incThen=0;
+  SLUG.forEach(function(s){bw+=P[s].base_org*P[s].tvl_then;bt+=P[s].tvl_then;incThen+=P[s].inc_musd;});
+  var orgThen=bt?bw/bt:0;
+  var f30=0,r30=0,haveFees=false;
+  SLUG.forEach(function(s){var f=FEES[s];if(!f)return;
+    if(f.dailyFees){f30+=f.dailyFees.d30;haveFees=true}
+    if(f.dailyRevenue){r30+=f.dailyRevenue.d30}});
+  function drift(now,then){
+    if(now==null)return '<span class="skel">waiting for live data</span>';
+    var d=now-then;
+    return 'published <b>'+f2(then)+'</b>, now '+(d>=0?'+':'')+f2(d);
+  }
+  var cells=[
+    ['Paid by borrowers, now', orgNow==null?'&mdash;':f2(orgNow),
+      orgNow==null?'<span class="skel">waiting for live data</span>':('published <b>'+f2(orgThen)+'</b>')],
+    ['Deposits covered', orgNow==null?'&mdash;':usd(tvl),
+      np?('<b>'+np.toLocaleString('en-US')+'</b> pools with a readable base rate')
+        :'<span class="skel">waiting for live data</span>'],
+    ['Subsidy run rate, annual', orgNow==null?'&mdash;':usd(sub),
+      'study measured <b>'+usd(incThen*1e6)+'</b> realised over 32 months'],
+    ['Protocol revenue, 30d', haveFees?usd(r30):'&mdash;',
+      haveFees?('fees <b>'+usd(f30)+'</b>, take rate <b>'+(f30>0?pct(r30/f30):'n/a')+'</b>')
+              :'<span class="skel">waiting for the fees endpoint</span>']
+  ];
+  $('hero').innerHTML=cells.map(function(c){
+    return '<div class="num"><span class="lb">'+c[0]+'</span><b>'+c[1]+'</b><span class="sub">'+c[2]+'</span></div>';
+  }).join('');
+}
+
+/* ---------- figure 1 ---------- */
+function renderDrift(agg){
+  var box=$('drift'); box.innerHTML='';
+  var rows=SLUG.map(function(s){var a=agg&&agg[s];
+    return {s:s,then:P[s].base_org,now:a?a.org:null};})
+    .sort(function(x,y){return (y.now==null?y.then:y.now)-(x.now==null?x.then:x.now)});
+  var lo=0.3;
+  var px=function(v){return Math.max(0,Math.min(100,(v-lo)/(1-lo)*100))};
+  rows.forEach(function(r){
+    var a=px(r.then), b=r.now==null?a:px(r.now);
+    var d=r.now==null?null:(r.now-r.then);
+    box.appendChild(el('div','bline',
+      '<span class="cname">'+esc(NAME[r.s])+'</span>'+
+      '<span class="trk"><span class="base"></span>'+
+        (r.now==null?'':'<span class="seg" style="left:'+Math.min(a,b)+'%;width:'+Math.abs(b-a)+'%"></span>')+
+        '<span class="pt then" style="left:'+a+'%"></span>'+
+        (r.now==null?'':'<span class="pt now" style="left:'+b+'%"></span>')+'</span>'+
+      '<span class="cval">'+(r.now==null?'&mdash;':f2(r.now))+
+        ' <span class="d">was '+f2(r.then)+'</span><br>'+
+        (d==null?'<span class="d">&mdash;</span>'
+               :'<span class="'+(d<-0.005?'dn':'d')+'">'+(d>=0?'+':'')+f2(d)+'</span>')+'</span>'));
+  });
+  $('drift-lg').innerHTML='<span><i class="then"></i>published, September 2026</span>'+
+    '<span><i class="now"></i>live, this page load</span>'+
+    '<span>scale starts at 0.30</span>';
+}
+
+/* ---------- figures 2 and 3 ---------- */
+function smallMultiples(host,opts){
+  host.innerHTML='';
+  var W=230,H=74,SP=3,lo=opts.lo,hi=opts.hi;
+  var xs=function(i){return (i/(MONTHS.length-1))*W};
+  var ys=function(v){return SP+(1-(Math.max(lo,Math.min(hi,v))-lo)/(hi-lo))*(H-2*SP)};
+  var grid=el('div','sm-grid');
+  opts.series.forEach(function(sr){
+    var segs=[],cur=[];
+    for(var i=0;i<MONTHS.length;i++){var v=sr.v[i];
+      if(v===null||v===undefined){if(cur.length){segs.push(cur);cur=[]}continue}
+      cur.push([xs(i),ys(v)]);}
+    if(cur.length)segs.push(cur);
+    var g='<svg viewBox="0 0 '+W+' '+H+'" preserveAspectRatio="none" role="img" aria-label="'+esc(sr.n)+'">';
+    if(opts.ref!==undefined)
+      g+='<line class="gridline" x1="0" y1="'+ys(opts.ref).toFixed(1)+'" x2="'+W+'" y2="'+ys(opts.ref).toFixed(1)+'" stroke-dasharray="2 3" opacity=".8"/>';
+    segs.forEach(function(sg){
+      if(sg.length<2){g+='<circle cx="'+sg[0][0].toFixed(1)+'" cy="'+sg[0][1].toFixed(1)+'" r="2" fill="var(--accent)"/>';return}
+      var d='M'+sg.map(function(q){return q[0].toFixed(1)+','+q[1].toFixed(1)}).join('L');
+      g+='<path d="'+d+'L'+sg[sg.length-1][0].toFixed(1)+','+H+'L'+sg[0][0].toFixed(1)+','+H+'Z" fill="var(--accent)" opacity=".13"/>';
+      g+='<path d="'+d+'" fill="none" stroke="var(--accent)" stroke-width="2" vector-effect="non-scaling-stroke" stroke-linejoin="round" stroke-linecap="round"/>';
+    });
+    g+='<rect class="smhit" x="0" y="0" width="'+W+'" height="'+H+'" fill="transparent"/></svg>';
+    var cell=el('div','sm',
+      '<h4><span class="smn">'+esc(sr.n)+'</span><span class="smv">'+esc(sr.tag)+'</span></h4>'+
+      '<div class="smc">'+g+'</div><p class="smf">'+esc(sr.foot)+'</p>');
+    var cb=cell.querySelector('.smc'), tip=el('div','tip'); cb.appendChild(tip);
+    var svg=cb.querySelector('svg');
+    svg.addEventListener('mousemove',function(ev){
+      var r=svg.getBoundingClientRect();
+      var i=Math.max(0,Math.min(MONTHS.length-1,Math.round((ev.clientX-r.left)/r.width*(MONTHS.length-1))));
+      var v=sr.v[i];
+      tip.innerHTML='<div class="tt">'+MONTHS[i]+'</div><div class="tv">'+
+        (v===null||v===undefined?'no data':opts.tip(v))+'</div>';
+      tip.classList.add('on');
+      var bw=r.width, tw=tip.offsetWidth;
+      tip.style.left=Math.max(0,Math.min(bw-tw,(i/(MONTHS.length-1))*bw-tw/2))+'px';
+      tip.style.top='-8px';
+    });
+    svg.addEventListener('mouseleave',function(){tip.classList.remove('on')});
+    grid.appendChild(cell);
+  });
+  host.appendChild(grid);
+  host.appendChild(el('p','smaxis','<span>'+MONTHS[0]+'</span><span>'+MONTHS[MONTHS.length-1]+'</span>'));
+}
+
+function renderHistory(){
+  smallMultiples($('hist'),{lo:0,hi:1.02,ref:0.5,
+    series:SLUG.map(function(s){return {n:NAME[s],v:P[s].org,tag:f2(P[s].base_org),
+      foot:'paid out '+usd(P[s].inc_musd*1e6)+' over the period'};}),
+    tip:function(v){return v.toFixed(3)}});
+  $('hist-lg').innerHTML='<span>Every panel runs '+MONTHS[0]+' to '+MONTHS[MONTHS.length-1]+' on the same scale, 0 to 1. The dashed line marks 0.5. The figure beside each name is the whole period result.</span>';
+
+  var cum={},mx=0;
+  SLUG.forEach(function(s){var run=0;
+    cum[s]=P[s].inc.map(function(v,i){run+=v||0;return (P[s].org[i]===null&&run===0)?null:run;});
+    var last=cum[s][cum[s].length-1]||0; if(last>mx)mx=last;});
+  smallMultiples($('subs'),{lo:0,hi:mx*1.04,
+    series:SLUG.map(function(s){var arr=cum[s],last=arr[arr.length-1]||0;
+      return {n:NAME[s],v:arr,tag:usd(last),
+        foot:last>0?(pct(last/(mx||1),0)+' of the largest spender'):'never paid a reward'};}),
+    tip:function(v){return usd(v)}});
+  $('subs-lg').innerHTML='<span>Cumulative, all eight panels on one scale topping out at '+usd(mx)+', so the filled areas are directly comparable.</span>';
+}
+
+/* ---------- live table ---------- */
+var liveSort={k:'org',dir:1};
+function liveCols(){return [
+  ['name','Protocol',function(r){return esc(NAME[r.s])},function(r){return NAME[r.s]},''],
+  ['tvl','Deposits',function(r){return r.a?usd(r.a.tvl):'&mdash;'},function(r){return r.a?r.a.tvl:-1},''],
+  ['pools','Pools',function(r){return r.a?r.a.pools.toLocaleString('en-US'):'&mdash;'},function(r){return r.a?r.a.pools:-1},''],
+  ['base','Base APY',function(r){return r.a?f2(r.a.base)+'%':'&mdash;'},function(r){return r.a?r.a.base:-1},''],
+  ['rew','Reward APY',function(r){return r.a?f2(r.a.rew)+'%':'&mdash;'},function(r){return r.a?r.a.rew:-1},''],
+  ['org','Paid by borrowers',function(r){return r.a?f2(r.a.org):'&mdash;'},function(r){return r.a?r.a.org:-1},
+    function(r){return r.a?'mark':''}],
+  ['was','Published',function(r){return f2(P[r.s].base_org)},function(r){return P[r.s].base_org},''],
+  ['sub','Subsidy run rate',function(r){return r.a?usd(r.a.sub):'&mdash;'},function(r){return r.a?r.a.sub:-1},''],
+  ['r30','Revenue 30d',function(r){var f=FEES[r.s]&&FEES[r.s].dailyRevenue;return f?usd(f.d30):'&mdash;'},
+    function(r){var f=FEES[r.s]&&FEES[r.s].dailyRevenue;return f?f.d30:-1},''],
+  ['dep','Dependency',function(r){var b=FEES[r.s]&&FEES[r.s].dailyRevenue;
+      if(!r.a||!b)return '&mdash;';
+      var an=b.d30*365/30; if(an<=0)return 'no revenue';
+      return f2(r.a.sub/an);},
+    function(r){var b=FEES[r.s]&&FEES[r.s].dailyRevenue;if(!r.a||!b)return -1;
+      var an=b.d30*365/30;return an>0?r.a.sub/an:1e9;},
+    function(r){var b=FEES[r.s]&&FEES[r.s].dailyRevenue;if(!r.a||!b)return '';
+      var an=b.d30*365/30;return (an<=0||r.a.sub/an>1)?'neg':'';}]
+];}
+function renderLive(agg){
+  var cols=liveCols();
+  var rows=SLUG.map(function(s){return {s:s,a:agg?agg[s]:null}});
+  var sc=cols.filter(function(c){return c[0]===liveSort.k})[0]||cols[5];
+  rows.sort(function(x,y){var a=sc[3](x),b=sc[3](y);
+    return typeof a==='string'?liveSort.dir*a.localeCompare(b):liveSort.dir*(b-a);});
+  var t=$('tlive');
+  t.innerHTML='<thead><tr>'+cols.map(function(c){
+    return '<th data-k="'+c[0]+'"'+(c[0]===liveSort.k?(' aria-sort="'+(liveSort.dir===1?'descending':'ascending')+'"'):'')+'>'+c[1]+'</th>';
+  }).join('')+'</tr></thead><tbody>'+rows.map(function(r){
+    return '<tr>'+cols.map(function(c){
+      var cl=typeof c[4]==='function'?c[4](r):c[4];
+      return '<td'+(cl?' class="'+cl+'"':'')+'>'+c[2](r)+'</td>';}).join('')+'</tr>';
+  }).join('')+'</tbody>';
+  Array.prototype.forEach.call(t.querySelectorAll('th'),function(th){
+    th.addEventListener('click',function(){
+      if(liveSort.k===th.dataset.k)liveSort.dir*=-1; else {liveSort.k=th.dataset.k;liveSort.dir=1}
+      renderLive(agg);});});
+}
+
+/* ---------- pool explorer ---------- */
+var PAGE=25;
+var poolSort={k:'tvl',dir:1}, poolFilter='', poolProj='all', poolMin=1e6, poolPage=0;
+var SIZES=[[1e7,'$10M and up'],[1e6,'$1M and up'],[1e5,'$100k and up'],[0,'Everything']];
+function poolCols(){return [
+  ['sym','Pool',function(p){return esc(p.sym)},function(p){return p.sym},''],
+  ['project','Protocol',function(p){return esc(NAME[p.project]||p.project)},function(p){return NAME[p.project]||p.project},''],
+  ['chain','Chain',function(p){return esc(p.chain)},function(p){return p.chain},''],
+  ['tvl','Size',function(p){return usd(p.tvl)},function(p){return p.tvl},''],
+  ['base','Base APY',function(p){return f2(p.base)+'%'},function(p){return p.base},''],
+  ['rew','Reward APY',function(p){return f2(p.rew)+'%'},function(p){return p.rew},''],
+  ['org','Paid by borrowers',function(p){var d=p.base+p.rew;return d>0?f2(p.base/d):'1.00'},
+    function(p){var d=p.base+p.rew;return d>0?p.base/d:1},'mark'],
+  ['sub','Subsidy run rate',function(p){return usd(p.rew/100*p.tvl)},function(p){return p.rew/100*p.tvl},'']
+];}
+function filteredPools(){
+  var q=poolFilter.toLowerCase();
+  return POOLS.filter(function(p){
+    if(p.tvl<poolMin)return false;
+    if(poolProj!=='all'&&p.project!==poolProj)return false;
+    if(!q)return true;
+    return (p.sym+' '+p.chain+' '+(NAME[p.project]||p.project)).toLowerCase().indexOf(q)>=0;});
+}
+function renderPools(){
+  var cols=poolCols(), rows=filteredPools();
+  var sc=cols.filter(function(c){return c[0]===poolSort.k})[0]||cols[3];
+  rows.sort(function(x,y){var a=sc[3](x),b=sc[3](y);
+    return typeof a==='string'?poolSort.dir*String(a).localeCompare(String(b)):poolSort.dir*(b-a);});
+  var total=rows.length, pages=Math.max(1,Math.ceil(total/PAGE));
+  if(poolPage>=pages)poolPage=pages-1;
+  if(poolPage<0)poolPage=0;
+  var slice=rows.slice(poolPage*PAGE,poolPage*PAGE+PAGE);
+  var hidden=POOLS.length-rows.length;
+  $('cnt').textContent=total.toLocaleString('en-US')+(total===1?' pool':' pools')+
+    (hidden>0?(', '+hidden.toLocaleString('en-US')+' filtered out'):'');
+  var t=$('tpools');
+  t.innerHTML='<thead><tr>'+cols.map(function(c){
+    return '<th data-k="'+c[0]+'"'+(c[0]===poolSort.k?(' aria-sort="'+(poolSort.dir===1?'descending':'ascending')+'"'):'')+'>'+c[1]+'</th>';
+  }).join('')+'</tr></thead><tbody>'+
+    (slice.length?slice.map(function(p){return '<tr>'+cols.map(function(c){
+      return '<td'+(c[4]?' class="'+c[4]+'"':'')+'>'+c[2](p)+'</td>';}).join('')+'</tr>';}).join('')
+     :'<tr><td class="empty" colspan="8">'+(POOLS.length?'Nothing matches that filter.':'Waiting for live data.')+'</td></tr>')+
+    '</tbody>';
+  Array.prototype.forEach.call(t.querySelectorAll('th'),function(th){
+    th.addEventListener('click',function(){
+      if(poolSort.k===th.dataset.k)poolSort.dir*=-1; else {poolSort.k=th.dataset.k;poolSort.dir=1}
+      poolPage=0; renderPools();});});
+  $('pg').textContent=total?('page '+(poolPage+1)+' of '+pages+', showing '+
+    (poolPage*PAGE+1)+' to '+Math.min(total,(poolPage+1)*PAGE)):'';
+  $('prev').disabled=poolPage<=0;
+  $('next').disabled=poolPage>=pages-1;
+}
+function buildControls(){
+  $('sizes').innerHTML=SIZES.map(function(o){
+    return '<button class="plain'+(o[0]===poolMin?' on':'')+'" type="button" data-v="'+o[0]+'">'+esc(o[1])+'</button>';}).join('');
+  Array.prototype.forEach.call($('sizes').querySelectorAll('button'),function(b){
+    b.addEventListener('click',function(){
+      poolMin=+b.dataset.v; poolPage=0;
+      Array.prototype.forEach.call($('sizes').querySelectorAll('button'),function(x){x.classList.toggle('on',x===b)});
+      renderPools();});});
+  var opts=[['all','All']].concat(SLUG.map(function(s){return [s,NAME[s]]}));
+  $('chips').innerHTML=opts.map(function(o){
+    return '<button class="plain'+(o[0]===poolProj?' on':'')+'" type="button" data-p="'+o[0]+'">'+esc(o[1])+'</button>';}).join('');
+  Array.prototype.forEach.call($('chips').querySelectorAll('button'),function(b){
+    b.addEventListener('click',function(){
+      poolProj=b.dataset.p; poolPage=0;
+      Array.prototype.forEach.call($('chips').querySelectorAll('button'),function(x){x.classList.toggle('on',x===b)});
+      renderPools();});});
+  $('prev').addEventListener('click',function(){poolPage--;renderPools();
+    $('sec-pools').scrollIntoView({behavior:'smooth',block:'start'});});
+  $('next').addEventListener('click',function(){poolPage++;renderPools();
+    $('sec-pools').scrollIntoView({behavior:'smooth',block:'start'});});
+  $('q').addEventListener('input',function(){poolFilter=this.value;poolPage=0;renderPools()});
+}
+
+/* ---------- status ---------- */
+function setStatus(kind,msg){$('stat').innerHTML='<i class="'+kind+'"></i> '+msg}
+
+/* ---------- boot ---------- */
+renderHistory();
+buildControls();
+renderHero(null); renderDrift(null); renderLive(null); renderPools();
+
+function refresh(){
+  $('refresh').disabled=true; setStatus('','loading live data'); $('errbox').innerHTML=''; FEES={};
+  var t0=Date.now();
+  loadPools().then(function(){
+    var agg=aggregate();
+    renderHero(agg); renderDrift(agg); renderLive(agg); renderPools();
+    setStatus('live','pools loaded, fetching fees');
+    return loadFees().then(function(){
+      var ok=SLUG.filter(function(s){return FEES[s]&&FEES[s].dailyFees}).length;
+      renderHero(agg); renderLive(agg);
+      setStatus('live','live');
+      $('stamp').textContent=new Date().toLocaleString('en-GB')+', '+((Date.now()-t0)/1000).toFixed(1)+'s'+
+        (ok<SLUG.length?(', fees '+ok+' of '+SLUG.length):'');
+      $('refresh').disabled=false;});
+  }).catch(function(e){
+    setStatus('off','live data unavailable'); $('refresh').disabled=false;
+    $('errbox').innerHTML='<p class="err"><b>This page could not reach the DefiLlama API</b> ('+esc(e.message)+
+      '), so the live figures are empty and only the published baseline is shown. That normally means the page is running somewhere outbound requests are blocked, or the API is down. Open the file directly in a browser, or serve it over http, and it will fill in.</p>';
+  });
+}
+$('refresh').addEventListener('click',refresh);
+refresh();
+
+$('theme').addEventListener('click',function(){
+  var c=document.documentElement.getAttribute('data-theme');
+  if(!c)c=matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light';
+  document.documentElement.setAttribute('data-theme',c==='dark'?'light':'dark');});
+})();
+</script>
+
+</body>
+</html>

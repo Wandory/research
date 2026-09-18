@@ -1,0 +1,436 @@
+<div id="grain" aria-hidden="true"></div>
+<canvas id="dust" aria-hidden="true"></canvas>
+<div id="scrollpos" aria-hidden="true"></div>
+
+<header class="bar">
+  <div class="bar-in">
+    <a class="mark" href="#top">Illia Sharan <span>/ Wandor</span></a>
+    <nav class="jump" aria-label="Sections">
+      <a href="#studies">Studies</a>
+      <a href="#timeline">Timeline</a>
+      <a href="#method">Method</a>
+      <a href="#contact">Contact</a>
+    </nav>
+    <p class="status"><i aria-hidden="true"></i> Open to research roles</p>
+  </div>
+</header>
+
+<main>
+  <section class="sec hero" id="top">
+    <p class="eyebrow">Research portfolio</p>
+    <h1>Illia Sharan <span class="alias">Wandor</span></h1>
+    <p class="role">Independent onchain researcher</p>
+    <p class="where">DeFi lending, exchanges and yield bearing stablecoins &middot; Rzesz&oacute;w, Poland &middot; CET / CEST &middot; remote<br>Every study, table and chart in English</p>
+    <p class="intro">I collect the data myself, recompute the result several ways before I believe it, and put the limitations in the same document as the findings. Five studies so far, each asking one question of a different market: which part of the advertised yield is paid by real demand, and which part is printed.</p>
+
+    <div class="nums">
+      <div class="num"><b>5</b><span>studies published, all done solo</span></div>
+      <div class="num"><b>737</b><span>pools and vaults collected and verified</span></div>
+      <div class="num"><b>220,000</b><span>pool days behind the published numbers</span></div>
+      <div class="num"><b>$175M</b><span>of token subsidies priced in dollars</span></div>
+    </div>
+
+    <dl class="facts">
+      <div class="fact"><dt>Email</dt><dd><a href="mailto:sukagedown@gmail.com">sukagedown@gmail.com</a></dd></div>
+      <div class="fact"><dt>Telegram</dt><dd><a href="https://t.me/erentor" target="_blank" rel="noopener">@erentor</a></dd></div>
+      <div class="fact"><dt>X</dt><dd><a href="https://x.com/saihoelse" target="_blank" rel="noopener">@saihoelse</a></dd></div>
+      <div class="fact"><dt>Repository</dt><dd><a href="https://github.com/Wandory/research" target="_blank" rel="noopener">github.com/Wandory/research<span class="sub">PDFs and every table</span></a></dd></div>
+    </dl>
+  </section>
+
+  <section class="sec" id="studies">
+    <div class="sec-head r">
+      <h2>The five studies</h2>
+      <p>Click any study to open it: findings, the tables behind them, the parts that are not obvious from the summary, and every file it produced.</p>
+    </div>
+
+    <div class="worklist r">
+
+      <!-- ===== 01 LENDING ===== -->
+      <article class="srow" id="s1">
+        <button class="shead" aria-expanded="false" aria-controls="p1">
+          <div class="smeta">
+            <p class="worg">Lending</p>
+            <p class="wsub">8 protocols &middot; 478 pools</p>
+            <p class="wsub">Jan 2024 &rarr; Aug 2026</p>
+            <p class="wsub dim">Published Sep 2026</p>
+          </div>
+          <div class="sbody">
+            <h3>Organic yield against token subsidies</h3>
+            <p class="wlead">Which lending protocols pay their depositors out of real borrowing demand, and which print the difference in their own token.</p>
+            <div class="skpi">
+              <div><b>$73M</b><span>subsidies priced against $288M of revenue</span></div>
+              <div><b>147k</b><span>pool days collected</span></div>
+              <div><b>13</b><span>metrics closed out of the brief</span></div>
+            </div>
+          </div>
+          <span class="sopen"><span class="lbl">Open</span><span class="ch" aria-hidden="true">&#9662;</span></span>
+        </button>
+        <div class="spanel" id="p1" role="region"><div><div class="sinner">
+          <div></div>
+          <div>
+            <div class="sblock">
+              <h4>What it found</h4>
+              <ul>
+                <li><b>Four protocols out of eight pay out more than they earn.</b> Morpho handed out $30.6M with zero revenue, Fluid $21.8M against $12.9M, Euler $6.6M against $4.7M.</li>
+                <li><b>The split between real and printed yield runs from 1.00 to 0.45.</b> SparkLend never paid a single day of rewards; Euler v2 prints more than half of what it shows.</li>
+                <li><b>Rewards buy nothing in lending.</b> A difference in differences study on 91 reward switches: turning rewards on produced zero excess TVL growth against the protocol's own trend.</li>
+                <li><b>The headline rate decays with the horizon.</b> Over 30 days the advertised APY is honest everywhere; over 365 days the median depositor got 0.64 of it at Moonwell.</li>
+              </ul>
+            </div>
+            <div class="sblock">
+              <h4>Share of yield paid by borrowers</h4>
+              <div class="chart" data-chart="lending"></div>
+              <div class="ckey"><span><i style="background:var(--accent)"></i>interest from borrowers</span><span><i style="background:var(--line-2)"></i>printed in the protocol's own token</span></div>
+            </div>
+            <div class="sblock">
+              <h4>What the subsidy cost</h4>
+              <div class="tw"><table class="d" data-table="lending"></table></div>
+              <p class="snote">Dependency is subsidies divided by protocol revenue. Net margin is revenue minus subsidies over average supply, annualised.</p>
+            </div>
+            <div class="sblock">
+              <h4>Not obvious from the summary</h4>
+              <ul>
+                <li><b>One inclusion rule decides the whole result.</b> Counting every pool day gives Compound v3 a 9.4% coverage figure, because collateral pools pay no interest at all. The rule that fixes it turned out to be written in the protocol's own documentation.</li>
+                <li><b>The first version of this study was wrong, and the report says so.</b> It mixed parent and child protocol slugs, which moves Spark's fees by 49%, and it mixed two revenue definitions, which made Venus look like a 0.84% take rate instead of 17.8%.</li>
+                <li><b>Euler v2 gets no conclusion.</b> Its rank moves six places out of eight depending on the weighting, so the report states that no conclusion is available rather than picking the flattering angle.</li>
+              </ul>
+            </div>
+            <div class="sblock"><h4>Files</h4><div class="files">
+<a class="frow" href="https://wandory.github.io/research/lending-live.html" target="_blank" rel="noopener"><span class="fn">Live panel</span><span class="fd">The same metric recomputed on today's pools, in the browser</span></a>
+<a class="frow" href="https://github.com/Wandory/research/raw/main/organic-vs-subsidies-2026-09.pdf" target="_blank" rel="noopener"><span class="fn">organic-vs-subsidies-2026-09.pdf</span><span class="fd">The full study, formatted for print and for sending on</span></a>
+<a class="frow" href="https://claude.ai/artifact/XSChgwYTW9j2o9iSBxPVDc" target="_blank" rel="noopener"><span class="fn">Read in the browser</span><span class="fd">The same 13 sections as a web page</span></a>
+<a class="frow" href="https://github.com/Wandory/research/raw/main/data/incentives_month.csv" target="_blank" rel="noopener"><span class="fn">incentives_month.csv</span><span class="fd">Monthly reward rate and the subsidy in dollars, per protocol</span></a>
+<a class="frow" href="https://github.com/Wandory/research/raw/main/data/protocol_month.csv" target="_blank" rel="noopener"><span class="fn">protocol_month.csv</span><span class="fd">Daily supply and borrow aggregated to months, 8 protocols</span></a>
+<a class="frow" href="https://github.com/Wandory/research/raw/main/data/fees_month.csv" target="_blank" rel="noopener"><span class="fn">fees_month.csv</span><span class="fd">Five revenue series on one matched scope</span></a>
+<a class="frow" href="https://github.com/Wandory/research/raw/main/data/full_month.csv" target="_blank" rel="noopener"><span class="fn">full_month.csv</span><span class="fd">The merged panel every ratio in the study is computed from</span></a>
+<a class="frow" href="https://github.com/Wandory/research/raw/main/data/claimed_vs_realized.csv" target="_blank" rel="noopener"><span class="fn">claimed_vs_realized.csv</span><span class="fd">Shown rate against received rate, four horizons</span></a>
+<a class="frow" href="https://github.com/Wandory/research/raw/main/data/event_study_summary.csv" target="_blank" rel="noopener"><span class="fn">event_study_summary.csv</span><span class="fd">91 reward switches with the protocol trend netted out</span></a>
+<a class="frow" href="https://github.com/Wandory/research/raw/main/data/util_decomposition.csv" target="_blank" rel="noopener"><span class="fn">util_decomposition.csv</span><span class="fd">Monthly utilisation change split into borrow and supply</span></a>
+<a class="frow" href="https://github.com/Wandory/research/raw/main/data/organic_share_angles.csv" target="_blank" rel="noopener"><span class="fn">organic_share_angles.csv</span><span class="fd">The headline metric recomputed eight ways</span></a>
+<a class="frow" href="https://github.com/Wandory/research/raw/main/data/organic_check.csv" target="_blank" rel="noopener"><span class="fn">organic_check.csv</span><span class="fd">Second collection a day later, against the first</span></a>
+</div></div></div>
+          </div>
+        </div></div></div>
+      </article>
+
+      <!-- ===== 02 MORPHO ===== -->
+      <article class="srow" id="s2">
+        <button class="shead" aria-expanded="false" aria-controls="p2">
+          <div class="smeta">
+            <p class="worg">Morpho Blue</p>
+            <p class="wsub">78 vaults &middot; 12 curators</p>
+            <p class="wsub">Snapshot plus one year of history</p>
+            <p class="wsub dim">Published Sep 2026</p>
+          </div>
+          <div class="sbody">
+            <h3>Who runs your money in Morpho</h3>
+            <p class="wlead">In Aave the protocol sets the risk. In Morpho outside curators do, and the depositor sees only a rate.</p>
+            <div class="skpi">
+              <div><b>$2.0B</b><span>vault assets in the sample</span></div>
+              <div><b>84%</b><span>held by three curators</span></div>
+              <div><b>$473M</b><span>in vaults whose rate cannot be read</span></div>
+            </div>
+          </div>
+          <span class="sopen"><span class="lbl">Open</span><span class="ch" aria-hidden="true">&#9662;</span></span>
+        </button>
+        <div class="spanel" id="p2" role="region"><div><div class="sinner">
+          <div></div>
+          <div>
+            <div class="sblock">
+              <h4>What it found</h4>
+              <ul>
+                <li><b>The rate is commoditised.</b> Median 3.40% a year across the thirty largest vaults, with a typical band of 1.08 points. Choosing a curator barely moves what you earn.</li>
+                <li><b>The fee does not track the result.</b> Curators charge from 0% to 25% of the yield for rates that sit within one point of each other.</li>
+                <li><b>Risk is where they differ.</b> Some vaults sit entirely in blue chip collateral, others hold none of it at the same rate.</li>
+                <li><b>Depositors move in herds.</b> Sixteen of the twenty six vaults with a full year of history lost more than 30% of their assets, while one grew from $13M to $419M.</li>
+              </ul>
+            </div>
+            <div class="sblock">
+              <h4>Share of curated assets</h4>
+              <div class="chart" data-chart="morpho"></div>
+            </div>
+            <div class="sblock">
+              <h4>Rate, fee and collateral by curator</h4>
+              <div class="tw"><table class="d" data-table="morpho"></table></div>
+              <p class="snote">Blue chip means ETH, BTC and their liquid derivatives plus the major stablecoins. Everything weighted by assets.</p>
+            </div>
+            <div class="sblock">
+              <h4>Not obvious from the summary</h4>
+              <ul>
+                <li><b>Six vaults holding $473M report impossible rates,</b> up to 297,995% a year, with no listed curator. Two of them are named Not Gauntlet and Duplicated Key. The vault namespace is not moderated, and the interface shows a name and a number.</li>
+                <li><b>The data comes from Morpho's own API,</b> not from an aggregator, so the protocol itself splits the rate into total and excluding rewards. That makes the reward share a protocol fact rather than an estimate.</li>
+                <li><b>Spikes exist but cannot be caught.</b> Thirty vaults produced 238 days with a rate above 20% a year, and they last hours, at the moment utilisation hits the ceiling.</li>
+              </ul>
+            </div>
+            <div class="sblock"><h4>Files</h4><div class="files">
+<a class="frow" href="https://wandory.github.io/research/morpho-live.html" target="_blank" rel="noopener"><span class="fn">Live panel</span><span class="fd">Curator concentration, fees and collateral read live from the Morpho API</span></a>
+<a class="frow" href="https://github.com/Wandory/research/raw/main/morpho-curators-2026-09.pdf" target="_blank" rel="noopener"><span class="fn">morpho-curators-2026-09.pdf</span><span class="fd">The full study, formatted for print and for sending on</span></a>
+<a class="frow" href="https://claude.ai/artifact/LRPCj97cVtH6DDcCQ5CGpN" target="_blank" rel="noopener"><span class="fn">Read in the browser</span><span class="fd">The same 10 sections as a web page</span></a>
+<a class="frow" href="https://github.com/Wandory/research/raw/main/data/morpho_vaults.csv" target="_blank" rel="noopener"><span class="fn">morpho_vaults.csv</span><span class="fd">78 vaults: curator, fee, collateral mix, LLTV, utilisation</span></a>
+<a class="frow" href="https://github.com/Wandory/research/raw/main/data/morpho_curators.csv" target="_blank" rel="noopener"><span class="fn">morpho_curators.csv</span><span class="fd">The same aggregated by curator</span></a>
+<a class="frow" href="https://github.com/Wandory/research/raw/main/data/morpho_vault_history.csv" target="_blank" rel="noopener"><span class="fn">morpho_vault_history.csv</span><span class="fd">A year of daily rate and assets, thirty largest vaults</span></a>
+<a class="frow" href="https://github.com/Wandory/research/raw/main/data/morpho_curator_history.csv" target="_blank" rel="noopener"><span class="fn">morpho_curator_history.csv</span><span class="fd">The same aggregated by curator</span></a>
+<a class="frow" href="https://github.com/Wandory/research/raw/main/data/morpho_unreadable_vaults.csv" target="_blank" rel="noopener"><span class="fn">morpho_unreadable_vaults.csv</span><span class="fd">The six vaults excluded, with their reported rates</span></a>
+</div></div></div>
+          </div>
+        </div></div></div>
+      </article>
+
+      <!-- ===== 03 DEX ===== -->
+      <article class="srow" id="s3">
+        <button class="shead" aria-expanded="false" aria-controls="p3">
+          <div class="smeta">
+            <p class="worg">Exchanges</p>
+            <p class="wsub">7 venues &middot; 143 pools</p>
+            <p class="wsub">Jan 2024 &rarr; Sep 2026</p>
+            <p class="wsub dim">Published Sep 2026</p>
+          </div>
+          <div class="sbody">
+            <h3>Mercenary liquidity</h3>
+            <p class="wlead">The lending study found that rewards buy nothing. The same method applied to exchanges finds the opposite, which is the point: the method holds, the market does not.</p>
+            <div class="skpi">
+              <div><b>$96.7M</b><span>of emissions priced</span></div>
+              <div><b>+39.5%</b><span>excess TVL 90 days after rewards start</span></div>
+              <div><b>0.10</b><span>lowest share of self earned yield</span></div>
+            </div>
+          </div>
+          <span class="sopen"><span class="lbl">Open</span><span class="ch" aria-hidden="true">&#9662;</span></span>
+        </button>
+        <div class="spanel" id="p3" role="region"><div><div class="sinner">
+          <div></div>
+          <div>
+            <div class="sblock">
+              <h4>What it found</h4>
+              <ul>
+                <li><b>Two models on one market.</b> Uniswap v3 and v4 hold liquidity with no emissions at all. Aerodrome v1 prints nine tenths of what its LPs earn.</li>
+                <li><b>Here the money works.</b> Median excess TVL 90 days after rewards are switched on is +39.5%, against zero in lending.</li>
+                <li><b>And it leaves.</b> Switching rewards off costs Aerodrome a median 10.2% of pool TVL against its own venue trend, negative in 70% of cases.</li>
+                <li><b>Exchanges spend more than lenders, over a shorter window.</b> $96.7M across 143 pools against $73M across 478 lending pools over a longer period.</li>
+              </ul>
+            </div>
+            <div class="sblock">
+              <h4>Share of yield earned from trading fees</h4>
+              <div class="chart" data-chart="dex"></div>
+              <div class="ckey"><span><i style="background:var(--accent)"></i>trading fees</span><span><i style="background:var(--line-2)"></i>token emissions</span></div>
+            </div>
+            <div class="sblock">
+              <h4>What happens around a reward switch</h4>
+              <div class="tw"><table class="d" data-table="dex"></table></div>
+              <p class="snote">Excess is the change in pool TVL minus the change of the whole venue over the same days. The last two rows are the lending result, for comparison.</p>
+            </div>
+            <div class="sblock">
+              <h4>Not obvious from the summary</h4>
+              <ul>
+                <li><b>Curve moves the other way and the data explains why.</b> After a switch off its pools grew faster than the venue, because a Curve reward rarely disappears, it falls from 2.3% to 0.4% and the pool stays inside the emission vote.</li>
+                <li><b>The advertised yield here excludes impermanent loss.</b> The study measures the composition of the shown rate, not what the liquidity provider ended up with, and says so in the limitations rather than in a footnote.</li>
+                <li><b>Emission is counter cyclical.</b> At Aerodrome the fee share of yield fell from 0.76 to 0.31 in five months while the reward rate climbed to 104% a year. They pay more exactly when trading pays less.</li>
+              </ul>
+            </div>
+            <div class="sblock"><h4>Files</h4><div class="files">
+<a class="frow" href="https://wandory.github.io/research/dex-live.html" target="_blank" rel="noopener"><span class="fn">Live panel</span><span class="fd">Fee share against emissions recomputed on today’s pools</span></a>
+<a class="frow" href="https://github.com/Wandory/research/raw/main/dex-mercenary-liquidity-2026-09.pdf" target="_blank" rel="noopener"><span class="fn">dex-mercenary-liquidity-2026-09.pdf</span><span class="fd">The full study, formatted for print and for sending on</span></a>
+<a class="frow" href="https://claude.ai/artifact/UWQyqLQLe4hNPaLzfViwoS" target="_blank" rel="noopener"><span class="fn">Read in the browser</span><span class="fd">The same 7 sections as a web page</span></a>
+<a class="frow" href="https://github.com/Wandory/research/raw/main/data/dex_stable_monthly.csv" target="_blank" rel="noopener"><span class="fn">dex_stable_monthly.csv</span><span class="fd">Monthly panel, seven venues and eight issuers</span></a>
+<a class="frow" href="https://github.com/Wandory/research/raw/main/data/dex_stable_totals.csv" target="_blank" rel="noopener"><span class="fn">dex_stable_totals.csv</span><span class="fd">Per venue totals: pools, TVL, emissions, rate split</span></a>
+<a class="frow" href="https://github.com/Wandory/research/raw/main/data/dex_events_did.csv" target="_blank" rel="noopener"><span class="fn">dex_events_did.csv</span><span class="fd">60 reward switches with the venue trend netted out</span></a>
+</div></div></div>
+          </div>
+        </div></div></div>
+      </article>
+
+      <!-- ===== 04 STABLES ===== -->
+      <article class="srow" id="s4">
+        <button class="shead" aria-expanded="false" aria-controls="p4">
+          <div class="smeta">
+            <p class="worg">Stablecoins</p>
+            <p class="wsub">8 issuers &middot; $9.6B</p>
+            <p class="wsub">Jan 2024 &rarr; Sep 2026</p>
+            <p class="wsub dim">Published Sep 2026</p>
+          </div>
+          <div class="sbody">
+            <h3>The rate that does not hold</h3>
+            <p class="wlead">A yield bearing stablecoin is sold as one number. Behind it sits a treasury coupon, a funding rate or a token giveaway, and the interface shows them the same way.</p>
+            <div class="skpi">
+              <div><b>0.81</b><span>of the shown rate, received over a year at Ethena</span></div>
+              <div><b>37 &rarr; 4.8</b><span>per cent, Ethena's rate over two years</span></div>
+              <div><b>9%</b><span>of Ondo's monthly windows missed the shown rate</span></div>
+            </div>
+          </div>
+          <span class="sopen"><span class="lbl">Open</span><span class="ch" aria-hidden="true">&#9662;</span></span>
+        </button>
+        <div class="spanel" id="p4" role="region"><div><div class="sinner">
+          <div></div>
+          <div>
+            <div class="sblock">
+              <h4>What it found</h4>
+              <ul>
+                <li><b>Honest for a month, not for a year.</b> Over 30 days every issuer delivers what it shows. Over 365 days the median holder got 0.81 of it at Ethena and 0.88 at Sky.</li>
+                <li><b>The mechanism is visible in the shape of the curve.</b> Treasuries draw a flat line, a funding rate draws the market cycle, a governance decision draws steps.</li>
+                <li><b>Money follows the rate down.</b> Ethena went from $5.9B to $1.35B as its rate fell from above 7% to 4%.</li>
+                <li><b>A high opening rate is an invitation, not a level.</b> Midas opened at 10.4% and sits at 5.0%, Falcon at 7.9% and sits at 3.7%.</li>
+              </ul>
+            </div>
+            <div class="sblock">
+              <h4>Rate by month, per cent a year</h4>
+              <div class="lines" data-chart="stable"></div>
+            </div>
+            <div class="sblock">
+              <h4>Received divided by shown</h4>
+              <div class="tw"><table class="d" data-table="stable"></table></div>
+              <p class="snote">Only windows where the rate on entry was at least 3% a year. A dash means fewer than thirty windows, so the cell is not computed.</p>
+            </div>
+            <div class="sblock">
+              <h4>Not obvious from the summary</h4>
+              <ul>
+                <li><b>Predictability is the product.</b> Ondo pays the least of the eight and misses its own shown rate in only 9% of monthly windows. Everyone else misses in 30 to 45%.</li>
+                <li><b>One issuer prints most of its yield.</b> Usual USD0 showed 14.7% of its own rate against 97.6% in token rewards at the peak, so 87% of the number on the screen was printed.</li>
+                <li><b>The same decay appears in lending.</b> Two different markets, one method, and the same answer: the shown rate describes a month and not a year.</li>
+              </ul>
+            </div>
+            <div class="sblock"><h4>Files</h4><div class="files">
+<a class="frow" href="https://wandory.github.io/research/stable-live.html" target="_blank" rel="noopener"><span class="fn">Live panel</span><span class="fd">Advertised rates read live, against what holders realised</span></a>
+<a class="frow" href="https://github.com/Wandory/research/raw/main/stablecoin-yield-2026-09.pdf" target="_blank" rel="noopener"><span class="fn">stablecoin-yield-2026-09.pdf</span><span class="fd">The full study, formatted for print and for sending on</span></a>
+<a class="frow" href="https://claude.ai/artifact/BRa4h5jgqsHGsJTWSJeT8E" target="_blank" rel="noopener"><span class="fn">Read in the browser</span><span class="fd">The same 7 sections as a web page</span></a>
+<a class="frow" href="https://github.com/Wandory/research/raw/main/data/dex_stable_monthly.csv" target="_blank" rel="noopener"><span class="fn">dex_stable_monthly.csv</span><span class="fd">Monthly rate and size per issuer</span></a>
+<a class="frow" href="https://github.com/Wandory/research/raw/main/data/dex_stable_claimed_realized.csv" target="_blank" rel="noopener"><span class="fn">dex_stable_claimed_realized.csv</span><span class="fd">Shown against received, four horizons</span></a>
+<a class="frow" href="https://github.com/Wandory/research/raw/main/data/dex_stable_totals.csv" target="_blank" rel="noopener"><span class="fn">dex_stable_totals.csv</span><span class="fd">Per issuer totals over the whole period</span></a>
+</div></div></div>
+          </div>
+        </div></div></div>
+      </article>
+
+      <!-- ===== 05 ALTIUS ===== -->
+      <article class="srow" id="s5">
+        <button class="shead" aria-expanded="false" aria-controls="p5">
+          <div class="smeta">
+            <p class="worg">Altius</p>
+            <p class="wsub">Protocol research &middot; 41 pages</p>
+            <p class="wsub">Sep 2025</p>
+            <p class="wsub dim">Written for the protocol</p>
+          </div>
+          <div class="sbody">
+            <h3>Execution as a market</h3>
+            <p class="wlead">Can modular blockchain execution become a competitive market for compute, and what exactly would be traded on it?</p>
+            <div class="skpi">
+              <div><b>41</b><span>pages, written solo</span></div>
+              <div><b>4</b><span>pricing models compared</span></div>
+              <div><b>4</b><span>failure modes worked through</span></div>
+            </div>
+          </div>
+          <span class="sopen"><span class="lbl">Open</span><span class="ch" aria-hidden="true">&#9662;</span></span>
+        </button>
+        <div class="spanel" id="p5" role="region"><div><div class="sinner">
+          <div></div>
+          <div>
+            <div class="sblock">
+              <h4>What it covers</h4>
+              <ul>
+                <li><b>The traded unit.</b> What is actually being sold once execution is unbundled from settlement, and what a buyer can enforce.</li>
+                <li><b>Pricing.</b> The unit priced under several models and compared against existing markets for compute.</li>
+                <li><b>Failure modes.</b> Verification cost, latency, MEV capture and operator concentration, each with the condition that breaks the market.</li>
+              </ul>
+            </div>
+            <div class="sblock">
+              <p>Written as a contribution to the protocol rather than as marketing, which is why it spends as much space on what would go wrong as on the design itself.</p>
+              <h4 style="margin-top:26px">Files</h4><div class="files">
+<a class="frow" href="https://github.com/Wandory/research/raw/main/altius-execution-marketplace-research.pdf" target="_blank" rel="noopener"><span class="fn">altius-execution-marketplace-research.pdf</span><span class="fd">The full 41 page study as a PDF</span></a>
+<a class="frow" href="https://github.com/Wandory/research" target="_blank" rel="noopener"><span class="fn">github.com/Wandory/research</span><span class="fd">Repository with every study and every table</span></a>
+</div>
+            </div>
+          </div>
+        </div></div></div>
+      </article>
+
+    </div>
+  </section>
+
+  <div class="band">
+  <section class="sec" id="timeline">
+    <div class="sec-head r">
+      <h2>How this came about</h2>
+      <p>The dates on the studies are close together. This is why.</p>
+    </div>
+    <div class="tl r">
+      <div class="ev">
+        <span class="when">July 2026</span>
+        <div class="what">
+          <h4>Started, and stopped</h4>
+          <p>Began a study of lending protocol economics and ran into two problems I could not get past. Historical borrowing looked unavailable from the open APIs, and there appeared to be no way to price what a protocol had actually handed out in rewards. Both were written up as blockers and the project was left alone.</p>
+        </div>
+      </div>
+      <div class="ev">
+        <span class="when">September 2026</span>
+        <div class="what">
+          <h4>Both blockers turned out to be solvable</h4>
+          <p>Historical borrowing is in the protocol endpoint the whole time, as a daily series under <span class="mono">chainTvls.borrowed</span>. Rewards can be priced by taking the published reward rate against pool size on each day and summing. Neither needs a paid data source.</p>
+          <p>With the method unblocked, the same panel construction applies to any market that publishes a rate, which is why four studies followed in one week rather than one in four months.</p>
+        </div>
+      </div>
+      <div class="ev">
+        <span class="when">16 to 17 Sep</span>
+        <div class="what">
+          <h4>Data collected</h4>
+          <p>737 pools and vaults, 220,000 pool days, four markets. Every intermediate table saved, so every figure rebuilds without touching the network again. The collection date is on every study because it is part of the method: a reader checking these numbers needs to know which day the snapshot is from.</p>
+        </div>
+      </div>
+      <div class="ev">
+        <span class="when">18 Sep</span>
+        <div class="what">
+          <h4>Two errors found and printed</h4>
+          <p>An audit for implausible values, rather than for internal agreement, caught an emissions total that exceeded the sum of its own monthly rows by $50.3M, and six vaults quoting rates near 298,000% a year that turned out to be an artefact of their share price. The first changed a headline figure and a ranking. Both corrections are printed in the documents rather than applied quietly.</p>
+        </div>
+      </div>
+      <div class="ev now">
+        <span class="when">Continuing</span>
+        <div class="what">
+          <h4>The panels keep running</h4>
+          <p>Each study has a live panel that recomputes its headline metric on current data and sets it against the published baseline, so the work shows its own age. Aave has already moved from 0.94 to 0.84 since publication.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="sec" id="method">
+    <div class="sec-head r">
+      <h2>How the work is done</h2>
+      <p>The same three rules in every study, which is why they can be read together.</p>
+    </div>
+    <div class="cols r">
+      <div class="col">
+        <h4>Collection</h4>
+        <p>Protocol APIs first, aggregators second. Daily series pulled pool by pool with retry and backoff, a documented failure rate, and every intermediate table saved so the result can be rebuilt without touching the network again.</p>
+      </div>
+      <div class="col">
+        <h4>Verification</h4>
+        <p>Nothing is published on one calculation. Weightings swapped, medians against means, small and young units excluded, years split, and in the lending study the whole panel collected a second time a day later to see whether the answer moved.</p>
+      </div>
+      <div class="col">
+        <h4>Honesty</h4>
+        <p>Missing stays missing, never zero. Limitations sit in the same document as the findings, before the conclusions. When a result of mine broke a rule of the project, it came out of the report, and the report says which result and why.</p>
+      </div>
+    </div>
+  </section>
+  </div>
+
+  <section class="sec" id="contact">
+    <div class="sec-head r"><h2>Contact</h2><p>Send the question, I will send back how I would answer it with data.</p></div>
+    <div class="crow r">
+      <a href="mailto:sukagedown@gmail.com">sukagedown@gmail.com</a>
+      <button class="copybtn" data-copy="sukagedown@gmail.com"><span>Copy</span></button>
+      <a href="https://t.me/erentor" target="_blank" rel="noopener">@erentor</a>
+      <a href="https://x.com/saihoelse" target="_blank" rel="noopener">@saihoelse</a>
+      <a href="https://github.com/Wandory/research" target="_blank" rel="noopener">github.com/Wandory/research</a>
+    </div>
+    <div class="foot">
+      <p class="wsub">Illia Sharan &middot; Wandor &middot; Rzesz&oacute;w, Poland</p>
+      <p class="wsub">Updated September 2026</p>
+    </div>
+  </section>
+</main>
+
+<div id="dock">
+  <button id="theme" type="button" aria-label="Switch theme">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
+  </button>
+</div>

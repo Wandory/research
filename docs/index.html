@@ -1,0 +1,1081 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Illia Sharan, research portfolio</title>
+</head>
+<body>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Schibsted+Grotesk:wght@400;500;600;700&family=Instrument+Serif:ital@0;1&family=Geist+Mono:wght@400;500&display=swap">
+
+<style>
+/* ===================== TOKENS ===================== */
+:root{
+  --bg:#08090A; --card:#111315; --card-2:#16191B;
+  --fg:#EFEFED; --fg-2:#A8ABA9; --fg-3:#6E7273;
+  --line:#1E2224; --line-2:#2C3134;
+  --accent:#EFEFED; --accent-dim:#EFEFED12; --accent-fg:#C7CBC9; --on-accent:#08090A;
+  --ok:#EFEFED;
+
+  --sans:'Schibsted Grotesk',-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;
+  --serif:'Instrument Serif',Georgia,'Times New Roman',serif;
+  --mono:'Geist Mono',ui-monospace,'SF Mono',Menlo,Consolas,monospace;
+
+  --maxw:1060px;
+  --pad:clamp(20px,4vw,40px);
+  --secpad:clamp(46px,5.2vw,74px);
+  --measure:70ch;
+  --r:4px;
+  --ease:cubic-bezier(.16,.84,.34,1);
+}
+:root[data-theme="light"]{
+  --bg:#FBFBFA; --card:#FFFFFF; --card-2:#F7F7F5;
+  --fg:#0B0C0D; --fg-2:#4A4E50; --fg-3:#84898B;
+  --line:#E4E5E2; --line-2:#D2D4D0;
+  --accent:#0B0C0D; --accent-dim:#0B0C0D0D; --accent-fg:#3A3E40; --on-accent:#FBFBFA;
+  --ok:#0B0C0D;
+}
+@media (prefers-color-scheme: light){
+  :root:not([data-theme="dark"]){
+    --bg:#FBFBFA; --card:#FFFFFF; --card-2:#F7F7F5;
+    --fg:#0B0C0D; --fg-2:#4A4E50; --fg-3:#84898B;
+    --line:#E4E5E2; --line-2:#D2D4D0;
+    --accent:#0B0C0D; --accent-dim:#0B0C0D0D; --accent-fg:#3A3E40; --on-accent:#FBFBFA;
+    --ok:#0B0C0D;
+  }
+}
+
+/* ===================== BASE ===================== */
+*{box-sizing:border-box}
+html{scroll-behavior:smooth; -webkit-text-size-adjust:100%}
+body{
+  margin:0; background:var(--bg); color:var(--fg);
+  font-family:var(--sans); font-size:16px; line-height:1.6; letter-spacing:-.005em;
+  -webkit-font-smoothing:antialiased; overflow-x:hidden;
+}
+p{margin:0}
+ul{margin:0; padding:0; list-style:none}
+a{color:inherit; text-decoration:none}
+h1,h2,h3,h4{margin:0; font-weight:600; letter-spacing:-.03em; line-height:1.1; text-wrap:balance}
+:focus-visible{outline:2px solid var(--accent); outline-offset:3px; border-radius:3px}
+.kicker{font-family:var(--mono); font-size:11px; letter-spacing:.13em; text-transform:uppercase; color:var(--fg-3)}
+
+/* ===================== REVEAL ===================== */
+.js .r{opacity:0; transform:translateY(10px); transition:opacity .34s var(--ease), transform .34s var(--ease)}
+.js .r.on{opacity:1; transform:none}
+@media (prefers-reduced-motion: reduce){
+  html{scroll-behavior:auto}
+  .js .r{opacity:1!important; transform:none!important; transition:none!important}
+  *{animation:none!important}
+}
+
+/* ===================== TEXTURE ===================== */
+#grain{position:fixed; inset:0; z-index:0; pointer-events:none; opacity:.055;
+  background-repeat:repeat; background-size:180px 180px}
+#dust{position:fixed; inset:0; z-index:3; pointer-events:none; mix-blend-mode:difference}
+.bar, main, #dock{position:relative; z-index:2}
+.bar{z-index:60}
+
+/* ===================== INVERTED BAND ===================== */
+.band{
+  --bg:#EFEFED; --card:#E6E7E3; --card-2:#DDDEDA;
+  --fg:#0B0C0D; --fg-2:#3D4143; --fg-3:#6E7273;
+  --line:#CFD1CD; --line-2:#B4B7B2;
+  --accent:#0B0C0D; --accent-fg:#3D4143;
+  background:var(--bg); color:var(--fg);
+}
+:root[data-theme="light"] .band{
+  --bg:#111315; --card:#181B1D; --card-2:#1E2224;
+  --fg:#EFEFED; --fg-2:#A8ABA9; --fg-3:#7E8385;
+  --line:#272B2D; --line-2:#3A3F41;
+  --accent:#EFEFED; --accent-fg:#C7CBC9;
+}
+@media (prefers-color-scheme: light){
+  :root:not([data-theme="dark"]) .band{
+    --bg:#111315; --card:#181B1D; --card-2:#1E2224;
+    --fg:#EFEFED; --fg-2:#A8ABA9; --fg-3:#7E8385;
+    --line:#272B2D; --line-2:#3A3F41;
+    --accent:#EFEFED; --accent-fg:#C7CBC9;
+  }
+}
+.band .sec{border-bottom:none}
+
+/* ===================== SCROLL POSITION ===================== */
+#scrollpos{position:fixed; z-index:800; left:var(--pad); bottom:calc(18px + env(safe-area-inset-bottom,0px));
+  font-family:var(--mono); font-size:10.5px; letter-spacing:.14em; text-transform:uppercase;
+  color:#9A9A9A; mix-blend-mode:difference; pointer-events:none; isolation:auto}
+@media (max-width:700px){ #scrollpos{display:none} }
+
+/* ===================== TOP BAR ===================== */
+.bar{position:sticky; top:env(safe-area-inset-top,0px); z-index:60;
+  background:color-mix(in srgb, var(--bg) 84%, transparent); backdrop-filter:blur(14px) saturate(1.3);
+  border-bottom:1px solid var(--line)}
+.bar-in{max-width:var(--maxw); margin-inline:auto; padding:13px var(--pad);
+  display:flex; align-items:center; justify-content:space-between; gap:20px}
+.bar .mark{font-size:14.5px; font-weight:600; letter-spacing:-.02em; white-space:nowrap}
+.bar .mark span{color:var(--fg-3); font-weight:400}
+nav.jump{display:flex; align-items:center; gap:22px}
+nav.jump a{font-family:var(--mono); font-size:11px; letter-spacing:.08em; text-transform:uppercase;
+  color:var(--fg-3); transition:color .25s var(--ease); white-space:nowrap}
+nav.jump a:hover{color:var(--fg-2)}
+nav.jump a.active{color:var(--fg)}
+.status{display:inline-flex; align-items:center; gap:8px;
+  font-family:var(--mono); font-size:10.5px; letter-spacing:.09em; text-transform:uppercase; color:var(--fg-2)}
+.status i{width:6px; height:6px; border-radius:50%; background:var(--ok); position:relative; flex:none}
+.status i::after{content:""; position:absolute; inset:-3px; border-radius:50%; border:1px solid var(--ok);
+  opacity:.5; animation:pl 2.8s var(--ease) infinite}
+@keyframes pl{0%{transform:scale(.6);opacity:.7}70%{transform:scale(1.7);opacity:0}100%{opacity:0}}
+
+/* ===================== SECTIONS ===================== */
+main{min-width:0}
+.sec{max-width:var(--maxw); margin-inline:auto; padding:var(--secpad) var(--pad); border-bottom:1px solid var(--line)}
+.sec:last-of-type{border-bottom:none}
+.sec-head{margin-bottom:32px}
+.sec-head h2{font-size:clamp(20px,2.3vw,25px)}
+.sec-head p{margin-top:9px; font-size:15px; color:var(--fg-3); max-width:52ch}
+
+/* ===================== HERO ===================== */
+.hero{padding-block:clamp(46px,5.5vw,78px) clamp(34px,4vw,54px)}
+.hero .eyebrow{font-family:var(--mono); font-size:11px; letter-spacing:.16em; text-transform:uppercase;
+  color:var(--accent-fg); margin-bottom:22px}
+.hero h1{font-size:clamp(34px,5vw,58px); font-weight:600; letter-spacing:-.04em; line-height:1.04}
+.hero h1 .alias{font-family:var(--mono); font-size:.34em; font-weight:400; letter-spacing:.02em;
+  color:var(--fg-3); vertical-align:baseline; margin-left:.52em; white-space:nowrap}
+.hero .role{margin-top:16px; font-size:clamp(24px,3.4vw,40px); font-weight:600; letter-spacing:-.035em;
+  color:var(--fg); max-width:27ch; line-height:1.08}
+.hero .where{margin-top:16px; font-family:var(--mono); font-size:12px; letter-spacing:.05em;
+  color:var(--fg-3); line-height:1.7}
+.hero p.intro{margin-top:18px; font-size:clamp(16px,1.6vw,18px); color:var(--fg-2);
+  max-width:56ch; line-height:1.6}
+.hero .nums{margin-top:clamp(30px,3.6vw,44px); padding-top:26px; border-top:1px solid var(--line)}
+
+.facts{margin-top:clamp(34px,4vw,52px); padding-top:26px; border-top:1px solid var(--line);
+  display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:24px 28px}
+.fact dt{font-family:var(--mono); font-size:10.5px; letter-spacing:.1em; text-transform:uppercase; color:var(--fg-3)}
+.fact dd{margin:7px 0 0; font-size:15px; color:var(--fg)}
+.fact dd a{transition:color .25s var(--ease)}
+.fact dd a:hover{color:var(--accent)}
+.fact dd .sub{display:block; margin-top:3px; font-size:13px; color:var(--fg-3)}
+
+/* ===================== NUMBERS ===================== */
+.nums{display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:26px 30px}
+.num b{display:block; font-size:clamp(27px,3.3vw,36px); font-weight:600; letter-spacing:-.045em;
+  line-height:1; font-variant-numeric:tabular-nums}
+.num span{display:block; margin-top:9px; font-size:13px; color:var(--fg-3); line-height:1.45}
+
+/* ===================== COLUMNS ===================== */
+.cols{display:grid; grid-template-columns:repeat(auto-fit,minmax(230px,1fr)); gap:32px}
+.col h4{font-family:var(--mono); font-size:11px; font-weight:500; letter-spacing:.1em; text-transform:uppercase;
+  color:var(--accent-fg); margin-bottom:10px}
+.col p{font-size:14.5px; color:var(--fg-2); line-height:1.6}
+
+/* ===================== WORK ROWS ===================== */
+.worklist{display:grid}
+.wrow{display:grid; grid-template-columns:230px minmax(0,1fr); gap:clamp(22px,4vw,52px);
+  padding-block:clamp(26px,3.4vw,40px); border-top:1px solid var(--line)}
+.wrow:first-child{border-top:none; padding-top:0}
+.worg{font-size:16px; font-weight:600; letter-spacing:-.02em}
+.wsub{margin-top:5px; font-family:var(--mono); font-size:11px; letter-spacing:.06em; color:var(--fg-3); line-height:1.5}
+.wsub.dim{margin-top:10px; opacity:.72}
+.wbody h3{font-size:clamp(21px,2.6vw,29px); font-weight:600; letter-spacing:-.035em; line-height:1.12; max-width:22ch}
+.wlead{margin-top:14px; font-size:clamp(15.5px,1.5vw,17px); color:var(--fg-2); line-height:1.55; max-width:56ch}
+.wbody ul{margin-top:16px; display:grid; gap:8px; max-width:60ch}
+.wbody li{font-size:14.5px; color:var(--fg-3); line-height:1.5; padding-left:17px; position:relative}
+.wbody li::before{content:""; position:absolute; left:0; top:.72em; width:8px; height:1px; background:var(--line-2)}
+.cardlinks{display:flex; flex-wrap:wrap; gap:8px 18px; margin-top:18px}
+.cardlinks a{display:inline-flex; align-items:center; gap:7px; font-family:var(--mono); font-size:12px;
+  letter-spacing:.03em; color:var(--fg-2); transition:color .22s var(--ease), transform .22s var(--ease)}
+.cardlinks a svg{width:13px; height:13px; flex:none; color:var(--fg-3); transition:color .22s var(--ease)}
+.cardlinks a:hover{color:var(--fg); transform:translateY(-1px)}
+.cardlinks a:hover svg{color:var(--fg)}
+.cardlinks a .go{display:inline-block; transition:transform .22s var(--ease); color:var(--fg-3)}
+.cardlinks a:hover .go{transform:translate(2px,-2px); color:var(--fg)}
+
+/* ===================== EXPERIENCE ===================== */
+.job{display:grid; grid-template-columns:158px minmax(0,1fr); gap:28px; padding:26px 0; border-top:1px solid var(--line)}
+.job:first-child{border-top:none; padding-top:0}
+.job .when{font-family:var(--mono); font-size:11.5px; letter-spacing:.06em; color:var(--fg-3); padding-top:4px}
+.job h3{font-size:19px; font-weight:600; letter-spacing:-.03em}
+.job .what{margin-top:7px; font-family:var(--mono); font-size:11px; letter-spacing:.09em;
+  text-transform:uppercase; color:var(--accent-fg)}
+.job .ctx{margin-top:11px; font-size:14px; color:var(--fg-3); line-height:1.55; max-width:var(--measure)}
+.job ul{margin-top:14px; display:grid; gap:8px; max-width:var(--measure)}
+.job li{font-size:14.5px; color:var(--fg-2); line-height:1.55; padding-left:17px; position:relative}
+.job li::before{content:""; position:absolute; left:0; top:.72em; width:8px; height:1px; background:var(--line-2)}
+
+/* ===================== QUOTE ===================== */
+blockquote{position:relative; margin:0; padding-left:clamp(34px,4.5vw,62px);
+  font-family:var(--serif); font-size:clamp(21px,2.5vw,30px); font-weight:400; font-style:italic;
+  letter-spacing:-.005em; line-height:1.34; color:var(--fg); max-width:none}
+blockquote::before{content:"\201C"; position:absolute; left:0; top:-.02em;
+  font-family:var(--serif); font-style:normal; font-size:clamp(58px,7vw,96px); line-height:.78; color:var(--line-2)}
+cite{display:block; margin-top:24px; padding-left:clamp(34px,4.5vw,62px); font-style:normal;
+  font-family:var(--mono); font-size:11px; letter-spacing:.12em; text-transform:uppercase; color:var(--fg-3)}
+
+/* ===================== CONTACT ===================== */
+.crow{display:flex; flex-wrap:wrap; align-items:center; gap:14px 28px}
+.crow a{display:inline-flex; align-items:center; gap:10px; padding:4px 0 6px; font-size:15.5px;
+  color:var(--fg-2); transition:color .26s var(--ease)}
+.crow a svg{width:15px; height:15px; flex:none; color:var(--fg-3); transition:color .26s var(--ease)}
+.crow a:hover{color:var(--fg)}
+.crow a:hover svg{color:var(--fg-2)}
+.copybtn{appearance:none; font:inherit; cursor:pointer; display:inline-flex; align-items:center; gap:7px;
+  padding:4px 0 6px; border:none; background:transparent;
+  font-family:var(--mono); font-size:11px; letter-spacing:.08em; text-transform:uppercase; color:var(--fg-3);
+  transition:color .26s var(--ease)}
+.copybtn svg{width:13px; height:13px}
+.copybtn:hover{color:var(--fg-2)}
+.copybtn.done{color:var(--accent)}
+.foot{margin-top:44px; display:flex; flex-wrap:wrap; gap:8px 24px}
+
+/* ===================== DOCK ===================== */
+#dock{position:fixed; right:16px; bottom:calc(16px + env(safe-area-inset-bottom,0px)); z-index:900;
+  display:flex; align-items:stretch; gap:8px}
+#theme{appearance:none; cursor:pointer; background:var(--card); border:1px solid var(--line-2); border-radius:4px;
+  color:var(--fg-3); width:38px; display:grid; place-items:center; box-shadow:0 8px 28px rgba(0,0,0,.28);
+  transition:color .25s var(--ease), border-color .25s var(--ease)}
+#theme svg{width:16px; height:16px}
+#theme:hover{color:var(--accent); border-color:var(--accent)}
+
+/* ===================== RESPONSIVE ===================== */
+@media (max-width:860px){ nav.jump{display:none} }
+@media (max-width:760px){
+  .wrow{grid-template-columns:minmax(0,1fr); gap:14px}
+}
+@media (max-width:620px){
+  .job{grid-template-columns:minmax(0,1fr); gap:10px}
+  .job .when{padding-top:0}
+    .hero h1 .alias{display:block; margin-left:0; vertical-align:0; margin-top:10px; font-size:14px}
+}
+/* ===================== STUDY ROWS ===================== */
+.srow{border-top:1px solid var(--line)}
+.srow:first-child{border-top:none}
+.shead{width:100%; appearance:none; background:transparent; border:none; cursor:pointer; font:inherit; color:inherit;
+  display:grid; grid-template-columns:230px minmax(0,1fr) 84px; gap:clamp(22px,4vw,52px); align-items:start;
+  padding-block:clamp(26px,3.4vw,40px); text-align:left}
+.srow:first-child .shead{padding-top:0}
+@media (max-width:760px){ .shead{grid-template-columns:minmax(0,1fr) 84px; gap:12px}
+  .shead .smeta{grid-column:1 / -1} }
+.smeta .worg{font-size:16px; font-weight:600; letter-spacing:-.02em}
+.smeta .wsub{margin-top:5px; font-family:var(--mono); font-size:11px; letter-spacing:.06em; color:var(--fg-3); line-height:1.5}
+.sbody h3{font-size:clamp(21px,2.6vw,29px); font-weight:600; letter-spacing:-.035em; line-height:1.12; max-width:24ch;
+  transition:color .24s var(--ease)}
+.shead:hover .sbody h3{color:var(--accent-fg)}
+.sbody .wlead{margin-top:14px; font-size:clamp(15.5px,1.5vw,17px); color:var(--fg-2); line-height:1.55; max-width:58ch}
+.skpi{margin-top:18px; display:flex; flex-wrap:wrap; gap:10px 34px}
+.skpi div{min-width:90px}
+.skpi b{display:block; font-family:var(--mono); font-size:17px; font-weight:500; letter-spacing:-.02em; font-variant-numeric:tabular-nums}
+.skpi span{display:block; margin-top:4px; font-size:12px; color:var(--fg-3); line-height:1.4; max-width:22ch}
+.sopen{display:inline-flex; align-items:center; gap:7px; justify-self:end; padding-top:5px; white-space:nowrap;
+  font-family:var(--mono); font-size:11px; letter-spacing:.09em; text-transform:uppercase; color:var(--fg-3);
+  transition:color .24s var(--ease)}
+.sopen .ch{display:inline-block; font-size:10px; transition:transform .32s var(--ease)}
+.shead:hover .sopen{color:var(--fg)}
+.srow.open .sopen{color:var(--fg)}
+.srow.open .sopen .ch{transform:rotate(180deg)}
+.shead:focus-visible{outline:2px solid var(--accent); outline-offset:4px}
+.spanel{display:grid; grid-template-rows:0fr; transition:grid-template-rows .42s var(--ease)}
+.srow.open .spanel{grid-template-rows:1fr}
+.spanel > div{overflow:hidden; min-height:0}
+.sinner{padding-bottom:clamp(30px,3.6vw,46px); display:grid; grid-template-columns:230px minmax(0,1fr);
+  gap:clamp(22px,4vw,52px)}
+@media (max-width:760px){ .sinner{grid-template-columns:minmax(0,1fr); gap:20px} }
+.sinner h4{font-family:var(--mono); font-size:11px; font-weight:500; letter-spacing:.1em; text-transform:uppercase;
+  color:var(--accent-fg); margin:0 0 12px}
+.sblock + .sblock{margin-top:clamp(26px,3vw,38px)}
+.sblock ul{display:grid; gap:14px; max-width:64ch}
+.sblock li{font-size:14.5px; color:var(--fg-2); line-height:1.55}
+.sblock li b{color:var(--fg); font-weight:600}
+.sblock p{font-size:14.5px; color:var(--fg-2); line-height:1.6; max-width:64ch}
+.snote{margin-top:14px; font-size:13px; color:var(--fg-3); line-height:1.55; max-width:64ch}
+
+/* ===================== CHARTS ===================== */
+.chart{display:grid; gap:0; max-width:none}
+.bline{display:grid; grid-template-columns:minmax(92px,150px) minmax(0,1fr) 66px; gap:clamp(10px,2vw,20px);
+  align-items:center; padding-block:10px; border-bottom:1px solid var(--line)}
+.bline:first-child{border-top:1px solid var(--line)}
+.bline .cname{font-size:13.5px; letter-spacing:-.01em}
+.ctrack{position:relative; height:8px; background:var(--card-2)}
+.cfill{position:absolute; inset:0 auto 0 0; background:var(--accent); transform-origin:left center}
+.cfill.dim{left:auto; right:0; background:var(--line-2); transform-origin:right center}
+.cval{font-family:var(--mono); font-size:13px; text-align:right; font-variant-numeric:tabular-nums; color:var(--fg-2)}
+.cval.neg{color:var(--fg-3)}
+.ckey{display:flex; flex-wrap:wrap; gap:16px; margin-top:14px; font-size:12.5px; color:var(--fg-3)}
+.ckey i{display:inline-block; width:16px; height:7px; margin-right:7px; vertical-align:1px}
+.dz{position:relative; height:9px}
+.dz .zl{position:absolute; top:-4px; bottom:-4px; width:1px; background:var(--line-2)}
+.dz span{position:absolute; top:0; height:9px; background:var(--accent)}
+.dz span.m{background:var(--line-2)}
+.lines svg{display:block; width:100%; height:auto; overflow:visible}
+.lines text{font-family:var(--mono); font-size:9.5px; fill:var(--fg-3)}
+
+/* ===================== TABLES ===================== */
+.tw{overflow-x:auto; margin-top:4px}
+table.d{border-collapse:collapse; width:100%; min-width:520px; font-size:13px}
+table.d th,table.d td{text-align:right; padding:9px 10px; border-bottom:1px solid var(--line); white-space:nowrap}
+table.d th:first-child,table.d td:first-child{text-align:left; padding-left:0; white-space:normal}
+table.d th:last-child,table.d td:last-child{padding-right:0}
+table.d thead th{font-family:var(--mono); font-size:10px; letter-spacing:.09em; text-transform:uppercase;
+  color:var(--fg-3); font-weight:400; border-bottom:1px solid var(--line-2); vertical-align:bottom}
+table.d tbody td{font-family:var(--mono); color:var(--fg-2); font-variant-numeric:tabular-nums}
+table.d tbody td:first-child{font-family:var(--sans); color:var(--fg); font-size:13.5px}
+table.d tbody tr:hover td{color:var(--fg)}
+table.d td.mark{color:var(--fg)}
+
+
+/* ===================== TIMELINE ===================== */
+.tl{display:grid; gap:0; max-width:none}
+.tl .ev{display:grid; grid-template-columns:132px minmax(0,1fr); gap:clamp(14px,3vw,34px);
+  padding-block:18px; border-bottom:1px solid var(--line)}
+.tl .ev:first-child{border-top:1px solid var(--line)}
+.tl .when{font-family:var(--mono); font-size:12px; letter-spacing:.04em; color:var(--fg-3); padding-top:2px}
+.tl .what h4{font-size:15px; font-weight:600; letter-spacing:-.02em; margin:0 0 7px}
+.tl .what p{font-size:14.5px; color:var(--fg-2); line-height:1.58; max-width:66ch}
+.tl .what p + p{margin-top:8px}
+.tl .ev.now .when{color:var(--fg)}
+@media (max-width:620px){ .tl .ev{grid-template-columns:minmax(0,1fr); gap:6px} }
+
+/* ===================== FILE LIST ===================== */
+.files{display:grid}
+.frow{display:grid; grid-template-columns:minmax(0,1fr) auto; gap:18px; align-items:baseline;
+  padding-block:11px; border-bottom:1px solid var(--line)}
+.frow:first-child{border-top:1px solid var(--line)}
+.frow .fn{font-family:var(--mono); font-size:13px; color:var(--fg-2); transition:color .22s var(--ease)}
+.frow:hover .fn{color:var(--fg)}
+.frow .fd{font-size:12.5px; color:var(--fg-3); text-align:right}
+.sblock .files{max-width:none}
+@media (max-width:620px){ .frow{grid-template-columns:minmax(0,1fr); gap:3px} .frow .fd{text-align:left} }
+
+/* ===================== SERIES COLOURS ===================== */
+:root{
+  --c1:#C9A16A; --c2:#7FB9AC; --c3:#8AA9E0; --c4:#D7908F;
+  --c5:#9AC07C; --c6:#B694DC; --c7:#6FC2D6; --c8:#C98BB4;
+}
+:root[data-theme="light"]{
+  --c1:#8A5E27; --c2:#2C7367; --c3:#3B5CA8; --c4:#A8514F;
+  --c5:#4B7A2F; --c6:#6B48A0; --c7:#1F6F84; --c8:#9C4A78;
+}
+@media (prefers-color-scheme: light){
+  :root:not([data-theme="dark"]){
+    --c1:#8A5E27; --c2:#2C7367; --c3:#3B5CA8; --c4:#A8514F;
+    --c5:#4B7A2F; --c6:#6B48A0; --c7:#1F6F84; --c8:#9C4A78;
+  }
+}
+.slegend{display:flex; flex-wrap:wrap; gap:9px 22px; margin-top:16px; font-size:12.5px; color:var(--fg-2)}
+.slegend i{display:inline-block; width:15px; height:2px; margin-right:8px; vertical-align:4px}
+
+</style>
+
+
+<div id="grain" aria-hidden="true"></div>
+<canvas id="dust" aria-hidden="true"></canvas>
+<div id="scrollpos" aria-hidden="true"></div>
+
+<header class="bar">
+  <div class="bar-in">
+    <a class="mark" href="#top">Illia Sharan <span>/ Wandor</span></a>
+    <nav class="jump" aria-label="Sections">
+      <a href="#studies">Studies</a>
+      <a href="#timeline">Timeline</a>
+      <a href="#method">Method</a>
+      <a href="#contact">Contact</a>
+    </nav>
+    <p class="status"><i aria-hidden="true"></i> Open to research roles</p>
+  </div>
+</header>
+
+<main>
+  <section class="sec hero" id="top">
+    <p class="eyebrow">Research portfolio</p>
+    <h1>Illia Sharan <span class="alias">Wandor</span></h1>
+    <p class="role">Independent onchain researcher</p>
+    <p class="where">DeFi lending, exchanges and yield bearing stablecoins &middot; Rzesz&oacute;w, Poland &middot; CET / CEST &middot; remote<br>Every study, table and chart in English</p>
+    <p class="intro">I collect the data myself, recompute the result several ways before I believe it, and put the limitations in the same document as the findings. Five studies so far, each asking one question of a different market: which part of the advertised yield is paid by real demand, and which part is printed.</p>
+
+    <div class="nums">
+      <div class="num"><b>5</b><span>studies published, all done solo</span></div>
+      <div class="num"><b>737</b><span>pools and vaults collected and verified</span></div>
+      <div class="num"><b>220,000</b><span>pool days behind the published numbers</span></div>
+      <div class="num"><b>$175M</b><span>of token subsidies priced in dollars</span></div>
+    </div>
+
+    <dl class="facts">
+      <div class="fact"><dt>Email</dt><dd><a href="mailto:sukagedown@gmail.com">sukagedown@gmail.com</a></dd></div>
+      <div class="fact"><dt>Telegram</dt><dd><a href="https://t.me/erentor" target="_blank" rel="noopener">@erentor</a></dd></div>
+      <div class="fact"><dt>X</dt><dd><a href="https://x.com/saihoelse" target="_blank" rel="noopener">@saihoelse</a></dd></div>
+      <div class="fact"><dt>Repository</dt><dd><a href="https://github.com/Wandory/research" target="_blank" rel="noopener">github.com/Wandory/research<span class="sub">PDFs and every table</span></a></dd></div>
+    </dl>
+  </section>
+
+  <section class="sec" id="studies">
+    <div class="sec-head r">
+      <h2>The five studies</h2>
+      <p>Click any study to open it: findings, the tables behind them, the parts that are not obvious from the summary, and every file it produced.</p>
+    </div>
+
+    <div class="worklist r">
+
+      <!-- ===== 01 LENDING ===== -->
+      <article class="srow" id="s1">
+        <button class="shead" aria-expanded="false" aria-controls="p1">
+          <div class="smeta">
+            <p class="worg">Lending</p>
+            <p class="wsub">8 protocols &middot; 478 pools</p>
+            <p class="wsub">Jan 2024 &rarr; Aug 2026</p>
+            <p class="wsub dim">Published Sep 2026</p>
+          </div>
+          <div class="sbody">
+            <h3>Organic yield against token subsidies</h3>
+            <p class="wlead">Which lending protocols pay their depositors out of real borrowing demand, and which print the difference in their own token.</p>
+            <div class="skpi">
+              <div><b>$73M</b><span>subsidies priced against $288M of revenue</span></div>
+              <div><b>147k</b><span>pool days collected</span></div>
+              <div><b>13</b><span>metrics closed out of the brief</span></div>
+            </div>
+          </div>
+          <span class="sopen"><span class="lbl">Open</span><span class="ch" aria-hidden="true">&#9662;</span></span>
+        </button>
+        <div class="spanel" id="p1" role="region"><div><div class="sinner">
+          <div></div>
+          <div>
+            <div class="sblock">
+              <h4>What it found</h4>
+              <ul>
+                <li><b>Four protocols out of eight pay out more than they earn.</b> Morpho handed out $30.6M with zero revenue, Fluid $21.8M against $12.9M, Euler $6.6M against $4.7M.</li>
+                <li><b>The split between real and printed yield runs from 1.00 to 0.45.</b> SparkLend never paid a single day of rewards; Euler v2 prints more than half of what it shows.</li>
+                <li><b>Rewards buy nothing in lending.</b> A difference in differences study on 91 reward switches: turning rewards on produced zero excess TVL growth against the protocol's own trend.</li>
+                <li><b>The headline rate decays with the horizon.</b> Over 30 days the advertised APY is honest everywhere; over 365 days the median depositor got 0.64 of it at Moonwell.</li>
+              </ul>
+            </div>
+            <div class="sblock">
+              <h4>Share of yield paid by borrowers</h4>
+              <div class="chart" data-chart="lending"></div>
+              <div class="ckey"><span><i style="background:var(--accent)"></i>interest from borrowers</span><span><i style="background:var(--line-2)"></i>printed in the protocol's own token</span></div>
+            </div>
+            <div class="sblock">
+              <h4>What the subsidy cost</h4>
+              <div class="tw"><table class="d" data-table="lending"></table></div>
+              <p class="snote">Dependency is subsidies divided by protocol revenue. Net margin is revenue minus subsidies over average supply, annualised.</p>
+            </div>
+            <div class="sblock">
+              <h4>Not obvious from the summary</h4>
+              <ul>
+                <li><b>One inclusion rule decides the whole result.</b> Counting every pool day gives Compound v3 a 9.4% coverage figure, because collateral pools pay no interest at all. The rule that fixes it turned out to be written in the protocol's own documentation.</li>
+                <li><b>The first version of this study was wrong, and the report says so.</b> It mixed parent and child protocol slugs, which moves Spark's fees by 49%, and it mixed two revenue definitions, which made Venus look like a 0.84% take rate instead of 17.8%.</li>
+                <li><b>Euler v2 gets no conclusion.</b> Its rank moves six places out of eight depending on the weighting, so the report states that no conclusion is available rather than picking the flattering angle.</li>
+              </ul>
+            </div>
+            <div class="sblock"><h4>Files</h4><div class="files">
+<a class="frow" href="lending-live.html" target="_blank" rel="noopener"><span class="fn">Live panel</span><span class="fd">The same metric recomputed on today's pools, in the browser</span></a>
+<a class="frow" href="organic-vs-subsidies-2026-09.pdf" target="_blank" rel="noopener"><span class="fn">organic-vs-subsidies-2026-09.pdf</span><span class="fd">The full study, formatted for print and for sending on</span></a>
+<a class="frow" href="studies/organic-vs-subsidies.html" target="_blank" rel="noopener"><span class="fn">Read in the browser</span><span class="fd">The same 13 sections as a web page</span></a>
+<a class="frow" href="data/incentives_month.csv" target="_blank" rel="noopener"><span class="fn">incentives_month.csv</span><span class="fd">Monthly reward rate and the subsidy in dollars, per protocol</span></a>
+<a class="frow" href="data/protocol_month.csv" target="_blank" rel="noopener"><span class="fn">protocol_month.csv</span><span class="fd">Daily supply and borrow aggregated to months, 8 protocols</span></a>
+<a class="frow" href="data/fees_month.csv" target="_blank" rel="noopener"><span class="fn">fees_month.csv</span><span class="fd">Five revenue series on one matched scope</span></a>
+<a class="frow" href="data/full_month.csv" target="_blank" rel="noopener"><span class="fn">full_month.csv</span><span class="fd">The merged panel every ratio in the study is computed from</span></a>
+<a class="frow" href="data/claimed_vs_realized.csv" target="_blank" rel="noopener"><span class="fn">claimed_vs_realized.csv</span><span class="fd">Shown rate against received rate, four horizons</span></a>
+<a class="frow" href="data/event_study_summary.csv" target="_blank" rel="noopener"><span class="fn">event_study_summary.csv</span><span class="fd">91 reward switches with the protocol trend netted out</span></a>
+<a class="frow" href="data/util_decomposition.csv" target="_blank" rel="noopener"><span class="fn">util_decomposition.csv</span><span class="fd">Monthly utilisation change split into borrow and supply</span></a>
+<a class="frow" href="data/organic_share_angles.csv" target="_blank" rel="noopener"><span class="fn">organic_share_angles.csv</span><span class="fd">The headline metric recomputed eight ways</span></a>
+<a class="frow" href="data/organic_check.csv" target="_blank" rel="noopener"><span class="fn">organic_check.csv</span><span class="fd">Second collection a day later, against the first</span></a>
+</div></div></div>
+          </div>
+        </div></div></div>
+      </article>
+
+      <!-- ===== 02 MORPHO ===== -->
+      <article class="srow" id="s2">
+        <button class="shead" aria-expanded="false" aria-controls="p2">
+          <div class="smeta">
+            <p class="worg">Morpho Blue</p>
+            <p class="wsub">78 vaults &middot; 12 curators</p>
+            <p class="wsub">Snapshot plus one year of history</p>
+            <p class="wsub dim">Published Sep 2026</p>
+          </div>
+          <div class="sbody">
+            <h3>Who runs your money in Morpho</h3>
+            <p class="wlead">In Aave the protocol sets the risk. In Morpho outside curators do, and the depositor sees only a rate.</p>
+            <div class="skpi">
+              <div><b>$2.0B</b><span>vault assets in the sample</span></div>
+              <div><b>84%</b><span>held by three curators</span></div>
+              <div><b>$473M</b><span>in vaults whose rate cannot be read</span></div>
+            </div>
+          </div>
+          <span class="sopen"><span class="lbl">Open</span><span class="ch" aria-hidden="true">&#9662;</span></span>
+        </button>
+        <div class="spanel" id="p2" role="region"><div><div class="sinner">
+          <div></div>
+          <div>
+            <div class="sblock">
+              <h4>What it found</h4>
+              <ul>
+                <li><b>The rate is commoditised.</b> Median 3.40% a year across the thirty largest vaults, with a typical band of 1.08 points. Choosing a curator barely moves what you earn.</li>
+                <li><b>The fee does not track the result.</b> Curators charge from 0% to 25% of the yield for rates that sit within one point of each other.</li>
+                <li><b>Risk is where they differ.</b> Some vaults sit entirely in blue chip collateral, others hold none of it at the same rate.</li>
+                <li><b>Depositors move in herds.</b> Sixteen of the twenty six vaults with a full year of history lost more than 30% of their assets, while one grew from $13M to $419M.</li>
+              </ul>
+            </div>
+            <div class="sblock">
+              <h4>Share of curated assets</h4>
+              <div class="chart" data-chart="morpho"></div>
+            </div>
+            <div class="sblock">
+              <h4>Rate, fee and collateral by curator</h4>
+              <div class="tw"><table class="d" data-table="morpho"></table></div>
+              <p class="snote">Blue chip means ETH, BTC and their liquid derivatives plus the major stablecoins. Everything weighted by assets.</p>
+            </div>
+            <div class="sblock">
+              <h4>Not obvious from the summary</h4>
+              <ul>
+                <li><b>Six vaults holding $473M report impossible rates,</b> up to 297,995% a year, with no listed curator. Two of them are named Not Gauntlet and Duplicated Key. The vault namespace is not moderated, and the interface shows a name and a number.</li>
+                <li><b>The data comes from Morpho's own API,</b> not from an aggregator, so the protocol itself splits the rate into total and excluding rewards. That makes the reward share a protocol fact rather than an estimate.</li>
+                <li><b>Spikes exist but cannot be caught.</b> Thirty vaults produced 238 days with a rate above 20% a year, and they last hours, at the moment utilisation hits the ceiling.</li>
+              </ul>
+            </div>
+            <div class="sblock"><h4>Files</h4><div class="files">
+<a class="frow" href="morpho-live.html" target="_blank" rel="noopener"><span class="fn">Live panel</span><span class="fd">Curator concentration, fees and collateral read live from the Morpho API</span></a>
+<a class="frow" href="morpho-curators-2026-09.pdf" target="_blank" rel="noopener"><span class="fn">morpho-curators-2026-09.pdf</span><span class="fd">The full study, formatted for print and for sending on</span></a>
+<a class="frow" href="studies/morpho-curators.html" target="_blank" rel="noopener"><span class="fn">Read in the browser</span><span class="fd">The same 10 sections as a web page</span></a>
+<a class="frow" href="data/morpho_vaults.csv" target="_blank" rel="noopener"><span class="fn">morpho_vaults.csv</span><span class="fd">78 vaults: curator, fee, collateral mix, LLTV, utilisation</span></a>
+<a class="frow" href="data/morpho_curators.csv" target="_blank" rel="noopener"><span class="fn">morpho_curators.csv</span><span class="fd">The same aggregated by curator</span></a>
+<a class="frow" href="data/morpho_vault_history.csv" target="_blank" rel="noopener"><span class="fn">morpho_vault_history.csv</span><span class="fd">A year of daily rate and assets, thirty largest vaults</span></a>
+<a class="frow" href="data/morpho_curator_history.csv" target="_blank" rel="noopener"><span class="fn">morpho_curator_history.csv</span><span class="fd">The same aggregated by curator</span></a>
+<a class="frow" href="data/morpho_unreadable_vaults.csv" target="_blank" rel="noopener"><span class="fn">morpho_unreadable_vaults.csv</span><span class="fd">The six vaults excluded, with their reported rates</span></a>
+</div></div></div>
+          </div>
+        </div></div></div>
+      </article>
+
+      <!-- ===== 03 DEX ===== -->
+      <article class="srow" id="s3">
+        <button class="shead" aria-expanded="false" aria-controls="p3">
+          <div class="smeta">
+            <p class="worg">Exchanges</p>
+            <p class="wsub">7 venues &middot; 143 pools</p>
+            <p class="wsub">Jan 2024 &rarr; Sep 2026</p>
+            <p class="wsub dim">Published Sep 2026</p>
+          </div>
+          <div class="sbody">
+            <h3>Mercenary liquidity</h3>
+            <p class="wlead">The lending study found that rewards buy nothing. The same method applied to exchanges finds the opposite, which is the point: the method holds, the market does not.</p>
+            <div class="skpi">
+              <div><b>$96.7M</b><span>of emissions priced</span></div>
+              <div><b>+39.5%</b><span>excess TVL 90 days after rewards start</span></div>
+              <div><b>0.10</b><span>lowest share of self earned yield</span></div>
+            </div>
+          </div>
+          <span class="sopen"><span class="lbl">Open</span><span class="ch" aria-hidden="true">&#9662;</span></span>
+        </button>
+        <div class="spanel" id="p3" role="region"><div><div class="sinner">
+          <div></div>
+          <div>
+            <div class="sblock">
+              <h4>What it found</h4>
+              <ul>
+                <li><b>Two models on one market.</b> Uniswap v3 and v4 hold liquidity with no emissions at all. Aerodrome v1 prints nine tenths of what its LPs earn.</li>
+                <li><b>Here the money works.</b> Median excess TVL 90 days after rewards are switched on is +39.5%, against zero in lending.</li>
+                <li><b>And it leaves.</b> Switching rewards off costs Aerodrome a median 10.2% of pool TVL against its own venue trend, negative in 70% of cases.</li>
+                <li><b>Exchanges spend more than lenders, over a shorter window.</b> $96.7M across 143 pools against $73M across 478 lending pools over a longer period.</li>
+              </ul>
+            </div>
+            <div class="sblock">
+              <h4>Share of yield earned from trading fees</h4>
+              <div class="chart" data-chart="dex"></div>
+              <div class="ckey"><span><i style="background:var(--accent)"></i>trading fees</span><span><i style="background:var(--line-2)"></i>token emissions</span></div>
+            </div>
+            <div class="sblock">
+              <h4>What happens around a reward switch</h4>
+              <div class="tw"><table class="d" data-table="dex"></table></div>
+              <p class="snote">Excess is the change in pool TVL minus the change of the whole venue over the same days. The last two rows are the lending result, for comparison.</p>
+            </div>
+            <div class="sblock">
+              <h4>Not obvious from the summary</h4>
+              <ul>
+                <li><b>Curve moves the other way and the data explains why.</b> After a switch off its pools grew faster than the venue, because a Curve reward rarely disappears, it falls from 2.3% to 0.4% and the pool stays inside the emission vote.</li>
+                <li><b>The advertised yield here excludes impermanent loss.</b> The study measures the composition of the shown rate, not what the liquidity provider ended up with, and says so in the limitations rather than in a footnote.</li>
+                <li><b>Emission is counter cyclical.</b> At Aerodrome the fee share of yield fell from 0.76 to 0.31 in five months while the reward rate climbed to 104% a year. They pay more exactly when trading pays less.</li>
+              </ul>
+            </div>
+            <div class="sblock"><h4>Files</h4><div class="files">
+<a class="frow" href="dex-live.html" target="_blank" rel="noopener"><span class="fn">Live panel</span><span class="fd">Fee share against emissions recomputed on today’s pools</span></a>
+<a class="frow" href="dex-mercenary-liquidity-2026-09.pdf" target="_blank" rel="noopener"><span class="fn">dex-mercenary-liquidity-2026-09.pdf</span><span class="fd">The full study, formatted for print and for sending on</span></a>
+<a class="frow" href="studies/dex-mercenary-liquidity.html" target="_blank" rel="noopener"><span class="fn">Read in the browser</span><span class="fd">The same 7 sections as a web page</span></a>
+<a class="frow" href="data/dex_stable_monthly.csv" target="_blank" rel="noopener"><span class="fn">dex_stable_monthly.csv</span><span class="fd">Monthly panel, seven venues and eight issuers</span></a>
+<a class="frow" href="data/dex_stable_totals.csv" target="_blank" rel="noopener"><span class="fn">dex_stable_totals.csv</span><span class="fd">Per venue totals: pools, TVL, emissions, rate split</span></a>
+<a class="frow" href="data/dex_events_did.csv" target="_blank" rel="noopener"><span class="fn">dex_events_did.csv</span><span class="fd">60 reward switches with the venue trend netted out</span></a>
+</div></div></div>
+          </div>
+        </div></div></div>
+      </article>
+
+      <!-- ===== 04 STABLES ===== -->
+      <article class="srow" id="s4">
+        <button class="shead" aria-expanded="false" aria-controls="p4">
+          <div class="smeta">
+            <p class="worg">Stablecoins</p>
+            <p class="wsub">8 issuers &middot; $9.6B</p>
+            <p class="wsub">Jan 2024 &rarr; Sep 2026</p>
+            <p class="wsub dim">Published Sep 2026</p>
+          </div>
+          <div class="sbody">
+            <h3>The rate that does not hold</h3>
+            <p class="wlead">A yield bearing stablecoin is sold as one number. Behind it sits a treasury coupon, a funding rate or a token giveaway, and the interface shows them the same way.</p>
+            <div class="skpi">
+              <div><b>0.81</b><span>of the shown rate, received over a year at Ethena</span></div>
+              <div><b>37 &rarr; 4.8</b><span>per cent, Ethena's rate over two years</span></div>
+              <div><b>9%</b><span>of Ondo's monthly windows missed the shown rate</span></div>
+            </div>
+          </div>
+          <span class="sopen"><span class="lbl">Open</span><span class="ch" aria-hidden="true">&#9662;</span></span>
+        </button>
+        <div class="spanel" id="p4" role="region"><div><div class="sinner">
+          <div></div>
+          <div>
+            <div class="sblock">
+              <h4>What it found</h4>
+              <ul>
+                <li><b>Honest for a month, not for a year.</b> Over 30 days every issuer delivers what it shows. Over 365 days the median holder got 0.81 of it at Ethena and 0.88 at Sky.</li>
+                <li><b>The mechanism is visible in the shape of the curve.</b> Treasuries draw a flat line, a funding rate draws the market cycle, a governance decision draws steps.</li>
+                <li><b>Money follows the rate down.</b> Ethena went from $5.9B to $1.35B as its rate fell from above 7% to 4%.</li>
+                <li><b>A high opening rate is an invitation, not a level.</b> Midas opened at 10.4% and sits at 5.0%, Falcon at 7.9% and sits at 3.7%.</li>
+              </ul>
+            </div>
+            <div class="sblock">
+              <h4>Rate by month, per cent a year</h4>
+              <div class="lines" data-chart="stable"></div>
+            </div>
+            <div class="sblock">
+              <h4>Received divided by shown</h4>
+              <div class="tw"><table class="d" data-table="stable"></table></div>
+              <p class="snote">Only windows where the rate on entry was at least 3% a year. A dash means fewer than thirty windows, so the cell is not computed.</p>
+            </div>
+            <div class="sblock">
+              <h4>Not obvious from the summary</h4>
+              <ul>
+                <li><b>Predictability is the product.</b> Ondo pays the least of the eight and misses its own shown rate in only 9% of monthly windows. Everyone else misses in 30 to 45%.</li>
+                <li><b>One issuer prints most of its yield.</b> Usual USD0 showed 14.7% of its own rate against 97.6% in token rewards at the peak, so 87% of the number on the screen was printed.</li>
+                <li><b>The same decay appears in lending.</b> Two different markets, one method, and the same answer: the shown rate describes a month and not a year.</li>
+              </ul>
+            </div>
+            <div class="sblock"><h4>Files</h4><div class="files">
+<a class="frow" href="stable-live.html" target="_blank" rel="noopener"><span class="fn">Live panel</span><span class="fd">Advertised rates read live, against what holders realised</span></a>
+<a class="frow" href="stablecoin-yield-2026-09.pdf" target="_blank" rel="noopener"><span class="fn">stablecoin-yield-2026-09.pdf</span><span class="fd">The full study, formatted for print and for sending on</span></a>
+<a class="frow" href="studies/stablecoin-yield.html" target="_blank" rel="noopener"><span class="fn">Read in the browser</span><span class="fd">The same 7 sections as a web page</span></a>
+<a class="frow" href="data/dex_stable_monthly.csv" target="_blank" rel="noopener"><span class="fn">dex_stable_monthly.csv</span><span class="fd">Monthly rate and size per issuer</span></a>
+<a class="frow" href="data/dex_stable_claimed_realized.csv" target="_blank" rel="noopener"><span class="fn">dex_stable_claimed_realized.csv</span><span class="fd">Shown against received, four horizons</span></a>
+<a class="frow" href="data/dex_stable_totals.csv" target="_blank" rel="noopener"><span class="fn">dex_stable_totals.csv</span><span class="fd">Per issuer totals over the whole period</span></a>
+</div></div></div>
+          </div>
+        </div></div></div>
+      </article>
+
+      <!-- ===== 05 ALTIUS ===== -->
+      <article class="srow" id="s5">
+        <button class="shead" aria-expanded="false" aria-controls="p5">
+          <div class="smeta">
+            <p class="worg">Altius</p>
+            <p class="wsub">Protocol research &middot; 41 pages</p>
+            <p class="wsub">Sep 2025</p>
+            <p class="wsub dim">Written for the protocol</p>
+          </div>
+          <div class="sbody">
+            <h3>Execution as a market</h3>
+            <p class="wlead">Can modular blockchain execution become a competitive market for compute, and what exactly would be traded on it?</p>
+            <div class="skpi">
+              <div><b>41</b><span>pages, written solo</span></div>
+              <div><b>4</b><span>pricing models compared</span></div>
+              <div><b>4</b><span>failure modes worked through</span></div>
+            </div>
+          </div>
+          <span class="sopen"><span class="lbl">Open</span><span class="ch" aria-hidden="true">&#9662;</span></span>
+        </button>
+        <div class="spanel" id="p5" role="region"><div><div class="sinner">
+          <div></div>
+          <div>
+            <div class="sblock">
+              <h4>What it covers</h4>
+              <ul>
+                <li><b>The traded unit.</b> What is actually being sold once execution is unbundled from settlement, and what a buyer can enforce.</li>
+                <li><b>Pricing.</b> The unit priced under several models and compared against existing markets for compute.</li>
+                <li><b>Failure modes.</b> Verification cost, latency, MEV capture and operator concentration, each with the condition that breaks the market.</li>
+              </ul>
+            </div>
+            <div class="sblock">
+              <p>Written as a contribution to the protocol rather than as marketing, which is why it spends as much space on what would go wrong as on the design itself.</p>
+              <h4 style="margin-top:26px">Files</h4><div class="files">
+<a class="frow" href="altius-execution-marketplace-research.pdf" target="_blank" rel="noopener"><span class="fn">altius-execution-marketplace-research.pdf</span><span class="fd">The full 41 page study as a PDF</span></a>
+<a class="frow" href="https://github.com/Wandory/research" target="_blank" rel="noopener"><span class="fn">github.com/Wandory/research</span><span class="fd">Repository with every study and every table</span></a>
+</div>
+            </div>
+          </div>
+        </div></div></div>
+      </article>
+
+    </div>
+  </section>
+
+  <div class="band">
+  <section class="sec" id="timeline">
+    <div class="sec-head r">
+      <h2>How this came about</h2>
+      <p>The dates on the studies are close together. This is why.</p>
+    </div>
+    <div class="tl r">
+      <div class="ev">
+        <span class="when">July 2026</span>
+        <div class="what">
+          <h4>Started, and stopped</h4>
+          <p>Began a study of lending protocol economics and ran into two problems I could not get past. Historical borrowing looked unavailable from the open APIs, and there appeared to be no way to price what a protocol had actually handed out in rewards. Both were written up as blockers and the project was left alone.</p>
+        </div>
+      </div>
+      <div class="ev">
+        <span class="when">September 2026</span>
+        <div class="what">
+          <h4>Both blockers turned out to be solvable</h4>
+          <p>Historical borrowing is in the protocol endpoint the whole time, as a daily series under <span class="mono">chainTvls.borrowed</span>. Rewards can be priced by taking the published reward rate against pool size on each day and summing. Neither needs a paid data source.</p>
+          <p>With the method unblocked, the same panel construction applies to any market that publishes a rate, which is why four studies followed in one week rather than one in four months.</p>
+        </div>
+      </div>
+      <div class="ev">
+        <span class="when">16 to 17 Sep</span>
+        <div class="what">
+          <h4>Data collected</h4>
+          <p>737 pools and vaults, 220,000 pool days, four markets. Every intermediate table saved, so every figure rebuilds without touching the network again. The collection date is on every study because it is part of the method: a reader checking these numbers needs to know which day the snapshot is from.</p>
+        </div>
+      </div>
+      <div class="ev">
+        <span class="when">18 Sep</span>
+        <div class="what">
+          <h4>Two errors found and printed</h4>
+          <p>An audit for implausible values, rather than for internal agreement, caught an emissions total that exceeded the sum of its own monthly rows by $50.3M, and six vaults quoting rates near 298,000% a year that turned out to be an artefact of their share price. The first changed a headline figure and a ranking. Both corrections are printed in the documents rather than applied quietly.</p>
+        </div>
+      </div>
+      <div class="ev now">
+        <span class="when">Continuing</span>
+        <div class="what">
+          <h4>The panels keep running</h4>
+          <p>Each study has a live panel that recomputes its headline metric on current data and sets it against the published baseline, so the work shows its own age. Aave has already moved from 0.94 to 0.84 since publication.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="sec" id="method">
+    <div class="sec-head r">
+      <h2>How the work is done</h2>
+      <p>The same three rules in every study, which is why they can be read together.</p>
+    </div>
+    <div class="cols r">
+      <div class="col">
+        <h4>Collection</h4>
+        <p>Protocol APIs first, aggregators second. Daily series pulled pool by pool with retry and backoff, a documented failure rate, and every intermediate table saved so the result can be rebuilt without touching the network again.</p>
+      </div>
+      <div class="col">
+        <h4>Verification</h4>
+        <p>Nothing is published on one calculation. Weightings swapped, medians against means, small and young units excluded, years split, and in the lending study the whole panel collected a second time a day later to see whether the answer moved.</p>
+      </div>
+      <div class="col">
+        <h4>Honesty</h4>
+        <p>Missing stays missing, never zero. Limitations sit in the same document as the findings, before the conclusions. When a result of mine broke a rule of the project, it came out of the report, and the report says which result and why.</p>
+      </div>
+    </div>
+  </section>
+  </div>
+
+  <section class="sec" id="contact">
+    <div class="sec-head r"><h2>Contact</h2><p>Send the question, I will send back how I would answer it with data.</p></div>
+    <div class="crow r">
+      <a href="mailto:sukagedown@gmail.com">sukagedown@gmail.com</a>
+      <button class="copybtn" data-copy="sukagedown@gmail.com"><span>Copy</span></button>
+      <a href="https://t.me/erentor" target="_blank" rel="noopener">@erentor</a>
+      <a href="https://x.com/saihoelse" target="_blank" rel="noopener">@saihoelse</a>
+      <a href="https://github.com/Wandory/research" target="_blank" rel="noopener">github.com/Wandory/research</a>
+    </div>
+    <div class="foot">
+      <p class="wsub">Illia Sharan &middot; Wandor &middot; Rzesz&oacute;w, Poland</p>
+      <p class="wsub">Updated September 2026</p>
+    </div>
+  </section>
+</main>
+
+<div id="dock">
+  <button id="theme" type="button" aria-label="Switch theme">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
+  </button>
+</div>
+
+<script>
+(function(){
+  var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  document.documentElement.classList.add('js');
+
+  /* reveal */
+  var items = [].slice.call(document.querySelectorAll('.r'));
+  function showAll(){ items.forEach(function(el){ el.classList.add('on'); }); }
+  if(reduce || !('IntersectionObserver' in window)) showAll();
+  else{
+    var io = new IntersectionObserver(function(es){
+      es.forEach(function(e){ if(e.isIntersecting){ e.target.classList.add('on'); io.unobserve(e.target); } });
+    }, {rootMargin:'0px 0px -6% 0px', threshold:.06});
+    items.forEach(function(el){ io.observe(el); });
+    setTimeout(showAll, 2400);
+  }
+
+  /* static grain, drawn once */
+  (function(){
+    var n=180, c=document.createElement('canvas'); c.width=n; c.height=n;
+    var x=c.getContext('2d'), d=x.createImageData(n,n), a=d.data;
+    for(var i=0;i<a.length;i+=4){
+      var v=(Math.random()*255)|0;
+      a[i]=a[i+1]=a[i+2]=v; a[i+3]=Math.random()*255;
+    }
+    x.putImageData(d,0,0);
+    document.getElementById('grain').style.backgroundImage='url('+c.toDataURL()+')';
+  })();
+
+  /* slow drifting dust */
+  (function(){
+    if(reduce) return;
+    var cv=document.getElementById('dust'), ctx=cv.getContext('2d');
+    var W=0,H=0,dpr=1,P=[];
+    var col='#FFFFFF';
+    window.__dustColor=function(){};
+    function hexA(hex,a){
+      hex=String(hex).replace('#','');
+      if(hex.length===3) hex=hex[0]+hex[0]+hex[1]+hex[1]+hex[2]+hex[2];
+      var v=parseInt(hex.slice(0,6),16); if(isNaN(v)) v=0xEFEFED;
+      return 'rgba('+((v>>16)&255)+','+((v>>8)&255)+','+(v&255)+','+a+')';
+    }
+    function resize(){
+      dpr=Math.min(window.devicePixelRatio||1,2);
+      W=window.innerWidth; H=window.innerHeight;
+      cv.width=W*dpr; cv.height=H*dpr; ctx.setTransform(dpr,0,0,dpr,0,0);
+      var count=Math.round(Math.min(70, Math.max(26, W*H/26000)));
+      P=[];
+      for(var i=0;i<count;i++) P.push({
+        x:Math.random()*W, y:Math.random()*H,
+        r:0.5+Math.random()*1.3, sp:0.06+Math.random()*0.16,
+        ph:Math.random()*Math.PI*2, am:6+Math.random()*16,
+        a:0.05+Math.random()*0.14
+      });
+    }
+    resize(); window.addEventListener('resize',resize);
+    var sy=0;
+    window.addEventListener('scroll',function(){ sy=window.scrollY; },{passive:true});
+    (function loop(t){
+      ctx.clearRect(0,0,W,H);
+      for(var i=0;i<P.length;i++){
+        var q=P[i];
+        q.y+=q.sp;
+        if(q.y>H+8){ q.y=-8; q.x=Math.random()*W; }
+        var px=q.x+Math.sin(t*0.00016+q.ph)*q.am;
+        var py=q.y-(sy*0.05)%(H+16);
+        if(py<-8) py+=H+16;
+        ctx.beginPath(); ctx.arc(px,py,q.r,0,6.2832);
+        ctx.fillStyle=hexA(col,q.a); ctx.fill();
+      }
+      requestAnimationFrame(loop);
+    })(0);
+  })();
+
+  /* number count-up, once */
+  (function(){
+    var fmt=new Intl.NumberFormat('en-US');
+    var els=[].slice.call(document.querySelectorAll('.num b'));
+    els.forEach(function(el){
+      var raw=el.textContent.trim();
+      var m=raw.match(/^([^0-9]*)([0-9][0-9,\s]*)(.*)$/);
+      if(!m) return;
+      var target=parseInt(m[2].replace(/[^0-9]/g,''),10);
+      if(!isFinite(target)) return;
+      el.dataset.pre=m[1]; el.dataset.post=m[3]; el.dataset.to=target;
+    });
+    function run(el){
+      var to=+el.dataset.to, pre=el.dataset.pre||'', post=el.dataset.post||'', t0=null, dur=900;
+      function step(t){
+        if(!t0) t0=t;
+        var k=Math.min(1,(t-t0)/dur), e=1-Math.pow(1-k,3);
+        el.textContent=pre+fmt.format(Math.round(to*e))+post;
+        if(k<1) requestAnimationFrame(step);
+      }
+      requestAnimationFrame(step);
+    }
+    var targets=els.filter(function(el){ return el.dataset.to; });
+    if(reduce || !('IntersectionObserver' in window)) return;
+    var io2=new IntersectionObserver(function(es){
+      es.forEach(function(e){ if(e.isIntersecting){ run(e.target); io2.unobserve(e.target); } });
+    },{threshold:.4});
+    targets.forEach(function(el){ io2.observe(el); });
+  })();
+
+  /* scroll position, printed as instrumentation */
+  (function(){
+    var out=document.getElementById('scrollpos');
+    var ss=[].slice.call(document.querySelectorAll('main section.sec'));
+    var total=ss.length, tick=false;
+    function upd(){
+      var h=document.documentElement.scrollHeight-window.innerHeight;
+      var pct=h>0?Math.round(Math.min(100,Math.max(0,window.scrollY/h*100))):0;
+      var idx=1, mid=window.scrollY+window.innerHeight*0.35;
+      for(var i=0;i<total;i++){ if(ss[i].offsetTop<=mid) idx=i+1; }
+      out.textContent=String(idx).padStart(2,'0')+' / '+String(total).padStart(2,'0')+'  \u00b7  '+pct+'%';
+      tick=false;
+    }
+    window.addEventListener('scroll',function(){ if(!tick){ tick=true; requestAnimationFrame(upd); } },{passive:true});
+    window.addEventListener('resize',upd); upd();
+  })();
+
+  /* scroll spy */
+  var links = [].slice.call(document.querySelectorAll('nav.jump a'));
+  var secs = links.map(function(a){ return document.querySelector(a.getAttribute('href')); }).filter(Boolean);
+  if('IntersectionObserver' in window && secs.length){
+    var spy = new IntersectionObserver(function(es){
+      es.forEach(function(e){
+        if(e.isIntersecting){
+          links.forEach(function(a){ a.classList.toggle('active', a.getAttribute('href') === '#'+e.target.id); });
+        }
+      });
+    }, {rootMargin:'-30% 0px -60% 0px', threshold:0});
+    secs.forEach(function(s){ spy.observe(s); });
+  }
+
+  /* theme */
+  var root = document.documentElement, tbtn = document.getElementById('theme');
+  function curTheme(){
+    var a = root.getAttribute('data-theme');
+    if(a) return a;
+    return (window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches) ? 'light' : 'dark';
+  }
+  try{ var st = localStorage.getItem('cv-theme'); if(st) root.setAttribute('data-theme', st); }catch(e){}
+  tbtn.addEventListener('click', function(){
+    var next = curTheme()==='dark' ? 'light' : 'dark';
+    root.setAttribute('data-theme', next);
+    try{ localStorage.setItem('cv-theme', next); }catch(e){}
+    if(window.__dustColor) window.__dustColor();
+  });
+
+  /* copy */
+  [].forEach.call(document.querySelectorAll('.copybtn'), function(b){
+    var label = b.querySelector('span');
+    b.addEventListener('click', function(){
+      var v = b.dataset.copy, done = function(){
+        b.classList.add('done'); label.textContent = 'Copied';
+        setTimeout(function(){
+          b.classList.remove('done');
+          label.textContent = 'Copy';
+        }, 1600);
+      };
+      if(navigator.clipboard && navigator.clipboard.writeText){ navigator.clipboard.writeText(v).then(done, done); }
+      else{
+        var ta=document.createElement('textarea'); ta.value=v; document.body.appendChild(ta); ta.select();
+        try{ document.execCommand('copy'); }catch(e){}
+        document.body.removeChild(ta); done();
+      }
+    });
+  });
+})();
+</script>
+
+
+<script id="PD" type="application/json">{"lending":{"organic":[["SparkLend",1.0],["Venus",0.9914],["Aave v3",0.9402],["Compound v3",0.8984],["Morpho Blue",0.852],["Fluid",0.7153],["Moonwell",0.5062],["Euler v2",0.4516]],"money":[["SparkLend",0.0,7.3,0.0,0.066],["Venus",0.3,24.4,0.011,0.408],["Aave v3",11.9,233.5,0.051,0.254],["Moonwell",1.2,5.1,0.238,0.692],["Compound v3",0.5,0.4,1.382,-0.004],["Euler v2",6.6,4.7,1.418,-0.076],["Fluid",21.8,12.9,1.696,-0.221],["Morpho Blue",30.6,0.0,null,-0.193]]},"morpho":{"curators":[["Gauntlet",23,581262831.0,3.9,1.6,0.911],["Steakhouse Financial",14,401666009.0,3.53,12.0,0.846],["SparkDAO",2,310223003.0,4.0,9.8,1.0],["No curator listed",15,128493566.0,4.18,4.3,0.838],["Felix",3,28931987.0,2.83,10.0,0.0],["Hakutora",2,22741599.0,4.02,15.0,1.0],["Yearn",4,21245364.0,5.73,3.8,0.524],["Pangolins",1,11849045.0,3.97,10.0,1.0]]},"dex":{"organic":[["Uniswap v4",1.0],["Uniswap v3",0.9988],["Aerodrome Slipstream",0.5789],["Balancer v3",0.572],["Curve",0.4944],["Aerodrome v1",0.1015]],"events":[["All switch ons",17,0.0,1.37,39.5,"24%",true],["Curve, on",11,0.0,1.09,39.5,"27%",false],["All switch offs",43,18.6,3.13,-5.7,"58%",true],["Aerodrome, off",27,60.37,11.82,-10.2,"70%",false],["Balancer v3, off",4,2.68,0.44,-17.5,"100%",false],["Curve, off",11,2.32,0.41,25.7,"9%",false],["Lending, on",50,0.0,1.09,-0.6,"52%",true],["Lending, off",41,1.89,0.41,-7.4,"56%",true]]},"stable":{"months":["2024-01","2024-02","2024-03","2024-04","2024-05","2024-06","2024-07","2024-08","2024-09","2024-10","2024-11","2024-12","2025-01","2025-02","2025-03","2025-04","2025-05","2025-06","2025-07","2025-08","2025-09","2025-10","2025-11","2025-12","2026-01","2026-02","2026-03","2026-04","2026-05","2026-06","2026-07","2026-08","2026-09"],"series":[{"n":"Ethena","v":[null,20.3889,37.107,23.984,20.7292,17.2636,11.2686,7.069,6.4337,11.3432,20.6744,20.3861,12.1066,9.18,6.5573,4.9757,5.7611,4.905,6.6947,7.614,7.0726,4.2584,5.1747,4.4152,4.7566,3.7534,3.4914,4.0311,3.7834,3.8685,3.9743,4.3076,4.7919],"hi":true},{"n":"Sky","v":[5.0,5.0,11.9698,12.2178,9.1234,8.0,7.4754,6.4436,6.0,5.605,6.3309,10.7936,11.4658,7.7415,5.7151,4.2276,4.0084,3.9427,3.8829,4.0844,4.1113,4.2285,4.192,3.9492,3.8452,3.8788,3.7152,3.6325,3.5545,3.5224,3.5517,3.5183,3.5655],"hi":false},{"n":"Midas","v":[null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,6.6453,10.4213,9.5454,null,null,null,null,null,null,8.298,6.9285,6.0995,4.9909],"hi":false},{"n":"Falcon","v":[null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,7.7659,7.4518,7.9357,6.4648,5.7995,5.397,5.5797,4.31,4.502,4.7542,4.1081,3.7069],"hi":false},{"n":"Ondo","v":[null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,3.6181,3.3905,3.4845,3.5132,3.516,3.5319,3.5338,3.5346,3.5511],"hi":false},{"n":"Usual USD0","v":[null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,32.8752,22.6096,15.4634,17.2495,14.6682,14.7825,18.8762,14.2666,14.0836,14.0072,13.7823,15.3013,20.5596,12.3125],"hi":true}],"cr":[["Ondo",1.018,1.018,1.012,null,9,"$232M"],["Sky",1.018,1.0,0.96,0.879,30,"$1.08B"],["Midas",1.019,null,null,null,41,"$24M"],["Ethena",1.042,0.989,0.938,0.811,45,"$1.35B"]]}}</script>
+<script>
+(function(){
+var D=JSON.parse(document.getElementById('PD').textContent);
+function bars(host,rows,opts){
+ opts=opts||{};
+ var box=document.createElement('div');
+ rows.forEach(function(r,i){
+  var w=(r.v/(opts.max||1))*100;
+  box.insertAdjacentHTML('beforeend',
+   '<div class="bline"><span class="cname">'+r.n+'</span>'+
+   '<span class="ctrack"><span class="cfill" style="width:'+w.toFixed(2)+'%"></span>'+
+   (opts.split&&w<99.7?'<span class="cfill dim" style="width:'+(100-w).toFixed(2)+'%"></span>':'')+'</span>'+
+   '<span class="cval">'+r.l+'</span></div>');
+ });
+ host.appendChild(box);
+}
+function table(host,head,rows){
+ host.innerHTML='<thead><tr>'+head.map(function(h){return '<th>'+h+'</th>'}).join('')+'</tr></thead><tbody>'+
+  rows.map(function(r){return '<tr>'+r.map(function(c){
+    var m=(typeof c==='object'&&c.m)?' class="mark"':''; var v=(typeof c==='object')?c.v:c;
+    return '<td'+m+'>'+v+'</td>'}).join('')+'</tr>'}).join('')+'</tbody>';
+}
+/* lending */
+var L=D.lending;
+document.querySelectorAll('[data-chart="lending"]').forEach(function(h){
+ bars(h,L.organic.map(function(x){return {n:x[0],v:x[1],l:x[1].toFixed(2)}}),{max:1,split:true});});
+document.querySelectorAll('[data-table="lending"]').forEach(function(h){
+ table(h,['Protocol','Paid out, $M','Revenue, $M','Dependency','Net margin, % a year'],
+  L.money.map(function(x){return [x[0],x[1].toFixed(1),x[2].toFixed(1),
+   {v:(x[3]===null?'no revenue':x[3].toFixed(3)),m:(x[3]===null||x[3]>1)},
+   {v:(x[4]>0?'+':'')+x[4].toFixed(3),m:x[4]<0}]}));});
+/* morpho */
+var M=D.morpho;
+document.querySelectorAll('[data-chart="morpho"]').forEach(function(h){
+ var tot=M.curators.reduce(function(s,x){return s+x[2]},0);
+ bars(h,M.curators.map(function(x){return {n:x[0],v:x[2]/tot,l:(x[2]/tot*100).toFixed(1)+'%'}}),{max:1});});
+document.querySelectorAll('[data-table="morpho"]').forEach(function(h){
+ table(h,['Curator','Vaults','Assets, $M','Rate','Fee','Blue chip collateral'],
+  M.curators.map(function(x){return [x[0],x[1],(x[2]/1e6).toFixed(0),x[3].toFixed(2)+'%',
+   {v:x[4].toFixed(1)+'%',m:x[4]>=12},{v:(x[5]*100).toFixed(0)+'%',m:x[5]<0.2}]}));});
+/* dex */
+var X=D.dex;
+document.querySelectorAll('[data-chart="dex"]').forEach(function(h){
+ bars(h,X.organic.map(function(x){return {n:x[0],v:x[1],l:x[1].toFixed(2)}}),{max:1,split:true});});
+document.querySelectorAll('[data-table="dex"]').forEach(function(h){
+ table(h,['Group','Events','Reward before','Reward after','Excess TVL, 90 days','Negative'],
+  X.events.map(function(x){return [{v:x[5]?'<b>'+x[0]+'</b>':x[0]},x[1],x[2].toFixed(2)+'%',x[3].toFixed(2)+'%',
+   {v:(x[4]>0?'+':'')+x[4].toFixed(1)+'%',m:Math.abs(x[4])>8},x[6]]}));});
+/* stable lines */
+var S=D.stable;
+document.querySelectorAll('[data-chart="stable"]').forEach(function(h){
+ var W=760,H=260,pad={l:34,r:132,t:12,b:30},hi=40,M2=S.months;
+ var xs=function(i){return pad.l+(i/(M2.length-1))*(W-pad.l-pad.r)};
+ var ys=function(v){return pad.t+(1-Math.min(v,hi)/hi)*(H-pad.t-pad.b)};
+ var s='<svg viewBox="0 0 '+W+' '+H+'" role="img" aria-label="rates by month">';
+ [0,10,20,30,40].forEach(function(g){
+  s+='<line x1="'+pad.l+'" y1="'+ys(g).toFixed(1)+'" x2="'+(W-pad.r)+'" y2="'+ys(g).toFixed(1)+'" stroke="currentColor" opacity=".14"/>'+
+     '<text x="'+(pad.l-7)+'" y="'+(ys(g)+3.4).toFixed(1)+'" text-anchor="end">'+g+'</text>';});
+ [0,12,24].forEach(function(i){if(i<M2.length)s+='<text x="'+xs(i).toFixed(1)+'" y="'+(H-7)+'" text-anchor="middle">'+M2[i]+'</text>';});
+ var labs=[],CP=['var(--c1)','var(--c2)','var(--c3)','var(--c4)','var(--c5)','var(--c6)','var(--c7)','var(--c8)'],leg=[];
+ S.series.forEach(function(ser,si){
+  var segs=[],cur=[];
+  ser.v.forEach(function(v,i){ if(v===null){ if(cur.length){segs.push(cur);cur=[]} return } cur.push([xs(i),ys(v),v]); });
+  if(cur.length)segs.push(cur);
+  var col=CP[si%CP.length]; leg.push('<span><i style="background:'+col+'"></i>'+ser.n+'</span>');
+  segs.forEach(function(g){ if(g.length<2)return;
+   s+='<path d="M'+g.map(function(q){return q[0].toFixed(1)+','+q[1].toFixed(1)}).join('L')+
+     '" fill="none" stroke="'+col+'" stroke-width="1.7" stroke-linejoin="round"/>';});
+  for(var k=1;k<segs.length;k++){ var a=segs[k-1][segs[k-1].length-1], bb=segs[k][0];
+   s+='<line x1="'+a[0].toFixed(1)+'" y1="'+a[1].toFixed(1)+'" x2="'+bb[0].toFixed(1)+'" y2="'+bb[1].toFixed(1)+'" stroke="'+col+'" stroke-width="1" stroke-dasharray="2 4" opacity=".5"/>'; }
+  var lastSeg=segs[segs.length-1];
+  if(lastSeg){var e=lastSeg[lastSeg.length-1];labs.push({x:e[0]+8,y:e[1],t:ser.n+' '+e[2].toFixed(1)+'%',col:col});}
+ });
+ labs.sort(function(a,b){return a.y-b.y});
+ for(var i=1;i<labs.length;i++){ if(labs[i].y-labs[i-1].y<13) labs[i].y=labs[i-1].y+13; }
+ var maxY=H-pad.b-2;
+ for(var i=labs.length-1;i>=0;i--){ if(labs[i].y>maxY){ labs[i].y=maxY; maxY-=13; } }
+ labs.forEach(function(L2){ s+='<text x="'+L2.x.toFixed(1)+'" y="'+(L2.y+3.4).toFixed(1)+'" fill="'+L2.col+'">'+L2.t+'</text>'; });
+ s+='</svg>';
+ h.innerHTML=s+'<div class="slegend">'+leg.join('')+'</div>'+
+  '<p class="snote">A dotted segment means months with no data in the source, not a rate of zero. Midas has a gap from December 2025 to May 2026.</p>';});
+document.querySelectorAll('[data-table="stable"]').forEach(function(h){
+ table(h,['Issuer','30 days','90 days','180 days','365 days','Missed, 30 days','Size now'],
+  S.cr.map(function(x){return [x[0]].concat(x.slice(1,5).map(function(v){
+    return v===null?'&mdash;':{v:v.toFixed(3),m:v<0.9}})).concat([x[5]===null?'&mdash;':x[5]+'%',x[6]])}));});
+
+/* expand / collapse */
+document.querySelectorAll('.srow .shead').forEach(function(btn){
+ btn.addEventListener('click',function(){
+  var row=btn.closest('.srow'), open=row.classList.toggle('open');
+  btn.setAttribute('aria-expanded',open?'true':'false');
+  var lbl=btn.querySelector('.sopen .lbl'); if(lbl) lbl.textContent=open?'Close':'Open';
+ });
+});
+})();
+</script>
+
+</body>
+</html>

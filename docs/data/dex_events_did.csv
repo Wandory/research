@@ -1,0 +1,8 @@
+group,n,med_reward_before,med_reward_after,med_pool_d90,med_protocol_d90,med_excess_d30,med_excess_d90,share_excess_neg_90
+start|all,17,0.00,1.37,17.3,3.5,17.2,39.5,0.24
+start|balancer-v3,4,0.00,1.37,44.9,21.5,28.4,51.5,0.00
+start|curve-dex,11,0.00,1.09,8.7,7.0,17.2,39.5,0.27
+stop|aerodrome-slipstream,27,60.37,11.82,-16.9,-7.9,-6.9,-10.2,0.70
+stop|all,43,18.60,3.13,-14.5,-8.7,-5.4,-5.7,0.58
+stop|balancer-v3,4,2.68,0.44,-34.1,-24.8,-10.7,-17.5,1.00
+stop|curve-dex,11,2.32,0.41,27.3,-8.8,14.4,25.7,0.09

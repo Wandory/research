@@ -1,0 +1,723 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Morpho curators, live</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Schibsted+Grotesk:wght@400;500;600;700&family=Instrument+Serif:ital@0;1&family=Geist+Mono:wght@400;500&display=swap">
+<style>
+/* ===================== TOKENS ===================== */
+:root{
+  --bg:#08090A; --card:#111315; --card-2:#16191B;
+  --fg:#EFEFED; --fg-2:#A8ABA9; --fg-3:#6E7273;
+  --line:#1E2224; --line-2:#2C3134;
+  --accent:#EFEFED; --accent-fg:#C7CBC9; --on-accent:#08090A;
+  --neg:#D7908F;
+  --sans:'Schibsted Grotesk',-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;
+  --serif:'Instrument Serif',Georgia,'Times New Roman',serif;
+  --mono:'Geist Mono',ui-monospace,'SF Mono',Menlo,Consolas,monospace;
+  --maxw:1060px;
+  --pad:clamp(20px,4vw,40px);
+  --secpad:clamp(46px,5.2vw,74px);
+  --measure:70ch;
+  --ease:cubic-bezier(.16,.84,.34,1);
+}
+:root[data-theme="light"]{
+  --bg:#FBFBFA; --card:#FFFFFF; --card-2:#F7F7F5;
+  --fg:#0B0C0D; --fg-2:#4A4E50; --fg-3:#84898B;
+  --line:#E4E5E2; --line-2:#D2D4D0;
+  --accent:#0B0C0D; --accent-fg:#3A3E40; --on-accent:#FBFBFA;
+  --neg:#8E3E3C;
+}
+@media (prefers-color-scheme: light){
+  :root:not([data-theme="dark"]){
+    --bg:#FBFBFA; --card:#FFFFFF; --card-2:#F7F7F5;
+    --fg:#0B0C0D; --fg-2:#4A4E50; --fg-3:#84898B;
+    --line:#E4E5E2; --line-2:#D2D4D0;
+    --accent:#0B0C0D; --accent-fg:#3A3E40; --on-accent:#FBFBFA;
+    --neg:#8E3E3C;
+  }
+}
+
+/* ===================== BASE ===================== */
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0; background:var(--bg); color:var(--fg);
+  font-family:var(--sans); font-size:16px; line-height:1.6; letter-spacing:-.005em;
+  -webkit-font-smoothing:antialiased; overflow-x:hidden}
+p{margin:0}
+ul,ol{margin:0; padding:0; list-style:none}
+a{color:inherit; text-decoration:none}
+h1,h2,h3,h4{margin:0; font-weight:600; letter-spacing:-.03em; line-height:1.1; text-wrap:balance}
+:focus-visible{outline:2px solid var(--accent); outline-offset:3px; border-radius:3px}
+table{border-collapse:collapse}
+.kicker{font-family:var(--mono); font-size:11px; letter-spacing:.16em; text-transform:uppercase; color:var(--fg-3)}
+
+/* ===================== SECTIONS ===================== */
+.sec{max-width:var(--maxw); margin-inline:auto; padding:var(--secpad) var(--pad); border-bottom:1px solid var(--line)}
+.sec:last-of-type{border-bottom:none}
+.sec > h2{font-size:clamp(21px,2.6vw,27px); letter-spacing:-.035em}
+.sec > .note{margin-top:16px; font-size:15px; color:var(--fg-2); line-height:1.6; max-width:72ch}
+.sec > .note b{color:var(--fg); font-weight:600}
+.sec > .note + .note{margin-top:10px}
+
+/* ===================== HERO ===================== */
+.hero{padding-block:clamp(46px,5.5vw,78px) clamp(30px,3.6vw,46px)}
+.hero h1{font-size:clamp(30px,4.4vw,50px); font-weight:600; letter-spacing:-.04em; line-height:1.06; margin-top:16px}
+.hero p.intro{margin-top:18px; font-size:clamp(16px,1.6vw,18px); color:var(--fg-2); line-height:1.6; max-width:62ch}
+.statusline{margin-top:20px; display:flex; flex-wrap:wrap; align-items:center; gap:10px 20px;
+  font-family:var(--mono); font-size:12px; letter-spacing:.04em; color:var(--fg-3)}
+.statusline i{display:inline-block; width:6px; height:6px; border-radius:50%; background:var(--fg-3); flex:none}
+.statusline i.live{background:var(--accent)}
+.statusline i.off{background:var(--neg)}
+button.plain{appearance:none; background:none; border:0; padding:0; cursor:pointer;
+  font-family:var(--mono); font-size:12px; letter-spacing:.1em; text-transform:uppercase;
+  color:var(--fg-3); transition:color .22s var(--ease)}
+button.plain:hover{color:var(--fg)}
+button.plain[disabled]{opacity:.4; cursor:default}
+button.plain.on{color:var(--fg)}
+
+.nums{display:grid; grid-template-columns:repeat(auto-fit,minmax(170px,1fr)); gap:26px 30px;
+  margin-top:clamp(30px,3.6vw,44px); padding-top:26px; border-top:1px solid var(--line)}
+.num b{display:block; font-family:var(--mono); font-size:clamp(25px,3vw,33px); font-weight:500;
+  letter-spacing:-.04em; font-variant-numeric:tabular-nums; line-height:1.05}
+.num .lb{display:block; font-family:var(--mono); font-size:10.5px; letter-spacing:.13em;
+  text-transform:uppercase; color:var(--fg-3); margin-bottom:11px}
+.num span.sub{display:block; margin-top:9px; font-size:13px; color:var(--fg-3); line-height:1.45}
+.num span.sub b{display:inline; font-family:var(--mono); font-size:13px; font-weight:400; color:var(--fg-2); letter-spacing:0}
+.num .skel{color:var(--fg-3)}
+
+
+/* ===================== CHARTS ===================== */
+.bline{display:grid; grid-template-columns:minmax(92px,150px) minmax(0,1fr) 108px; gap:clamp(10px,2vw,20px);
+  align-items:center; padding-block:10px; border-bottom:1px solid var(--line)}
+.bline:first-child{border-top:1px solid var(--line)}
+.bline .cname{font-size:13.5px; letter-spacing:-.01em}
+.trk{position:relative; height:20px}
+.trk .base{position:absolute; left:0; right:0; top:9px; height:1px; background:var(--line-2)}
+.trk .seg{position:absolute; top:9px; height:2px; background:var(--accent)}
+.trk .pt{position:absolute; top:4px; width:11px; height:11px; border-radius:50%; margin-left:-5.5px}
+.trk .pt.now{background:var(--accent); border:2px solid var(--bg)}
+.trk .pt.then{background:transparent; border:1.5px solid var(--fg-3)}
+.cval{font-family:var(--mono); font-size:13px; text-align:right; font-variant-numeric:tabular-nums; color:var(--fg-2)}
+.cval .d{color:var(--fg-3)}
+.cval .dn{color:var(--neg)}
+.ckey{display:flex; flex-wrap:wrap; gap:16px; margin-top:16px; font-size:12.5px; color:var(--fg-3)}
+.ckey i{display:inline-block; width:11px; height:11px; border-radius:50%; margin-right:8px; vertical-align:-1px}
+.ckey i.now{background:var(--accent)}
+.ckey i.then{border:1.5px solid var(--fg-3)}
+
+figure{margin:26px 0 0}
+figcaption{margin-top:16px; padding-top:11px; border-top:1px solid var(--line);
+  font-size:12.5px; color:var(--fg-3); line-height:1.55; max-width:84ch}
+figcaption b{color:var(--fg-2); font-weight:600}
+
+/* small multiples, one series per panel, no categorical colour needed */
+.sm-grid{display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:26px 24px}
+@media(max-width:900px){.sm-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:520px){.sm-grid{grid-template-columns:minmax(0,1fr)}}
+.sm h4{display:flex; align-items:baseline; justify-content:space-between; gap:10px;
+  font-size:13px; font-weight:600; letter-spacing:-.02em; margin-bottom:9px}
+.sm .smn{min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap}
+.sm .smv{font-family:var(--mono); font-weight:400; font-size:12.5px; color:var(--fg-2);
+  font-variant-numeric:tabular-nums; flex:none}
+.sm .smc{position:relative}
+.sm .smc svg{display:block; width:100%; height:auto; border-bottom:1px solid var(--line-2)}
+.sm .smc svg rect.smhit{cursor:crosshair}
+.sm .smf{margin-top:8px; font-family:var(--mono); font-size:10.5px; color:var(--fg-3); line-height:1.4}
+.smaxis{display:flex; justify-content:space-between; margin-top:16px;
+  font-family:var(--mono); font-size:10.5px; letter-spacing:.05em; color:var(--fg-3)}
+.gridline{stroke:var(--line-2); stroke-width:1}
+
+.tip{position:absolute; pointer-events:none; opacity:0; transition:opacity .14s var(--ease);
+  background:var(--card); border:1px solid var(--line-2); border-radius:4px; padding:9px 11px;
+  font-size:12.5px; box-shadow:0 8px 28px rgba(0,0,0,.3); z-index:9; white-space:nowrap}
+.tip.on{opacity:1}
+.tip .tt{font-family:var(--mono); font-size:10px; letter-spacing:.12em; text-transform:uppercase;
+  color:var(--fg-3); margin-bottom:5px}
+.tip .tv{font-family:var(--mono); font-variant-numeric:tabular-nums; color:var(--fg)}
+
+
+.dl{font-size:11px; fill:var(--fg-2)}
+.chart svg{display:block;width:100%;height:auto;overflow:visible}
+.chart text{font-family:var(--mono);font-size:10px;fill:var(--fg-3)}
+
+/* ===================== TABLES ===================== */
+.tw{overflow-x:auto; margin-top:26px}
+table.d{width:100%; table-layout:auto; font-size:13px}
+table.d th,table.d td{text-align:right; padding:11px 9px; border-bottom:1px solid var(--line); white-space:nowrap}
+table.d th:first-child,table.d td:first-child{text-align:left; padding-left:2px; padding-right:18px; white-space:normal}
+table.d th:last-child,table.d td:last-child{padding-right:2px}
+table.d.wide{min-width:820px}
+table.d thead th{font-family:var(--mono); font-size:10px; letter-spacing:.09em; text-transform:uppercase;
+  color:var(--fg-3); font-weight:400; border-bottom:1px solid var(--line-2); vertical-align:bottom;
+  cursor:pointer; user-select:none; transition:color .2s var(--ease)}
+table.d thead th:hover{color:var(--fg-2)}
+table.d thead th[aria-sort]{color:var(--fg)}
+table.d thead th[aria-sort="descending"]::after{content:" \25BE"}
+table.d thead th[aria-sort="ascending"]::after{content:" \25B4"}
+table.d tbody td{font-family:var(--mono); color:var(--fg-2); font-variant-numeric:tabular-nums}
+table.d tbody td:first-child{font-family:var(--sans); color:var(--fg); font-size:13.5px}
+table.d tbody tr:hover td{color:var(--fg)}
+table.d td.mark{color:var(--fg)}
+table.d td.neg{color:var(--neg)}
+table.d td.empty{font-family:var(--sans); color:var(--fg-3); text-align:left}
+
+/* ===================== CONTROLS ===================== */
+.ctl{display:flex; flex-wrap:wrap; gap:14px 26px; align-items:baseline; margin-top:26px;
+  padding-bottom:16px; border-bottom:1px solid var(--line)}
+.ctl .cl{font-family:var(--mono); font-size:10.5px; letter-spacing:.13em; text-transform:uppercase; color:var(--fg-3)}
+.ctl input[type=search]{appearance:none; background:transparent; border:0; border-bottom:1px solid var(--line-2);
+  color:var(--fg); font-family:var(--sans); font-size:14px; padding:4px 2px; min-width:200px}
+.ctl input[type=search]::placeholder{color:var(--fg-3)}
+.ctl input[type=search]:focus{outline:0; border-bottom-color:var(--fg)}
+.ctl .grp{display:flex; flex-wrap:wrap; gap:16px}
+.cnt{margin-left:auto; font-family:var(--mono); font-size:11.5px; color:var(--fg-3); letter-spacing:.04em}
+.pager{display:flex; flex-wrap:wrap; align-items:baseline; gap:18px; margin-top:20px}
+.pager .pg{font-family:var(--mono); font-size:11.5px; color:var(--fg-3); letter-spacing:.06em; margin-left:auto}
+
+/* ===================== NOTICE / FOOT ===================== */
+.err{margin-top:22px; padding-left:15px; border-left:1px solid var(--neg);
+  font-size:14px; color:var(--fg-2); line-height:1.6; max-width:76ch}
+.err b{color:var(--fg); font-weight:600}
+.foot{max-width:var(--maxw); margin-inline:auto; padding:var(--secpad) var(--pad) clamp(60px,7vw,96px)}
+.foot h4{font-family:var(--mono); font-size:11px; font-weight:500; letter-spacing:.13em;
+  text-transform:uppercase; color:var(--accent-fg); margin-bottom:12px}
+.foot p{font-size:13.5px; color:var(--fg-3); line-height:1.6; max-width:80ch}
+.foot .blk + .blk{margin-top:26px}
+.foot a{color:var(--fg-2); transition:color .22s var(--ease)}
+.foot a:hover{color:var(--fg)}
+
+#dock{position:fixed; right:16px; bottom:calc(16px + env(safe-area-inset-bottom,0px)); z-index:900}
+#theme{appearance:none; cursor:pointer; background:var(--card); border:1px solid var(--line-2); border-radius:4px;
+  color:var(--fg-3); width:38px; height:38px; display:grid; place-items:center;
+  box-shadow:0 8px 28px rgba(0,0,0,.28); transition:color .25s var(--ease), border-color .25s var(--ease)}
+#theme svg{width:16px; height:16px}
+#theme:hover{color:var(--accent); border-color:var(--accent)}
+
+@media(max-width:700px){
+  .bline{grid-template-columns:minmax(0,1fr) 104px; grid-template-areas:"nm vals" "trk trk"; row-gap:8px}
+  .bline .cname{grid-area:nm} .bline .cval{grid-area:vals} .bline .trk{grid-area:trk}
+  .cnt{margin-left:0; width:100%}
+}
+</style>
+</head>
+<body>
+<div id="dock"><button id="theme" type="button" aria-label="Switch theme">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
+</button></div>
+
+<header class="sec hero">
+  <p class="kicker">Live panel &middot; Morpho Blue</p>
+  <h1>Who runs your money in Morpho</h1>
+  <p class="intro">Curator concentration, fees, rates and collateral, read live from Morpho's own GraphQL API every time this page opens, against the snapshot published in September 2026.</p>
+  <div class="statusline">
+    <span id="stat"><i></i> connecting</span>
+    <span id="stamp"></span>
+    <button class="plain" id="refresh" type="button" disabled>Refresh</button>
+  </div>
+  <div id="errbox"></div>
+  <div class="nums" id="hero"></div>
+</header>
+
+<section class="sec" id="sec-drift">
+  <h2>What moved since publication</h2>
+  <p class="note">The hollow marker is each curator's share of readable assets as the study measured it, the filled marker is the same calculation on today's vaults.</p>
+  <figure>
+    <div id="drift"></div>
+    <div class="ckey" id="drift-lg"></div>
+    <figcaption><b>Figure 1.</b> Share of assets by curator, published snapshot against live. Vaults quoting a rate above 100% a year or a fee above 35% are excluded from both, and listed separately below. Source: Morpho GraphQL API, author's calculation.</figcaption>
+  </figure>
+</section>
+
+<section class="sec" id="sec-live">
+  <h2>Live curator table</h2>
+  <p class="note">Assets, rate and fee are weighted by vault size. Blue chip is the share of collateral in majors; PT is fixed maturity Pendle paper, which carries a maturity date and behaves differently from a plain asset while looking identical in the interface. LLTV is the average liquidation threshold. Click any heading to sort.</p>
+  <div class="tw"><table class="d wide" id="tlive"></table></div>
+</section>
+
+<section class="sec" id="sec-rate">
+  <h2>Rate and its spread</h2>
+  <p class="note">The published year of daily history for the thirty largest vaults, unchanged. The dot is the median rate, the bar is the interquartile range.</p>
+  <figure>
+    <div class="chart" id="whisker"></div>
+    <figcaption><b>Figure 2.</b> Median annual rate and interquartile range over 365 days, thirty largest readable vaults. Scale runs from zero to 8% a year. Source: Morpho GraphQL API, author's panel.</figcaption>
+  </figure>
+  <figure>
+    <div id="feebars"></div>
+    <div class="ckey" id="feebars-lg"></div>
+    <figcaption><b>Figure 3.</b> What the curator charges against what the depositor receives, live. A fee that rises without the rate rising with it is paid by the depositor and nobody else.</figcaption>
+  </figure>
+</section>
+
+<section class="sec" id="sec-vaults">
+  <h2>Vault explorer</h2>
+  <p class="note">Every live vault above one million dollars, sortable. Twenty five rows a page, largest first.</p>
+  <div class="ctl">
+    <span class="cl">Search</span>
+    <input type="search" id="q" placeholder="vault, asset, chain or curator" autocomplete="off">
+    <span class="cl">Curator</span>
+    <span class="grp" id="chips"></span>
+    <span class="cnt" id="cnt"></span>
+  </div>
+  <div class="tw"><table class="d wide" id="tvaults"></table></div>
+  <div class="pager">
+    <button class="plain" id="prev" type="button">Previous</button>
+    <button class="plain" id="next" type="button">Next</button>
+    <span class="pg" id="pg"></span>
+  </div>
+</section>
+
+<section class="sec" id="sec-bad">
+  <h2>Vaults with an unreadable rate</h2>
+  <p class="note">Excluded from every figure above rather than dropped silently. The API returns these rates as published; they are not corrected here.</p>
+  <p class="note" id="badnote"></p>
+  <div class="tw"><table class="d" id="tbad"></table></div>
+</section>
+
+<footer class="foot">
+  <div class="blk">
+    <h4>Method</h4>
+    <p>All V1 vaults holding at least one million dollars are taken. Curator names come from the curators query and are matched to each vault through the curator address on its state; a vault whose address matches no curator is shown as no curator listed. Rate is netApy, the rate a depositor actually receives after the fee. Collateral shares are computed per allocation, weighted by the amount allocated, and blue chip means WETH, wstETH, cbETH, rETH, weETH, ezETH, WBTC, cbBTC, tBTC, LBTC, USDC, USDT, DAI or USDS.</p>
+  </div>
+  <div class="blk">
+    <h4>Sources</h4>
+    <p><a href="https://blue-api.morpho.org/graphql" target="_blank" rel="noopener">blue-api.morpho.org/graphql</a>, queries vaults and curators, fetched by this page at open time. Baseline snapshot from the study published September 2026, covering 78 vaults and a year of daily history for the thirty largest.</p>
+  </div>
+  <div class="blk">
+    <h4>Limits</h4>
+    <p>Six vaults are excluded for quoting a rate above 100% a year or a fee above 35%. They are unlisted vaults whose share price has been pushed to hundreds of dollars in a vault denominated in a dollar asset, which is what the quoted rate is derived from; none of the listed vaults in the sample is affected. This is a snapshot rather than a daily series, so the live column moves with the market and is noisier than a monthly panel would be. V2 vaults are out of scope, which is why the total does not match protocol TVL at aggregators, where collateral held in isolated markets is also counted. A curator can run vaults under more than one address, and any address the curators query does not list falls into the unlisted row.</p>
+  </div>
+</footer>
+
+<script>
+/* Shared core for the four live panels. Formatting, fetch, charts, sortable
+   and paginated tables. Panels supply only their data and their columns. */
+var DASH=(function(){
+"use strict";
+var $=function(id){return document.getElementById(id)};
+var el=function(t,c,h){var e=document.createElement(t);if(c)e.className=c;if(h!==undefined)e.innerHTML=h;return e};
+var num=function(v){var n=parseFloat(v);return isFinite(n)?n:0};
+var f2=function(v,d){return (+v).toFixed(d===undefined?2:d)};
+var pct=function(v,d){return (v*100).toFixed(d===undefined?1:d)+'%'};
+var usd=function(v){var a=Math.abs(v);
+  if(a>=1e9)return '$'+(v/1e9).toFixed(2)+'B';
+  if(a>=1e6)return '$'+(v/1e6).toFixed(a>=1e8?0:1)+'M';
+  if(a>=1e3)return '$'+(v/1e3).toFixed(0)+'k';
+  return '$'+(+v).toFixed(0);};
+var esc=function(s){return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;')
+  .replace(/>/g,'&gt;').replace(/"/g,'&quot;')};
+var dash='&mdash;';
+
+function timeout(ms){return new Promise(function(_,rej){setTimeout(function(){rej(new Error('timeout'))},ms)})}
+function getJSON(u,ms){return Promise.race([fetch(u,{cache:'no-store'}).then(function(r){
+  if(!r.ok)throw new Error('HTTP '+r.status);return r.json();}),timeout(ms||25000)]);}
+function postJSON(u,body,ms){return Promise.race([fetch(u,{method:'POST',
+  headers:{'Content-Type':'application/json'},body:JSON.stringify(body)}).then(function(r){
+  if(!r.ok)throw new Error('HTTP '+r.status);return r.json();}),timeout(ms||25000)]);}
+
+function setStatus(kind,msg){var s=$('stat');if(s)s.innerHTML='<i class="'+kind+'"></i> '+msg}
+function setStamp(t){var s=$('stamp');if(s)s.textContent=t}
+function showError(msg){var b=$('errbox');if(b)b.innerHTML='<p class="err"><b>This page could not reach the API</b> ('+
+  esc(msg)+'), so the live figures are empty and only the published baseline is shown. That normally means the page '+
+  'is running somewhere outbound requests are blocked, or the source is down. Open the file directly in a browser, '+
+  'or serve it over http, and it will fill in.</p>';}
+function clearError(){var b=$('errbox');if(b)b.innerHTML=''}
+
+/* hero: [label, value, sub] */
+function hero(cells){
+  $('hero').innerHTML=cells.map(function(c){
+    return '<div class="num"><span class="lb">'+c[0]+'</span><b>'+c[1]+'</b><span class="sub">'+c[2]+'</span></div>';
+  }).join('');
+}
+
+/* dumbbell: rows [{name, then, now}], lo = scale floor, fmt */
+function dumbbell(host,legend,rows,lo,fmt,thenLabel,nowLabel){
+  var box=$(host); box.innerHTML='';
+  var hi=1; rows.forEach(function(r){hi=Math.max(hi,r.then,(r.now==null?0:r.now))});
+  var px=function(v){return Math.max(0,Math.min(100,(v-lo)/(hi-lo)*100))};
+  rows.forEach(function(r){
+    var a=px(r.then), b=r.now==null?a:px(r.now);
+    var d=r.now==null?null:(r.now-r.then);
+    box.appendChild(el('div','bline',
+      '<span class="cname">'+esc(r.name)+'</span>'+
+      '<span class="trk"><span class="base"></span>'+
+        (r.now==null?'':'<span class="seg" style="left:'+Math.min(a,b)+'%;width:'+Math.abs(b-a)+'%"></span>')+
+        '<span class="pt then" style="left:'+a+'%"></span>'+
+        (r.now==null?'':'<span class="pt now" style="left:'+b+'%"></span>')+'</span>'+
+      '<span class="cval">'+(r.now==null?dash:fmt(r.now))+
+        ' <span class="d">was '+fmt(r.then)+'</span><br>'+
+        (d==null?'<span class="d">'+dash+'</span>'
+               :'<span class="'+(d<0?'dn':'d')+'">'+(d>=0?'+':'')+fmt(d)+'</span>')+'</span>'));
+  });
+  if(legend)$(legend).innerHTML='<span><i class="then"></i>'+esc(thenLabel)+'</span>'+
+    '<span><i class="now"></i>'+esc(nowLabel)+'</span>'+
+    '<span>scale starts at '+fmt(lo)+'</span>';
+}
+
+/* small multiples: one series per panel, no categorical colour needed */
+function smallMultiples(host,months,opts){
+  var box=$(host); box.innerHTML='';
+  var W=230,H=74,SP=3,lo=opts.lo,hi=opts.hi;
+  var xs=function(i){return (i/(months.length-1))*W};
+  var ys=function(v){return SP+(1-(Math.max(lo,Math.min(hi,v))-lo)/(hi-lo))*(H-2*SP)};
+  var grid=el('div','sm-grid');
+  opts.series.forEach(function(sr){
+    var segs=[],cur=[];
+    for(var i=0;i<months.length;i++){var v=sr.v[i];
+      if(v===null||v===undefined){if(cur.length){segs.push(cur);cur=[]}continue}
+      cur.push([xs(i),ys(v)]);}
+    if(cur.length)segs.push(cur);
+    var g='<svg viewBox="0 0 '+W+' '+H+'" preserveAspectRatio="none" role="img" aria-label="'+esc(sr.n)+'">';
+    if(opts.ref!==undefined)
+      g+='<line class="gridline" x1="0" y1="'+ys(opts.ref).toFixed(1)+'" x2="'+W+'" y2="'+
+         ys(opts.ref).toFixed(1)+'" stroke-dasharray="2 3" opacity=".8"/>';
+    segs.forEach(function(sg){
+      if(sg.length<2){g+='<circle cx="'+sg[0][0].toFixed(1)+'" cy="'+sg[0][1].toFixed(1)+'" r="2" fill="var(--accent)"/>';return}
+      var d='M'+sg.map(function(q){return q[0].toFixed(1)+','+q[1].toFixed(1)}).join('L');
+      g+='<path d="'+d+'L'+sg[sg.length-1][0].toFixed(1)+','+H+'L'+sg[0][0].toFixed(1)+','+H+'Z" fill="var(--accent)" opacity=".13"/>';
+      g+='<path d="'+d+'" fill="none" stroke="var(--accent)" stroke-width="2" vector-effect="non-scaling-stroke" stroke-linejoin="round" stroke-linecap="round"/>';
+    });
+    g+='<rect class="smhit" x="0" y="0" width="'+W+'" height="'+H+'" fill="transparent"/></svg>';
+    var cell=el('div','sm','<h4><span class="smn">'+esc(sr.n)+'</span><span class="smv">'+esc(sr.tag)+'</span></h4>'+
+      '<div class="smc">'+g+'</div><p class="smf">'+esc(sr.foot)+'</p>');
+    var cb=cell.querySelector('.smc'), tip=el('div','tip'); cb.appendChild(tip);
+    var svg=cb.querySelector('svg');
+    svg.addEventListener('mousemove',function(ev){
+      var r=svg.getBoundingClientRect();
+      var i=Math.max(0,Math.min(months.length-1,Math.round((ev.clientX-r.left)/r.width*(months.length-1))));
+      var v=sr.v[i];
+      tip.innerHTML='<div class="tt">'+months[i]+'</div><div class="tv">'+
+        (v===null||v===undefined?'no data':opts.tip(v))+'</div>';
+      tip.classList.add('on');
+      var tw=tip.offsetWidth;
+      tip.style.left=Math.max(0,Math.min(r.width-tw,(i/(months.length-1))*r.width-tw/2))+'px';
+      tip.style.top='-8px';
+    });
+    svg.addEventListener('mouseleave',function(){tip.classList.remove('on')});
+    grid.appendChild(cell);
+  });
+  box.appendChild(grid);
+  box.appendChild(el('p','smaxis','<span>'+months[0]+'</span><span>'+months[months.length-1]+'</span>'));
+}
+
+/* dot and whisker: rows [{name, med, lo, hi, tag}] on a shared scale */
+function dotWhisker(host,rows,maxX,fmt){
+  var box=$(host);
+  var rowH=21,padL=176,padR=64,padB=28,W=920,H=rows.length*rowH+padB+10;
+  var xs=function(v){return padL+(Math.min(v,maxX)/maxX)*(W-padL-padR)};
+  var g='<svg viewBox="0 0 '+W+' '+H+'" role="img" aria-label="rate and its spread by vault">';
+  for(var t=0;t<=maxX;t+=maxX/4){
+    g+='<line class="gridline" x1="'+xs(t).toFixed(1)+'" y1="4" x2="'+xs(t).toFixed(1)+'" y2="'+(H-padB+4)+'" opacity=".7"/>'+
+       '<text x="'+xs(t).toFixed(1)+'" y="'+(H-padB+20)+'" text-anchor="middle">'+fmt(t)+'</text>';
+  }
+  rows.forEach(function(r,i){
+    var y=14+i*rowH;
+    g+='<text x="'+(padL-12)+'" y="'+(y+3.5)+'" text-anchor="end" class="dl">'+esc(r.name)+'</text>';
+    g+='<line x1="'+xs(r.lo).toFixed(1)+'" y1="'+y+'" x2="'+xs(r.hi).toFixed(1)+'" y2="'+y+
+       '" stroke="var(--fg-3)" stroke-width="1.5"/>';
+    g+='<circle cx="'+xs(r.med).toFixed(1)+'" cy="'+y+'" r="3.4" fill="var(--accent)"/>';
+    g+='<text x="'+(W-padR+10)+'" y="'+(y+3.5)+'" class="dl">'+esc(r.tag)+'</text>';
+  });
+  box.innerHTML=g+'</svg>';
+}
+
+/* sortable table. cols: [key, head, render(row), sortValue(row), className] */
+function Table(id,cols,getRows,opts){
+  opts=opts||{};
+  var state={k:opts.sort||cols[0][0],dir:1,page:0};
+  var perPage=opts.perPage||0;
+  function draw(){
+    var rows=getRows().slice();
+    var sc=cols.filter(function(c){return c[0]===state.k})[0]||cols[0];
+    rows.sort(function(x,y){var a=sc[3](x),b=sc[3](y);
+      return typeof a==='string'?state.dir*String(a).localeCompare(String(b)):state.dir*(b-a);});
+    var total=rows.length,pages=1;
+    if(perPage){
+      pages=Math.max(1,Math.ceil(total/perPage));
+      if(state.page>=pages)state.page=pages-1;
+      if(state.page<0)state.page=0;
+      rows=rows.slice(state.page*perPage,state.page*perPage+perPage);
+    }
+    var t=$(id);
+    t.innerHTML='<thead><tr>'+cols.map(function(c){
+      return '<th data-k="'+c[0]+'"'+(c[0]===state.k?(' aria-sort="'+(state.dir===1?'descending':'ascending')+'"'):'')+
+        '>'+c[1]+'</th>';}).join('')+'</tr></thead><tbody>'+
+      (rows.length?rows.map(function(r){return '<tr>'+cols.map(function(c){
+        var cl=typeof c[4]==='function'?c[4](r):(c[4]||'');
+        return '<td'+(cl?' class="'+cl+'"':'')+'>'+c[2](r)+'</td>';}).join('')+'</tr>';}).join('')
+       :'<tr><td class="empty" colspan="'+cols.length+'">'+(opts.empty||'Nothing to show.')+'</td></tr>')+
+      '</tbody>';
+    Array.prototype.forEach.call(t.querySelectorAll('th'),function(th){
+      th.addEventListener('click',function(){
+        if(state.k===th.dataset.k)state.dir*=-1; else {state.k=th.dataset.k;state.dir=1}
+        state.page=0; draw();});});
+    if(opts.onDraw)opts.onDraw(total,pages,state.page);
+  }
+  return {draw:draw,reset:function(){state.page=0},state:state};
+}
+
+/* plain-text chip row */
+function chips(host,options,current,onPick){
+  var h=$(host);
+  h.innerHTML=options.map(function(o){
+    return '<button class="plain'+(o[0]===current?' on':'')+'" type="button" data-v="'+esc(o[0])+'">'+esc(o[1])+'</button>';
+  }).join('');
+  Array.prototype.forEach.call(h.querySelectorAll('button'),function(b){
+    b.addEventListener('click',function(){
+      Array.prototype.forEach.call(h.querySelectorAll('button'),function(x){x.classList.toggle('on',x===b)});
+      onPick(b.dataset.v);});});
+}
+
+function theme(){
+  var b=$('theme'); if(!b)return;
+  b.addEventListener('click',function(){
+    var c=document.documentElement.getAttribute('data-theme');
+    if(!c)c=matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light';
+    document.documentElement.setAttribute('data-theme',c==='dark'?'light':'dark');});
+}
+
+return {$:$,el:el,num:num,f2:f2,pct:pct,usd:usd,esc:esc,dash:dash,
+  getJSON:getJSON,postJSON:postJSON,setStatus:setStatus,setStamp:setStamp,
+  showError:showError,clearError:clearError,hero:hero,dumbbell:dumbbell,
+  smallMultiples:smallMultiples,dotWhisker:dotWhisker,Table:Table,chips:chips,theme:theme};
+})();
+</script>
+
+<script id="BL" type="application/json">{"total":1530389019.0,"curators":[{"c":"Gauntlet","n":23,"aum":581262831,"share":0.3798,"apy":3.9,"fee":1.6,"blue":91.1,"pt":0.0,"lltv":0.866,"mk":5.6},{"c":"Steakhouse Financial","n":14,"aum":401666009,"share":0.2625,"apy":3.53,"fee":12.0,"blue":84.6,"pt":4.6,"lltv":0.873,"mk":7.6},{"c":"SparkDAO","n":2,"aum":310223003,"share":0.2027,"apy":4.0,"fee":9.8,"blue":100.0,"pt":0.0,"lltv":0.86,"mk":2.0},{"c":"No curator listed","n":15,"aum":128493566,"share":0.084,"apy":4.18,"fee":4.3,"blue":83.8,"pt":1.5,"lltv":0.857,"mk":3.9},{"c":"Felix","n":3,"aum":28931987,"share":0.0189,"apy":2.83,"fee":10.0,"blue":0.0,"pt":0.0,"lltv":0.777,"mk":4.4},{"c":"Hakutora","n":2,"aum":22741599,"share":0.0149,"apy":4.02,"fee":15.0,"blue":100.0,"pt":0.0,"lltv":0.86,"mk":1.0},{"c":"Yearn","n":4,"aum":21245364,"share":0.0139,"apy":5.73,"fee":3.8,"blue":52.4,"pt":8.2,"lltv":0.87,"mk":5.7},{"c":"Pangolins","n":1,"aum":11849045,"share":0.0077,"apy":3.97,"fee":10.0,"blue":100.0,"pt":0.0,"lltv":0.86,"mk":1.0},{"c":"Anthias Labs","n":3,"aum":11221846,"share":0.0073,"apy":2.78,"fee":15.0,"blue":100.0,"pt":0.0,"lltv":0.889,"mk":4.5},{"c":"MEV Capital","n":2,"aum":6665248,"share":0.0044,"apy":3.05,"fee":10.0,"blue":68.3,"pt":0.0,"lltv":0.943,"mk":4.0},{"c":"Clearstar","n":2,"aum":4386668,"share":0.0029,"apy":1.24,"fee":7.3,"blue":0.0,"pt":1.8,"lltv":0.862,"mk":2.5},{"c":"Hyperithm","n":1,"aum":1701853,"share":0.0011,"apy":7.3,"fee":10.0,"blue":0.0,"pt":0.0,"lltv":0.77,"mk":2.0}],"vh":[{"v":"Gauntlet USDC Prime","c":"Gauntlet","med":4.4,"iqr":1.16,"p95":6.75,"aum":419248377,"d20":0},{"v":"Spark USDC Vault","c":"SparkDAO","med":3.93,"iqr":1.07,"p95":6.21,"aum":303948497,"d20":0},{"v":"Steakhouse USDC","c":"Steakhouse Financial","med":3.29,"iqr":0.91,"p95":5.25,"aum":130931024,"d20":0},{"v":"Steakhouse USDT","c":"Steakhouse Financial","med":2.66,"iqr":1.0,"p95":8.03,"aum":87022773,"d20":8},{"v":"Steakhouse USDC","c":"Steakhouse Financial","med":3.4,"iqr":0.97,"p95":5.72,"aum":69211355,"d20":6},{"v":"Grove x Steakhouse USDC High Yield","c":"No curator listed","med":4.36,"iqr":1.04,"p95":6.9,"aum":62116000,"d20":0},{"v":"Steakhouse ETH","c":"Steakhouse Financial","med":1.61,"iqr":0.43,"p95":4.38,"aum":28649447,"d20":6},{"v":"Gauntlet USDC Prime","c":"Gauntlet","med":3.48,"iqr":1.16,"p95":5.98,"aum":26225525,"d20":7},{"v":"Smokehouse USDT","c":"Steakhouse Financial","med":3.42,"iqr":1.35,"p95":10.31,"aum":23883995,"d20":12},{"v":"Vault Bridge WBTC","c":"Gauntlet","med":0.01,"iqr":0.02,"p95":0.1,"aum":23624938,"d20":2},{"v":"Steakhouse Prime USDC","c":"Steakhouse Financial","med":4.23,"iqr":1.31,"p95":6.94,"aum":20498238,"d20":0},{"v":"Metronome msUSD Vault","c":"Gauntlet","med":2.43,"iqr":2.19,"p95":6.31,"aum":19510140,"d20":2},{"v":"Hakutora USDC","c":"Hakutora","med":2.98,"iqr":0.95,"p95":4.66,"aum":17011649,"d20":4},{"v":"Vault Bridge WETH","c":"Gauntlet","med":1.52,"iqr":0.53,"p95":4.33,"aum":16778529,"d20":2},{"v":"Felix HYPE","c":"Felix","med":0.78,"iqr":0.87,"p95":6.2,"aum":16166193,"d20":6},{"v":"Smokehouse USDC","c":"Steakhouse Financial","med":4.83,"iqr":1.1,"p95":8.27,"aum":13545567,"d20":8},{"v":"Vault Bridge USDC","c":"Steakhouse Financial","med":3.31,"iqr":1.11,"p95":6.2,"aum":12417142,"d20":6},{"v":"Felix USDC (Frontier)","c":"No curator listed","med":5.82,"iqr":1.65,"p95":10.87,"aum":11870382,"d20":2},{"v":"Pangolins USDC","c":"Pangolins","med":3.95,"iqr":0.73,"p95":6.05,"aum":11849088,"d20":0},{"v":"Re7 USDC","c":"No curator listed","med":6.22,"iqr":5.08,"p95":75.63,"aum":10137270,"d20":43},{"v":"SwissBorg Morpho USDC","c":"Gauntlet","med":3.16,"iqr":1.03,"p95":5.18,"aum":9327586,"d20":4},{"v":"Re7 WLD","c":"No curator listed","med":1.97,"iqr":2.37,"p95":49.51,"aum":9163733,"d20":21},{"v":"Gauntlet USDC RWA","c":"Gauntlet","med":5.44,"iqr":1.45,"p95":14.75,"aum":8983325,"d20":17},{"v":"Yearn OG USDC","c":"Yearn","med":4.64,"iqr":2.86,"p95":10.53,"aum":8882900,"d20":9},{"v":"Metronome msETH Vault","c":"Gauntlet","med":1.55,"iqr":0.9,"p95":4.26,"aum":7876697,"d20":6},{"v":"Felix USDC","c":"Felix","med":5.41,"iqr":2.45,"p95":38.35,"aum":7870495,"d20":51},{"v":"Gauntlet WETH Prime","c":"Gauntlet","med":1.62,"iqr":0.45,"p95":4.78,"aum":7724419,"d20":4},{"v":"WETH ARM Vault","c":"No curator listed","med":1.61,"iqr":0.42,"p95":3.21,"aum":7659418,"d20":0},{"v":"Gauntlet USDT Frontier","c":"Gauntlet","med":3.39,"iqr":1.61,"p95":9.23,"aum":7576502,"d20":7},{"v":"Yearn USDC","c":"Yearn","med":3.94,"iqr":1.44,"p95":8.97,"aum":7306415,"d20":5}],"bad":[{"v":"Adpend USDC","chain":"1","asset":"USDC","aum":301797905},{"v":"1337 USDC","chain":"1","asset":"USDC","aum":160980624},{"v":"Not Gauntlet","chain":"42161","asset":"USDC","aum":6266109},{"v":"Lulo USDC","chain":"1","asset":"USDC","aum":1797137},{"v":"Duplicated Key","chain":"1","asset":"USDC","aum":1347289},{"v":"frobUSDC","chain":"42161","asset":"USDC","aum":1062463}]}</script>
+<script>
+(function(){
+"use strict";
+var D=DASH, $=D.$, usd=D.usd, f2=D.f2, pct=D.pct, esc=D.esc;
+var BL=JSON.parse(document.getElementById('BL').textContent);
+var BASE_CUR={}; BL.curators.forEach(function(c){BASE_CUR[c.c]=c});
+var BLUE={WETH:1,wstETH:1,cbETH:1,rETH:1,weETH:1,ezETH:1,WBTC:1,cbBTC:1,tBTC:1,LBTC:1,USDC:1,USDT:1,DAI:1,USDS:1};
+var API='https://blue-api.morpho.org/graphql';
+var VQ='{ vaults(first:500, where:{ totalAssetsUsd_gte:1000000 }, orderBy:TotalAssetsUsd, orderDirection:Desc){'+
+  ' items{ address symbol name listed chain{network} asset{symbol}'+
+  ' state{ totalAssetsUsd netApy netApyExcludingRewards fee curator sharePriceNumber'+
+  ' allocation{ supplyAssetsUsd market{ lltv collateralAsset{ symbol } } } } } } }';
+var CQ='{ curators(first:300){ items{ name addresses{ address } } } }';
+
+var VAULTS=[], BAD=[], CUR=[], TOTAL=0, live=false;
+
+function classify(v){
+  var st=v.state||{}, aum=+st.totalAssetsUsd||0;
+  var apy=(+st.netApy||0)*100, fee=(+st.fee||0)*100;
+  var blue=0,pt=0,oth=0,wl=0,at=0;
+  (st.allocation||[]).forEach(function(a){
+    var s=+a.supplyAssetsUsd||0; if(!s||!a.market)return;
+    var sym=(a.market.collateralAsset&&a.market.collateralAsset.symbol)||'';
+    at+=s; wl+=(Number(a.market.lltv)/1e18)*s;
+    if(/^PT[-_]/i.test(sym))pt+=s; else if(BLUE[sym])blue+=s; else oth+=s;});
+  return {name:v.name||v.symbol||'', sym:v.symbol||'', chain:(v.chain&&v.chain.network)||'',
+    asset:(v.asset&&v.asset.symbol)||'', aum:aum, apy:apy, fee:fee,
+    listed:!!v.listed, share:+st.sharePriceNumber||null,
+    ex:(+st.netApyExcludingRewards||0)*100,
+    blue:at?blue/at:null, pt:at?pt/at:null, oth:at?oth/at:null, lltv:at?wl/at:null,
+    markets:(st.allocation||[]).filter(function(a){return +a.supplyAssetsUsd>0}).length,
+    curAddr:String(st.curator||'').toLowerCase()};
+}
+
+function load(){
+  return Promise.all([D.postJSON(API,{query:VQ},30000), D.postJSON(API,{query:CQ},20000)])
+   .then(function(r){
+    if(r[0].errors)throw new Error(r[0].errors[0].message);
+    if(r[1].errors)throw new Error(r[1].errors[0].message);
+    var a2n={};
+    (r[1].data.curators.items||[]).forEach(function(c){
+      (c.addresses||[]).forEach(function(a){a2n[String(a.address||a).toLowerCase()]=c.name});});
+    var all=(r[0].data.vaults.items||[]).map(classify);
+    all.forEach(function(v){v.cur=a2n[v.curAddr]||'No curator listed'});
+    VAULTS=all.filter(function(v){return v.apy<=100 && v.fee<=35});
+    BAD=all.filter(function(v){return v.apy>100 || v.fee>35});
+    TOTAL=VAULTS.reduce(function(s,v){return s+v.aum},0);
+    var by={};
+    VAULTS.forEach(function(v){
+      var o=by[v.cur]||(by[v.cur]={c:v.cur,n:0,aum:0,wapy:0,wfee:0,wlltv:0,blue:0,pt:0,al:0,wmk:0});
+      o.n++;o.aum+=v.aum;o.wapy+=v.apy*v.aum;o.wfee+=v.fee*v.aum;o.wmk+=v.markets*v.aum;
+      if(v.lltv!=null){o.wlltv+=v.lltv*v.aum;o.blue+=v.blue*v.aum;o.pt+=v.pt*v.aum;o.al+=v.aum}});
+    CUR=Object.keys(by).map(function(k){var o=by[k];
+      return {c:k,n:o.n,aum:o.aum,share:o.aum/TOTAL,apy:o.wapy/o.aum,fee:o.wfee/o.aum,
+        lltv:o.al?o.wlltv/o.al:null,blue:o.al?o.blue/o.al:null,pt:o.al?o.pt/o.al:null,
+        mk:o.wmk/o.aum};}).sort(function(a,b){return b.aum-a.aum});
+    live=true;
+  });
+}
+
+/* ---------- render ---------- */
+function renderHero(){
+  var med=null;
+  if(live&&VAULTS.length){var a=VAULTS.map(function(v){return v.apy}).sort(function(x,y){return x-y});
+    med=a.length%2?a[(a.length-1)/2]:(a[a.length/2-1]+a[a.length/2])/2;}
+  var top3=live?CUR.slice(0,3).reduce(function(s,c){return s+c.share},0):null;
+  var hhi=live?CUR.reduce(function(s,c){return s+c.share*c.share},0):null;
+  var bTop3=BL.curators.slice(0,3).reduce(function(s,c){return s+c.share},0);
+  var bHhi=BL.curators.reduce(function(s,c){return s+c.share*c.share},0);
+  var bMed=(function(){var a=BL.vh.map(function(v){return v.med}).sort(function(x,y){return x-y});
+    return a.length%2?a[(a.length-1)/2]:(a[a.length/2-1]+a[a.length/2])/2;})();
+  D.hero([
+    ['Readable assets', live?usd(TOTAL):D.dash,
+      live?('<b>'+VAULTS.length+'</b> vaults, published <b>'+usd(BL.total)+'</b> across '+BL.vh.length+'+ vaults')
+          :'<span class="skel">waiting for live data</span>'],
+    ['Held by the top three', live?pct(top3):D.dash, 'published <b>'+pct(bTop3)+'</b>'],
+    ['Median vault rate', live?f2(med)+'%':D.dash, 'published median across the thirty largest <b>'+f2(bMed)+'%</b>'],
+    ['Concentration, HHI', live?f2(hhi,3):D.dash,
+      'published <b>'+f2(bHhi,3)+'</b>, one would mean a single curator holds everything']
+  ]);
+}
+
+function renderDrift(){
+  var names={};
+  BL.curators.forEach(function(c){names[c.c]=1});
+  if(live)CUR.forEach(function(c){names[c.c]=1});
+  var liveBy={}; CUR.forEach(function(c){liveBy[c.c]=c});
+  var rows=Object.keys(names).map(function(n){
+    return {name:n, then:BASE_CUR[n]?BASE_CUR[n].share:0, now:live?(liveBy[n]?liveBy[n].share:0):null};})
+    .filter(function(r){return r.then>0.002||(r.now!=null&&r.now>0.002)})
+    .sort(function(a,b){return (b.now==null?b.then:b.now)-(a.now==null?a.then:a.now)});
+  D.dumbbell('drift','drift-lg',rows,0,function(v){return pct(v)},
+    'published, September 2026','live, this page load');
+}
+
+function renderCurators(){
+  var t=D.Table('tlive',[
+    ['c','Curator',function(r){return esc(r.c)},function(r){return r.c},''],
+    ['n','Vaults',function(r){return r.n},function(r){return r.n},''],
+    ['aum','Assets',function(r){return usd(r.aum)},function(r){return r.aum},''],
+    ['share','Share',function(r){return pct(r.share)},function(r){return r.share},'mark'],
+    ['was','Published',function(r){return BASE_CUR[r.c]?pct(BASE_CUR[r.c].share):D.dash},
+      function(r){return BASE_CUR[r.c]?BASE_CUR[r.c].share:-1},''],
+    ['apy','Rate',function(r){return f2(r.apy)+'%'},function(r){return r.apy},''],
+    ['fee','Fee',function(r){return f2(r.fee,1)+'%'},function(r){return r.fee},
+      function(r){return r.fee>=12?'neg':''}],
+    ['blue','Blue chip',function(r){return r.blue==null?D.dash:pct(r.blue,0)},function(r){return r.blue==null?-1:r.blue},
+      function(r){return (r.blue!=null&&r.blue<0.05)?'neg':''}],
+    ['pt','PT Pendle',function(r){return r.pt==null?D.dash:pct(r.pt,0)},function(r){return r.pt==null?-1:r.pt},''],
+    ['lltv','LLTV',function(r){return r.lltv==null?D.dash:f2(r.lltv,3)},function(r){return r.lltv==null?-1:r.lltv},''],
+    ['mk','Markets',function(r){return f2(r.mk,1)},function(r){return r.mk},'']
+  ],function(){return CUR},{sort:'aum',empty:'Waiting for live data.'});
+  t.draw();
+}
+
+function renderWhisker(){
+  var rows=BL.vh.slice(0,22).map(function(v){
+    return {name:v.v.length>26?v.v.slice(0,25)+'…':v.v, med:v.med,
+      lo:Math.max(0,v.med-v.iqr/2), hi:v.med+v.iqr/2, tag:f2(v.med)+'%'};});
+  D.dotWhisker('whisker',rows,8,function(t){return f2(t,0)+'%'});
+}
+
+function renderFeeBars(){
+  var box=$('feebars'); box.innerHTML='';
+  var rows=(live?CUR:BL.curators.map(function(c){return {c:c.c,apy:c.apy,fee:c.fee,aum:c.aum}}))
+    .slice().sort(function(a,b){return b.fee-a.fee});
+  rows.forEach(function(r){
+    box.appendChild(D.el('div','bline',
+      '<span class="cname">'+esc(r.c)+'</span>'+
+      '<span class="trk"><span class="base"></span>'+
+        '<span class="seg" style="top:5px;height:3px;left:0;width:'+Math.min(100,r.apy/8*100).toFixed(1)+'%"></span>'+
+        '<span class="seg" style="top:12px;height:3px;left:0;width:'+Math.min(100,r.fee/25*100).toFixed(1)+'%;background:var(--fg-3)"></span>'+
+      '</span>'+
+      '<span class="cval">'+f2(r.apy)+'% <span class="d">/ '+f2(r.fee,1)+'%</span></span>'));
+  });
+  $('feebars-lg').innerHTML='<span><i class="now"></i>rate delivered, scale to 8% a year</span>'+
+    '<span><i style="background:var(--fg-3);border:0"></i>curator fee, scale to 25%</span>';
+}
+
+function renderBad(){
+  var rows=live?BAD:BL.bad.map(function(b){
+    return {name:b.v,chain:b.chain,asset:b.asset,aum:b.aum,apy:null,fee:null,share:null,listed:null};});
+  var t=D.Table('tbad',[
+    ['name','Vault',function(r){return esc(r.name)},function(r){return r.name},''],
+    ['chain','Chain',function(r){return esc(r.chain)},function(r){return r.chain},''],
+    ['asset','Asset',function(r){return esc(r.asset||'')},function(r){return r.asset||''},''],
+    ['listed','Listed',function(r){return r.listed==null?D.dash:(r.listed?'yes':'no')},
+      function(r){return r.listed==null?-1:(r.listed?1:0)},
+      function(r){return r.listed===false?'neg':''}],
+    ['aum','Assets',function(r){return usd(r.aum)},function(r){return r.aum},''],
+    ['share','Share price',function(r){return r.share==null?D.dash:'$'+f2(r.share)},
+      function(r){return r.share==null?-1:r.share},
+      function(r){return (r.share!=null&&r.share>2)?'neg':''}],
+    ['apy','Rate as returned',function(r){return r.apy==null?D.dash:f2(r.apy)+'%'},
+      function(r){return r.apy==null?-1:r.apy},'neg'],
+    ['fee','Fee',function(r){return r.fee==null?D.dash:f2(r.fee,1)+'%'},function(r){return r.fee==null?-1:r.fee},'']
+  ],function(){return rows},{sort:'aum',empty:'No vault is currently quoting an unreadable rate.'});
+  t.draw();
+  var n=$('badnote');
+  if(n){
+    if(!live){ n.textContent=''; return; }
+    var okListed=VAULTS.filter(function(v){return v.listed}).length;
+    n.innerHTML='Of the '+(VAULTS.length+BAD.length)+' vaults above one million dollars, '+
+      BAD.length+' quote a rate this page will not use, and not one of them is listed on Morpho\'s own '+
+      'interface: all '+okListed+' listed vaults in the sample quote a plausible rate. '+
+      'The share price column is the reason. A vault denominated in a dollar asset should price its share '+
+      'near one dollar, as every included vault does. These price theirs in the hundreds, and the API derives '+
+      'the rate from share price growth, so a share that climbed from about a dollar to several hundred '+
+      'annualises into the figures on the right. The rate is an artefact of the share price, not yield anyone received.';
+  }
+}
+
+/* ---------- vault explorer ---------- */
+var q='', curPick='all', vt;
+function vaultRows(){
+  var s=q.toLowerCase();
+  return VAULTS.filter(function(v){
+    if(curPick!=='all'&&v.cur!==curPick)return false;
+    if(!s)return true;
+    return (v.name+' '+v.sym+' '+v.asset+' '+v.chain+' '+v.cur).toLowerCase().indexOf(s)>=0;});
+}
+function buildExplorer(){
+  vt=D.Table('tvaults',[
+    ['name','Vault',function(r){return esc(r.name)},function(r){return r.name},''],
+    ['cur','Curator',function(r){return esc(r.cur)},function(r){return r.cur},''],
+    ['chain','Chain',function(r){return esc(r.chain)},function(r){return r.chain},''],
+    ['asset','Asset',function(r){return esc(r.asset)},function(r){return r.asset},''],
+    ['aum','Assets',function(r){return usd(r.aum)},function(r){return r.aum},''],
+    ['apy','Rate',function(r){return f2(r.apy)+'%'},function(r){return r.apy},'mark'],
+    ['ex','Without rewards',function(r){return f2(r.ex)+'%'},function(r){return r.ex},''],
+    ['fee','Fee',function(r){return f2(r.fee,1)+'%'},function(r){return r.fee},''],
+    ['blue','Blue chip',function(r){return r.blue==null?D.dash:pct(r.blue,0)},function(r){return r.blue==null?-1:r.blue},''],
+    ['lltv','LLTV',function(r){return r.lltv==null?D.dash:f2(r.lltv,3)},function(r){return r.lltv==null?-1:r.lltv},'']
+  ],vaultRows,{sort:'aum',perPage:25,empty:VAULTS.length?'Nothing matches that filter.':'Waiting for live data.',
+    onDraw:function(total,pages,page){
+      $('cnt').textContent=total.toLocaleString('en-US')+(total===1?' vault':' vaults');
+      $('pg').textContent=total?('page '+(page+1)+' of '+pages+', showing '+(page*25+1)+' to '+
+        Math.min(total,(page+1)*25)):'';
+      $('prev').disabled=page<=0; $('next').disabled=page>=pages-1;}});
+  $('prev').addEventListener('click',function(){vt.state.page--;vt.draw();
+    $('sec-vaults').scrollIntoView({behavior:'smooth',block:'start'})});
+  $('next').addEventListener('click',function(){vt.state.page++;vt.draw();
+    $('sec-vaults').scrollIntoView({behavior:'smooth',block:'start'})});
+  $('q').addEventListener('input',function(){q=this.value;vt.reset();vt.draw()});
+}
+function refreshChips(){
+  var opts=[['all','All']].concat(CUR.map(function(c){return [c.c,c.c]}));
+  D.chips('chips',opts,curPick,function(v){curPick=v;vt.reset();vt.draw()});
+}
+
+/* ---------- boot ---------- */
+renderWhisker(); renderHero(); renderDrift(); renderCurators(); renderFeeBars(); renderBad();
+buildExplorer(); refreshChips(); vt.draw(); D.theme();
+
+function refresh(){
+  $('refresh').disabled=true; D.setStatus('','loading live data'); D.clearError();
+  var t0=Date.now();
+  load().then(function(){
+    renderHero(); renderDrift(); renderCurators(); renderFeeBars(); renderBad();
+    refreshChips(); vt.reset(); vt.draw();
+    D.setStatus('live','live');
+    D.setStamp(new Date().toLocaleString('en-GB')+', '+((Date.now()-t0)/1000).toFixed(1)+'s');
+    $('refresh').disabled=false;
+  }).catch(function(e){
+    live=false; D.setStatus('off','live data unavailable'); D.showError(e.message);
+    $('refresh').disabled=false;});
+}
+$('refresh').addEventListener('click',refresh);
+refresh();
+})();
+</script>
+
+</body>
+</html>

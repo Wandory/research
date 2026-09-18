@@ -1,0 +1,365 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Mercenary liquidity</title>
+</head>
+<body>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,600;8..60,700&family=Source+Sans+3:wght@400;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+:root{
+  --paper:#FFFFFF; --ink:#111111; --ink-2:#3A3A3A; --ink-3:#6B6B6B;
+  --rule:#D6D6D6; --rule-2:#9A9A9A; --tint:#F4F4F2;
+  --c1:#7A5A1E; --c2:#1F5F55; --c3:#2F4E8F; --c4:#8E3E3C;
+  --c5:#3D6524; --c6:#5B3C86; --c7:#175C6E; --c8:#7E3760;
+  --serif:'Source Serif 4',Georgia,'Times New Roman',serif;
+  --sans:'Source Sans 3',-apple-system,'Segoe UI',Arial,sans-serif;
+  --mono:'IBM Plex Mono',ui-monospace,Consolas,monospace;
+  --measure:37em; --col:48em;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --paper:#121212; --ink:#ECECEA; --ink-2:#C2C2BE; --ink-3:#8E8E8A;
+  --rule:#2C2C2C; --rule-2:#555555; --tint:#1A1A1A;
+  --c1:#C9A16A; --c2:#7FB9AC; --c3:#8AA9E0; --c4:#D7908F;
+  --c5:#9AC07C; --c6:#B694DC; --c7:#6FC2D6; --c8:#C98BB4;
+}}
+:root[data-theme="dark"]{
+  --paper:#121212; --ink:#ECECEA; --ink-2:#C2C2BE; --ink-3:#8E8E8A;
+  --rule:#2C2C2C; --rule-2:#555555; --tint:#1A1A1A;
+  --c1:#C9A16A; --c2:#7FB9AC; --c3:#8AA9E0; --c4:#D7908F;
+  --c5:#9AC07C; --c6:#B694DC; --c7:#6FC2D6; --c8:#C98BB4;
+}
+*{box-sizing:border-box}
+body{margin:0; background:var(--paper); color:var(--ink);
+  font-family:var(--serif); font-size:17px; line-height:1.52;
+  -webkit-font-smoothing:antialiased; hyphens:auto}
+.paper{max-width:var(--col); margin:0 auto; padding:clamp(28px,5vw,64px) clamp(20px,5vw,40px) 96px}
+p{margin:0 0 .85em; max-width:var(--measure)}
+p.wide{max-width:none}
+h1,h2,h3,h4{font-family:var(--sans); font-weight:600; color:var(--ink); margin:0}
+a{color:inherit; text-decoration:underline; text-underline-offset:2px; text-decoration-thickness:.5px;
+  text-decoration-color:var(--rule-2)}
+a:hover{text-decoration-color:var(--ink)}
+ul,ol{margin:0 0 .9em; padding-left:1.15em; max-width:var(--measure)}
+li{margin-bottom:.35em}
+ul.plain{list-style:none; padding-left:0}
+ul.plain li{margin-bottom:.7em}
+b,strong{font-weight:600}
+.mono{font-family:var(--mono); font-variant-numeric:tabular-nums}
+
+/* title block */
+.titleblock{border-bottom:1.5px solid var(--ink); padding-bottom:22px; margin-bottom:26px}
+.kicker{font-family:var(--sans); font-size:12px; font-weight:600; letter-spacing:.11em;
+  text-transform:uppercase; color:var(--ink-3); margin:0 0 14px}
+h1{font-size:clamp(27px,3.4vw,36px); line-height:1.16; letter-spacing:-.015em; max-width:26ch}
+.sub{margin-top:10px; font-size:17px; color:var(--ink-2); max-width:var(--measure)}
+dl.meta{display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:12px 26px;
+  margin:22px 0 0; padding-top:16px; border-top:1px solid var(--rule)}
+dl.meta dt{font-family:var(--sans); font-size:11px; font-weight:600; letter-spacing:.08em;
+  text-transform:uppercase; color:var(--ink-3)}
+dl.meta dd{margin:3px 0 0; font-size:14.5px; color:var(--ink-2); font-family:var(--sans)}
+
+/* abstract and toc */
+.abstract{background:var(--tint); padding:20px 22px; margin-bottom:26px}
+.abstract h2{font-size:12px; letter-spacing:.11em; text-transform:uppercase; color:var(--ink-3); margin-bottom:9px}
+.abstract p{font-size:16px; margin-bottom:.6em}
+.abstract p:last-child{margin-bottom:0}
+nav.toc{margin-bottom:34px; padding-bottom:22px; border-bottom:1px solid var(--rule)}
+nav.toc h2{font-size:12px; letter-spacing:.11em; text-transform:uppercase; color:var(--ink-3); margin-bottom:10px}
+nav.toc ol{list-style:none; padding:0; margin:0; columns:2; column-gap:38px; max-width:none}
+nav.toc li{font-family:var(--sans); font-size:14px; margin-bottom:5px; break-inside:avoid}
+nav.toc a{text-decoration:none; color:var(--ink-2)}
+nav.toc a:hover{color:var(--ink); text-decoration:underline}
+nav.toc .n{display:inline-block; min-width:1.7em; color:var(--ink-3); font-variant-numeric:tabular-nums}
+
+/* sections */
+section{margin-bottom:34px}
+section > h2{font-size:19px; line-height:1.3; margin:34px 0 12px; padding-bottom:6px;
+  border-bottom:1px solid var(--rule); display:flex; gap:.6em; align-items:baseline}
+section > h2 .n{color:var(--ink-3); font-variant-numeric:tabular-nums; flex:none}
+h3{font-size:15.5px; margin:22px 0 8px}
+.lead{font-size:17px; color:var(--ink-2)}
+
+/* figures and tables */
+figure{margin:22px 0 24px}
+figcaption{font-family:var(--sans); font-size:13px; color:var(--ink-2); line-height:1.5; margin-top:10px;
+  padding-top:8px; border-top:1px solid var(--rule); max-width:none}
+figcaption b{font-weight:600; color:var(--ink)}
+.tbl{margin:22px 0 24px}
+.tcap{font-family:var(--sans); font-size:13px; color:var(--ink); line-height:1.5; margin:0 0 8px; max-width:none}
+.tcap b{font-weight:600}
+.tnote{font-family:var(--sans); font-size:12.5px; color:var(--ink-3); line-height:1.5; margin:8px 0 0; max-width:none}
+.tw{overflow-x:auto}
+table{border-collapse:collapse; width:100%; min-width:520px; font-family:var(--sans); font-size:13.5px}
+thead th{font-size:11.5px; font-weight:600; letter-spacing:.04em; text-transform:uppercase; color:var(--ink-2);
+  text-align:right; padding:0 8px 7px; border-bottom:1px solid var(--ink); vertical-align:bottom}
+thead th:first-child{text-align:left; padding-left:0}
+thead th:last-child{padding-right:0}
+tbody td{text-align:right; padding:7px 8px; border-bottom:1px solid var(--rule);
+  font-variant-numeric:tabular-nums; color:var(--ink-2); white-space:nowrap}
+tbody td:first-child{text-align:left; padding-left:0; color:var(--ink); white-space:normal}
+tbody td:last-child{padding-right:0}
+tbody tr:last-child td{border-bottom:1px solid var(--ink)}
+td.mark{color:var(--ink); font-weight:600}
+td.neg{color:var(--c4)}
+
+/* simple charts, print safe */
+.bars{display:grid}
+.bline{display:grid; grid-template-columns:minmax(92px,150px) minmax(0,1fr) 62px; gap:14px; align-items:center;
+  padding:6px 0}
+.bline .cname{font-family:var(--sans); font-size:13px}
+.ctrack{position:relative; height:9px; background:var(--tint); border:1px solid var(--rule)}
+.cfill{position:absolute; inset:0 auto 0 0; background:var(--ink)}
+.cfill.dim{left:auto; right:0; background:var(--rule-2)}
+.cval{font-family:var(--mono); font-size:12.5px; text-align:right; font-variant-numeric:tabular-nums; color:var(--ink-2)}
+.dz{position:relative; height:10px; background:var(--tint); border:1px solid var(--rule)}
+.dz .zl{position:absolute; top:-3px; bottom:-3px; width:1px; background:var(--rule-2)}
+.dz span{position:absolute; top:0; bottom:0; background:var(--ink)}
+.dz span.m{background:var(--c4)}
+.lines svg{display:block; width:100%; height:auto; overflow:visible}
+.lines text{font-family:var(--mono); font-size:9.5px; fill:var(--ink-3)}
+.legend{display:flex; flex-wrap:wrap; gap:8px 20px; margin-top:12px; font-family:var(--sans); font-size:12.5px; color:var(--ink-2)}
+.legend i{display:inline-block; width:15px; height:2px; margin-right:7px; vertical-align:4px}
+.legend i.sw{height:9px; border:1px solid var(--rule)}
+.smallmult{display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:16px 20px}
+@media(max-width:760px){.smallmult{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.sm h4{font-family:var(--sans); font-size:12.5px; font-weight:600; display:flex; justify-content:space-between; gap:8px; margin-bottom:5px}
+.sm h4 span{font-family:var(--mono); font-weight:400; color:var(--ink-3)}
+.sm svg{display:block; width:100%; height:auto; border-bottom:1px solid var(--rule)}
+.sm p{font-family:var(--mono); font-size:10.5px; color:var(--ink-3); margin:5px 0 0; white-space:nowrap}
+.ustack{display:grid}
+.urow{display:grid; grid-template-columns:minmax(92px,150px) minmax(0,1fr); gap:14px; align-items:center; padding:5px 0}
+.ubar{display:flex; height:10px; border:1px solid var(--rule)}
+.ubar span{height:100%}
+
+/* key findings, no bullets, flush left */
+.findings{list-style:none; padding:0; margin:0 0 .9em; max-width:var(--measure)}
+.findings li{margin-bottom:.75em}
+.findings b{font-weight:600}
+
+/* references */
+ol.refs{padding-left:1.4em; max-width:none}
+ol.refs li{font-family:var(--sans); font-size:13.5px; color:var(--ink-2); margin-bottom:.5em}
+ol.refs code{font-family:var(--mono); font-size:12.5px}
+.files2{display:grid; margin-top:6px}
+.files2 a{display:grid; grid-template-columns:minmax(0,22em) minmax(0,1fr); gap:16px; padding:7px 0;
+  border-bottom:1px solid var(--rule); text-decoration:none; font-family:var(--sans); font-size:13px}
+.files2 a span:first-child{font-family:var(--mono); font-size:12.5px; color:var(--ink)}
+.files2 a span:last-child{color:var(--ink-3)}
+.files2 a:hover span:last-child{color:var(--ink-2)}
+@media(max-width:620px){.files2 a{grid-template-columns:1fr; gap:2px}}
+
+/* theme toggle, screen only */
+#tt{position:fixed; right:14px; bottom:14px; z-index:50; appearance:none; cursor:pointer;
+  background:var(--paper); border:1px solid var(--rule-2); color:var(--ink-3);
+  font-family:var(--sans); font-size:11px; letter-spacing:.08em; text-transform:uppercase; padding:7px 11px}
+#tt:hover{color:var(--ink); border-color:var(--ink)}
+@media print{ #tt{display:none} }
+</style>
+
+<button id="tt" type="button">Theme</button>
+<article class="paper">
+
+<header class="titleblock">
+  <p class="kicker">Independent research &middot; decentralised exchanges</p>
+  <h1>Mercenary liquidity</h1>
+  <p class="sub">The composition of liquidity-provider yield across seven exchanges, and how liquidity responds when emissions are switched on and off, January 2024 to September 2026</p>
+  <dl class="meta">
+    <div><dt>Author</dt><dd>Illia Sharan (Wandor)</dd></div>
+    <div><dt>Date</dt><dd>17 September 2026</dd></div>
+    <div><dt>Data</dt><dd>DefiLlama yields and protocol APIs</dd></div>
+    <div><dt>Sample</dt><dd>7 exchanges, 143 pools, 65,727 pool-days</dd></div>
+  </dl>
+</header>
+
+<section class="abstract">
+  <h2>Abstract</h2>
+  <p>This paper transfers the method of the preceding study on lending protocols to decentralised exchanges. Liquidity-provider yield is decomposed into trading fees and exchange-token emissions, and the response of liquidity is measured by an event study adjusted for the venue-wide trend.</p>
+  <p>The fee share of yield ranges from 1.00 at Uniswap v3 and v4, which pay no emissions at all, down to 0.10 at Aerodrome v1. Over the period the seven venues paid out $96.7M, about a third more than eight lending protocols paid over a longer window. The event-study result is the opposite of lending: switching emissions on produces a median excess pool-TVL gain of 39.5% over 90 days, against zero in lending, while switching them off costs Aerodrome 10.2% of pool TVL. The paper describes the composition of reported yield and does not measure the liquidity provider's bottom line, since the fee rate does not account for impermanent loss.</p>
+</section>
+
+<nav class="toc">
+  <h2>Contents</h2>
+  <ol>
+    <li><a href="#s1"><span class="n">1</span>Research question</a></li>
+    <li><a href="#s2"><span class="n">2</span>Data and method</a></li>
+    <li><a href="#s3"><span class="n">3</span>Composition of yield</a></li>
+    <li><a href="#s4"><span class="n">4</span>Event study of emissions</a></li>
+    <li><a href="#s5"><span class="n">5</span>The price of liquidity</a></li>
+    <li><a href="#s6"><span class="n">6</span>Limitations</a></li>
+    <li><a href="#s7"><span class="n">7</span>Conclusions</a></li>
+    <li><a href="#refs"><span class="n">&nbsp;</span>References</a></li>
+    <li><a href="#data"><span class="n">&nbsp;</span>Data availability</a></li>
+  </ol>
+</nav>
+
+<section id="s1">
+  <h2><span class="n">1</span>Research question</h2>
+  <p class="lead">The question of this paper: what share of a liquidity provider's yield on an exchange is created by trading and what share is printed, and does the liquidity stay once the printing stops.</p>
+  <p>In lending protocols, on the evidence of the preceding study, rewards do not buy liquidity: pools with rewards do not grow faster than their own protocol. Exchanges are built differently. There liquidity is a direct input of production, and venues pay for it with emissions routed through vote-escrow systems. If the method is sound it should surface that difference rather than reproduce the earlier finding.</p>
+  <p>Sample: Uniswap v3, Uniswap v4, Curve, Aerodrome Slipstream, Aerodrome v1, Balancer v3 and Velodrome v3.</p>
+</section>
+
+<section id="s2">
+  <h2><span class="n">2</span>Data and method</h2>
+  <h3>2.1 Sample and sources</h3>
+  <p>Pools were selected in descending order of TVL with a cap per venue. TVL coverage reached 85% at Aerodrome Slipstream, 78% at Curve, 71% at Uniswap v3 and 62% at Uniswap v4; at the remaining venues the sample covers the whole set. Daily series for <span class="mono">apyBase</span>, <span class="mono">apyReward</span> and <span class="mono">tvlUsd</span> come from the yields API, daily venue TVL from the protocol API [1]. Of 231 selected pools, 7 failed to load, including all ten Velodrome v3 pools, so that venue is absent from the tables.</p>
+  <h3>2.2 Metrics and event definition</h3>
+  <p>The fee share of yield is computed exactly as in the lending paper [2]: apyBase divided by the sum of apyBase and apyReward, aggregated across days weighted by TVL. Emissions are priced in dollars as the sum over pool-days of apyReward divided by 36,500 and multiplied by tvlUsd.</p>
+  <p>An emissions switch-on is defined as a move in the 14-day mean reward rate from below 0.15% to above 1% annualised; a switch-off is a fall from above 1% to a quarter of that level or lower. Each event requires pool TVL of at least $300k and 45 days of data on either side, with at least 60 days between consecutive events in the same pool. For each event the change in pool TVL is measured net of the change in the venue's total TVL over the same days.</p>
+</section>
+
+<section id="s3">
+  <h2><span class="n">3</span>Composition of yield</h2>
+  <p>Figure 1 shows the fee share of yield over the period; Figure 2 shows it month by month.</p>
+  <figure id="fig1">
+    <div class="bars" id="orgBars"></div>
+    <div class="legend"><span><i class="sw" style="background:var(--ink)"></i>trading fees</span><span><i class="sw" style="background:var(--rule-2)"></i>exchange-token emissions</span></div>
+    <figcaption><b>Figure 1.</b> TVL-weighted fee share of yield over the observation period. Source: DefiLlama yields API, author's calculation.</figcaption>
+  </figure>
+  <p>Two models coexist in one market. Uniswap v3 met rewards in only five months of 2025 across 37,765 pool-days, and they contributed 0.03 points out of a 22.1% annualised rate. Uniswap v4 paid no emissions at all. At the other end sits Aerodrome v1, where 90% of provider yield is printed, and Curve, where roughly half is.</p>
+  <figure id="fig2">
+    <div class="smallmult" id="mult"></div>
+    <figcaption><b>Figure 2.</b> Monthly fee share of yield. The filled area is fees, the gap above it is emissions; the dashed line marks 0.5.</figcaption>
+  </figure>
+  <p>Emissions behave counter-cyclically. At Aerodrome Slipstream the fee share fell from 0.76 in March 2026 to 0.31 in August while the reward rate rose to 104% annualised: the venue raises payouts precisely when trading brings in less.</p>
+</section>
+
+<section id="s4">
+  <h2><span class="n">4</span>Event study of emissions</h2>
+  <p>Sixty pool-level events were identified. Table 1 reports the result adjusted for the venue trend; the final two rows repeat the lending paper's result for comparison.</p>
+  <div class="tbl" id="tab1">
+    <p class="tcap"><b>Table 1.</b> Change in TVL around emissions switch-ons and switch-offs.</p>
+    <div class="tw"><table id="evTable"></table></div>
+    <p class="tnote">Excess is the change in pool TVL minus the change in venue TVL over the same days. Venue-level breakdowns are shown where at least three events occurred.</p>
+  </div>
+  <p>Across 17 switch-ons the median excess at 90 days is plus 39.5%, with 24% of cases negative. In lending the same computation returned minus 0.6%, that is, zero. Across 43 switch-offs the median excess is minus 5.7%, and at Aerodrome Slipstream, with 27 events, minus 10.2% with 70% of cases negative.</p>
+  <p>Curve behaves in the opposite direction: after a switch-off its pools grew faster than the venue, with a median excess of plus 25.7%. The explanation is visible in the data itself. At Curve the reward usually does not disappear but falls from 2.32% to 0.41% annualised, and the pool stays inside the vote-escrow system. The event there therefore marks a reduction in payouts, not their end.</p>
+</section>
+
+<section id="s5">
+  <h2><span class="n">5</span>The price of liquidity</h2>
+  <div class="tbl" id="tab2">
+    <p class="tcap"><b>Table 2.</b> Emissions paid, rates, and the price of acquired liquidity by venue.</p>
+    <div class="tw"><table id="incTable"></table></div>
+    <p class="tnote">TVL is as of the collection date. Rates are TVL-weighted over the sample's observation period. The price of liquidity is emissions over the period divided by mean sample TVL and annualised.</p>
+  </div>
+  <p>Aerodrome Slipstream paid out $58.4M and Curve $35.1M. For comparison, the most generous lending protocol in the preceding study, Morpho Blue, paid $30.6M over a longer window. Exchanges pay more for liquidity than lenders do, over a shorter window, and, unlike in lending, that payment does move the amount of liquidity.</p>
+  <p>Correction. The first version of this table reported $85.4M for Curve, taken from a separate totals pass that did not apply the inclusion rule stated in section 2.2. Summing the thirty three monthly rows of the published panel, which does apply it, gives $35.1M. The panel is the reproducible figure and is used here; the venue total for emissions changes from $147M to $96.7M, and Aerodrome Slipstream rather than Curve is the largest spender in the sample. No other venue was affected: every other total agrees with its monthly rows to within rounding.</p>
+</section>
+
+<section id="s6">
+  <h2><span class="n">6</span>Limitations</h2>
+  <ul class="plain">
+    <li><b>Impermanent loss is not accounted for.</b> This is the principal limitation of the paper. The fee rate in the source is computed as fees over TVL and excludes any change in the value of the position. The paper answers what reported yield is made of, not whether the liquidity provider made money.</li>
+    <li><b>Vote-escrow emissions are not decomposed.</b> At Curve, Aerodrome and Velodrome the allocation of rewards is decided by token-holder votes, and part of the payout is bought by third-party protocols. In the data this appears as a reward from the venue even though a third party pays it.</li>
+    <li><b>The sample is biased toward large pools.</b> Small pools, where emissions relative to TVL are highest, barely enter the sample.</li>
+    <li><b>Totals were reconciled against the monthly panel after publication.</b> One venue, Curve, disagreed: its totals row exceeded the sum of its own monthly rows by $50.3M. The monthly figure is used throughout. The check now runs over every venue and issuer in the data set.</li>
+    <li><b>The event sample is small.</b> 17 switch-ons and 43 switch-offs across six venues, with 4 to 27 cases per venue.</li>
+    <li><b>Velodrome v3 dropped out entirely</b> because every selected pool failed to load.</li>
+  </ul>
+</section>
+
+<section id="s7">
+  <h2><span class="n">7</span>Conclusions</h2>
+  <ol>
+    <li>Two models coexist on exchanges: fully fee-funded (Uniswap) and predominantly emissions-funded (Aerodrome, Curve).</li>
+    <li>On exchanges emissions do buy liquidity, unlike in lending protocols, where the same method returns a null effect.</li>
+    <li>Bought liquidity leaves when payouts fall, but it does not collapse: the median loss is about 10% at the most emissions-dependent venue.</li>
+    <li>An identical method producing opposite results confirms that the difference lies in how the markets are built, not in how they are measured.</li>
+  </ol>
+</section>
+
+<section id="refs">
+  <h2>References</h2>
+  <ol class="refs">
+    <li>DefiLlama. Yields API, <code>yields.llama.fi/pools</code> and <code>yields.llama.fi/chart/{pool}</code>; Protocol API, <code>api.llama.fi/protocol/{slug}</code>. Data retrieved 17 September 2026.</li>
+    <li>Illia Sharan. Organic yield against token subsidies: a decomposition of yield across eight lending protocols, September 2026. The event-study method and the definition of the yield share are taken from it unchanged.</li>
+  </ol>
+</section>
+
+<section id="data">
+  <h2>Data availability</h2>
+  <div class="files2" id="files"></div>
+</section>
+
+</article>
+
+<script id="D" type="application/json">{"months":["2024-01","2024-02","2024-03","2024-04","2024-05","2024-06","2024-07","2024-08","2024-09","2024-10","2024-11","2024-12","2025-01","2025-02","2025-03","2025-04","2025-05","2025-06","2025-07","2025-08","2025-09","2025-10","2025-11","2025-12","2026-01","2026-02","2026-03","2026-04","2026-05","2026-06","2026-07","2026-08","2026-09"],"totals":[{"project":"sky-lending","grp":"stable","pools":"5","tvl_now":"5156941534","incentives_usd":"0","base_apy_w":"4.767","reward_apy_w":"0.000","organic":"1.0000","pool_days":"2305"},{"project":"ondo-yield-assets","grp":"stable","pools":"11","tvl_now":"2553017496","incentives_usd":"0","base_apy_w":"3.516","reward_apy_w":"0.000","organic":"1.0000","pool_days":"2561"},{"project":"ethena-usde","grp":"stable","pools":"1","tvl_now":"1314879204","incentives_usd":"0","base_apy_w":"7.598","reward_apy_w":"0.000","organic":"1.0000","pool_days":"945"},{"project":"curve-dex","grp":"dex","pools":"35","tvl_now":"1057902484","incentives_usd":"35080564","base_apy_w":"1.700","reward_apy_w":"1.739","organic":"0.4944","pool_days":"25427"},{"project":"uniswap-v3","grp":"dex","pools":"40","tvl_now":"996580118","incentives_usd":"1176511","base_apy_w":"22.091","reward_apy_w":"0.026","organic":"0.9988","pool_days":"37765"},{"project":"uniswap-v4","grp":"dex","pools":"22","tvl_now":"506264290","incentives_usd":"0","base_apy_w":"18.135","reward_apy_w":"0.000","organic":"1.0000","pool_days":"3249"},{"project":"midas-rwa","grp":"stable","pools":"15","tvl_now":"391609846","incentives_usd":"0","base_apy_w":"7.953","reward_apy_w":"0.000","organic":"1.0000","pool_days":"1214"},{"project":"aerodrome-slipstream","grp":"dex","pools":"40","tvl_now":"136266248","incentives_usd":"58361436","base_apy_w":"24.863","reward_apy_w":"18.087","organic":"0.5789","pool_days":"9921"},{"project":"falcon-finance","grp":"stable","pools":"2","tvl_now":"84672912","incentives_usd":"0","base_apy_w":"6.111","reward_apy_w":"0.000","organic":"1.0000","pool_days":"676"},{"project":"origin-ether","grp":"stable","pools":"2","tvl_now":"76687668","incentives_usd":"0","base_apy_w":"2.700","reward_apy_w":"0.000","organic":"1.0000","pool_days":"84"},{"project":"balancer-v3","grp":"dex","pools":"4","tvl_now":"10801191","incentives_usd":"513068","base_apy_w":"2.205","reward_apy_w":"1.650","organic":"0.5720","pool_days":"1568"},{"project":"aerodrome-v1","grp":"dex","pools":"2","tvl_now":"9148654","incentives_usd":"1548225","base_apy_w":"1.235","reward_apy_w":"10.930","organic":"0.1015","pool_days":"482"},{"project":"usual-usd0","grp":"stable","pools":"1","tvl_now":"8193521","incentives_usd":"5541141","base_apy_w":"18.178","reward_apy_w":"49.494","organic":"0.2686","pool_days":"396"},{"project":"origin-dollar","grp":"stable","pools":"1","tvl_now":"5577449","incentives_usd":"0","base_apy_w":"5.837","reward_apy_w":"0.000","organic":"1.0000","pool_days":"41"}],"cr":[{"project":"aerodrome-slipstream","window_days":"180","n":"290","med_claimed":"42.97","med_realized":"82.14","med_ratio":"1.473","share_below":"0.317"},{"project":"aerodrome-slipstream","window_days":"30","n":"475","med_claimed":"40.51","med_realized":"71.24","med_ratio":"1.609","share_below":"0.267"},{"project":"aerodrome-slipstream","window_days":"365","n":"66","med_claimed":"51.21","med_realized":"103.81","med_ratio":"1.444","share_below":"0.288"},{"project":"aerodrome-slipstream","window_days":"90","n":"392","med_claimed":"39.82","med_realized":"74.53","med_ratio":"1.635","share_below":"0.301"},{"project":"balancer-v3","window_days":"180","n":"37","med_claimed":"4.18","med_realized":"3.68","med_ratio":"0.847","share_below":"0.730"},{"project":"balancer-v3","window_days":"30","n":"46","med_claimed":"4.26","med_realized":"4.07","med_ratio":"0.945","share_below":"0.696"},{"project":"balancer-v3","window_days":"90","n":"39","med_claimed":"4.13","med_realized":"3.64","med_ratio":"0.876","share_below":"0.769"},{"project":"curve-dex","window_days":"180","n":"603","med_claimed":"5.46","med_realized":"5.21","med_ratio":"0.898","share_below":"0.629"},{"project":"curve-dex","window_days":"30","n":"711","med_claimed":"5.37","med_realized":"5.47","med_ratio":"0.988","share_below":"0.540"},{"project":"curve-dex","window_days":"365","n":"450","med_claimed":"5.76","med_realized":"5.35","med_ratio":"0.815","share_below":"0.709"},{"project":"curve-dex","window_days":"90","n":"668","med_claimed":"5.38","med_realized":"5.28","med_ratio":"0.955","share_below":"0.569"},{"project":"ethena-usde","window_days":"180","n":"50","med_claimed":"8.00","med_realized":"6.42","med_ratio":"0.938","share_below":"0.580"},{"project":"ethena-usde","window_days":"30","n":"60","med_claimed":"6.00","med_realized":"6.50","med_ratio":"1.042","share_below":"0.450"},{"project":"ethena-usde","window_days":"365","n":"39","med_claimed":"10.29","med_realized":"8.47","med_ratio":"0.811","share_below":"0.692"},{"project":"ethena-usde","window_days":"90","n":"56","med_claimed":"6.35","med_realized":"6.68","med_ratio":"0.989","share_below":"0.536"},{"project":"midas-rwa","window_days":"30","n":"37","med_claimed":"8.07","med_realized":"8.18","med_ratio":"1.019","share_below":"0.405"},{"project":"ondo-yield-assets","window_days":"180","n":"44","med_claimed":"3.57","med_realized":"3.61","med_ratio":"1.012","share_below":"0.500"},{"project":"ondo-yield-assets","window_days":"30","n":"154","med_claimed":"3.55","med_realized":"3.61","med_ratio":"1.018","share_below":"0.091"},{"project":"ondo-yield-assets","window_days":"90","n":"110","med_claimed":"3.55","med_realized":"3.61","med_ratio":"1.018","share_below":"0.236"},{"project":"sky-lending","window_days":"180","n":"75","med_claimed":"5.00","med_realized":"5.03","med_ratio":"0.960","share_below":"0.573"},{"project":"sky-lending","window_days":"30","n":"101","med_claimed":"4.75","med_realized":"4.74","med_ratio":"1.018","share_below":"0.297"},{"project":"sky-lending","window_days":"365","n":"59","med_claimed":"5.00","med_realized":"5.43","med_ratio":"0.879","share_below":"0.729"},{"project":"sky-lending","window_days":"90","n":"87","med_claimed":"4.75","med_realized":"4.79","med_ratio":"1.000","share_below":"0.506"},{"project":"uniswap-v3","window_days":"180","n":"1481","med_claimed":"20.51","med_realized":"31.15","med_ratio":"1.249","share_below":"0.394"},{"project":"uniswap-v3","window_days":"30","n":"1687","med_claimed":"19.69","med_realized":"27.06","med_ratio":"1.257","share_below":"0.372"},{"project":"uniswap-v3","window_days":"365","n":"1260","med_claimed":"20.39","med_realized":"31.10","med_ratio":"1.304","share_below":"0.370"},{"project":"uniswap-v3","window_days":"90","n":"1607","med_claimed":"20.00","med_realized":"29.65","med_ratio":"1.273","share_below":"0.372"},{"project":"uniswap-v4","window_days":"180","n":"51","med_claimed":"11.58","med_realized":"12.91","med_ratio":"0.907","share_below":"0.569"},{"project":"uniswap-v4","window_days":"30","n":"133","med_claimed":"10.99","med_realized":"11.66","med_ratio":"0.938","share_below":"0.549"},{"project":"uniswap-v4","window_days":"90","n":"98","med_claimed":"11.49","med_realized":"12.94","med_ratio":"0.944","share_below":"0.541"}],"ev":[{"group":"start|all","n":"17","med_reward_before":"0.00","med_reward_after":"1.37","med_pool_d90":"17.3","med_protocol_d90":"3.5","med_excess_d30":"17.2","med_excess_d90":"39.5","share_excess_neg_90":"0.24"},{"group":"start|balancer-v3","n":"4","med_reward_before":"0.00","med_reward_after":"1.37","med_pool_d90":"44.9","med_protocol_d90":"21.5","med_excess_d30":"28.4","med_excess_d90":"51.5","share_excess_neg_90":"0.00"},{"group":"start|curve-dex","n":"11","med_reward_before":"0.00","med_reward_after":"1.09","med_pool_d90":"8.7","med_protocol_d90":"7.0","med_excess_d30":"17.2","med_excess_d90":"39.5","share_excess_neg_90":"0.27"},{"group":"stop|aerodrome-slipstream","n":"27","med_reward_before":"60.37","med_reward_after":"11.82","med_pool_d90":"-16.9","med_protocol_d90":"-7.9","med_excess_d30":"-6.9","med_excess_d90":"-10.2","share_excess_neg_90":"0.70"},{"group":"stop|all","n":"43","med_reward_before":"18.60","med_reward_after":"3.13","med_pool_d90":"-14.5","med_protocol_d90":"-8.7","med_excess_d30":"-5.4","med_excess_d90":"-5.7","share_excess_neg_90":"0.58"},{"group":"stop|balancer-v3","n":"4","med_reward_before":"2.68","med_reward_after":"0.44","med_pool_d90":"-34.1","med_protocol_d90":"-24.8","med_excess_d30":"-10.7","med_excess_d90":"-17.5","share_excess_neg_90":"1.00"},{"group":"stop|curve-dex","n":"11","med_reward_before":"2.32","med_reward_after":"0.41","med_pool_d90":"27.3","med_protocol_d90":"-8.8","med_excess_d30":"14.4","med_excess_d90":"25.7","share_excess_neg_90":"0.09"}],"series":{"aerodrome-slipstream":{"org":[null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,0.6131,0.5646,0.6654,0.652,0.5911,0.7164,0.6601,0.6297,0.7572,0.4763,0.7118,0.6862,0.4407,0.3124,0.326],"base":[null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,16.707,16.7759,9.9594,64.3238,87.0197,48.9323,25.4325,44.3205,41.057,29.6458,25.2287,31.2665,25.2907,32.5385,50.2653],"rew":[null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,10.5436,12.9373,5.0078,34.3314,60.1968,19.3722,13.0984,26.0679,13.1626,32.5938,10.214,14.2998,32.101,71.6172,103.9372],"tvl":[null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,45391188.0,47684991.0,39921456.0,7290893.0,5668493.0,6162409.0,7834267.0,5741469.0,5756267.0,5474365.0,5975797.0,4644383.0,4466535.0,3180819.0,3281380.0],"inc":[null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,4156493.0,11527057.0,3614953.0,4676956.0,5964428.0,2230600.0,1917375.0,2525907.0,1415710.0,3104197.0,1110370.0,1113566.0,3154362.0,5598299.0,6251162.0]},"aerodrome-v1":{"org":[null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,0.0899,0.0774,0.0889,0.1838,0.1131,0.1048,0.0896,0.0487,0.1282,0.1281,0.116,0.1093,0.06,0.1115,0.0967],"base":[null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,1.2466,1.2742,1.0932,1.8988,1.5904,1.0443,0.641,0.8327,1.2439,0.7837,0.7302,1.3236,0.7044,0.8547,0.9029],"rew":[null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,12.6197,15.1933,11.2104,8.4324,12.4736,8.9205,6.51,16.2673,8.4553,5.3326,5.5627,10.7848,11.042,6.8127,8.4329],"tvl":[null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,14136009.0,14307177.0,16319437.0,13637977.0,12088041.0,10454760.0,10977264.0,13076038.0,8554969.0,9433136.0,6582927.0,5115184.0,6119011.0,6455860.0,6964623.0],"inc":[null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,215048.0,369237.0,250613.0,144933.0,148716.0,112424.0,5874.0,5828.0,31709.0,20672.0,19062.0,69525.0,81450.0,50609.0,22527.0]},"balancer-v3":{"org":[null,null,null,null,null,null,null,null,null,null,null,0.4606,0.4658,0.8457,1.0,0.6319,0.4328,0.5575,0.6055,0.5544,0.5594,0.5329,0.5984,0.7517,0.543,0.7621,1.0,1.0,1.0,1.0,0.3538,0.2935,0.3966],"base":[null,null,null,null,null,null,null,null,null,null,null,2.323,2.3557,2.3606,2.7254,2.7812,2.201,2.1481,2.284,1.9451,2.0273,2.0957,2.3106,3.2035,2.2966,2.8466,2.1557,3.3355,2.1276,2.3719,1.8039,1.8479,2.2223],"rew":[null,null,null,null,null,null,null,null,null,null,null,2.7206,2.7011,0.4308,0.0,1.6204,2.8844,1.705,1.4881,1.5635,1.5965,1.8372,1.5509,1.0579,1.933,0.8886,0.0,0.0,0.0,0.0,3.2947,4.4471,3.381],"tvl":[null,null,null,null,null,null,null,null,null,null,null,2477953.0,2401689.0,1909489.0,1461026.0,1469650.0,9673967.0,15905173.0,23478103.0,27112961.0,25220240.0,20485037.0,5507352.0,2202410.0,4889274.0,4376518.0,4813269.0,3795421.0,2945874.0,2198822.0,2422665.0,3079229.0,3565887.0],"inc":[null,null,null,null,null,null,null,null,null,null,null,2955.0,5510.0,699.0,0.0,3915.0,47398.0,44578.0,59348.0,72009.0,66188.0,63927.0,14977.0,5936.0,24081.0,8950.0,0.0,0.0,0.0,0.0,23618.0,46521.0,22461.0]},"curve-dex":{"org":[0.5423,0.5437,0.4735,0.5951,0.6061,0.6512,0.7428,0.7807,0.7193,0.7663,0.7418,0.5085,0.4882,0.6501,0.4372,0.2769,0.2568,0.2937,0.2975,0.3397,0.294,0.4896,0.6137,0.5718,0.5494,0.5732,0.4759,0.5264,0.4529,0.6652,0.5437,0.5407,0.5737],"base":[1.5632,1.4218,1.8894,1.6866,1.3823,1.3401,1.2885,1.5646,1.129,1.2138,1.4688,1.6458,1.5256,1.6776,1.0021,0.9538,0.843,0.8816,1.0318,1.1397,1.0882,1.7537,2.7292,2.0613,1.6592,1.8524,1.2853,1.5581,1.0912,2.411,1.4462,1.4373,1.6275],"rew":[1.3193,1.1934,2.1008,1.1475,0.8982,0.7177,0.4461,0.4394,0.4406,0.3701,0.5113,1.591,1.5994,0.9028,1.2902,2.4905,2.4393,2.1207,2.4362,2.2153,2.6128,1.8279,1.7181,1.5438,1.3607,1.3791,1.4156,1.4018,1.3181,1.2135,1.2138,1.2209,1.2093],"tvl":[58919359.0,60046961.0,65733880.0,59872602.0,57058874.0,57683976.0,49911367.0,43724101.0,40114666.0,38400809.0,39145364.0,43509158.0,39452838.0,33964405.0,30881701.0,32939589.0,36511443.0,36366190.0,40354836.0,45070505.0,41934348.0,42492379.0,40946601.0,46057965.0,46671763.0,38096745.0,36296063.0,35161321.0,33457778.0,28108152.0,28671009.0,30820779.0,31275487.0],"inc":[902968.0,797104.0,1641985.0,790596.0,640285.0,510418.0,296484.0,261093.0,232415.0,193117.0,272529.0,1031738.0,992332.0,446924.0,656049.0,1348542.0,1620191.0,1407181.0,1939340.0,2051603.0,2341393.0,1781127.0,1561208.0,1630511.0,1456300.0,1088239.0,1135980.0,1196471.0,1157502.0,953226.0,1010647.0,1118549.0,616517.0]},"ethena-usde":{"org":[null,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0],"base":[null,20.3889,37.107,23.984,20.7292,17.2636,11.2686,7.069,6.4337,11.3432,20.6744,20.3861,12.1066,9.18,6.5573,4.9757,5.7611,4.905,6.6947,7.614,7.0726,4.2584,5.1747,4.4152,4.7566,3.7534,3.4914,4.0311,3.7834,3.8685,3.9743,4.3076,4.7919],"rew":[null,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0],"tvl":[null,182398887.0,327573908.0,380833521.0,571655958.0,1437654024.0,1546917918.0,1291261826.0,1119261570.0,1269628939.0,2070394724.0,3747251904.0,3681578348.0,3446641761.0,2742219503.0,2083937840.0,2355785530.0,3328306874.0,3575865999.0,5391631953.0,5910565543.0,5535436880.0,4499830585.0,3534896168.0,3705033598.0,3630204230.0,3561519786.0,3058367136.0,1862631965.0,1733508819.0,1588044637.0,1435749636.0,1346876956.0],"inc":[null,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0]},"falcon-finance":{"org":[null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0],"base":[null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,7.7659,7.4518,7.9357,6.4648,5.7995,5.397,5.5797,4.31,4.502,4.7542,4.1081,3.7069],"rew":[null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0],"tvl":[null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,122927446.0,92091595.0,84375928.0,79433278.0,56269051.0,52134489.0,49215717.0,45823678.0,42424094.0,39216203.0,38580926.0,42058474.0],"inc":[null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0]},"midas-rwa":{"org":[null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,1.0,1.0,1.0,null,null,null,null,null,null,1.0,1.0,1.0,1.0],"base":[null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,6.6453,10.4213,9.5454,null,null,null,null,null,null,8.298,6.9285,6.0995,4.9909],"rew":[null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,0.0,0.0,0.0,null,null,null,null,null,null,0.0,0.0,0.0,0.0],"tvl":[null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,104966466.0,113705915.0,91918940.0,null,null,null,null,null,null,20617669.0,21606250.0,22007277.0,24118845.0],"inc":[null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,0.0,0.0,0.0,null,null,null,null,null,null,0.0,0.0,0.0,0.0]},"ondo-yield-assets":{"org":[null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0],"base":[null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,3.6181,3.3905,3.4845,3.5132,3.516,3.5319,3.5338,3.5346,3.5511],"rew":[null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0],"tvl":[null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,108251491.0,110158899.0,141872412.0,146567781.0,180222711.0,238329904.0,234018319.0,230201733.0,232117598.0],"inc":[null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0]},"origin-dollar":{"org":[null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,1.0,1.0],"base":[null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,5.369,6.494],"rew":[null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,0.0,0.0],"tvl":[null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,5586123.0,5617536.0],"inc":[null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,0.0,0.0]},"origin-ether":{"org":[null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,1.0,1.0],"base":[null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,2.7002,2.7003],"rew":[null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,0.0,0.0],"tvl":[null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,35876305.0,39129779.0],"inc":[null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,0.0,0.0]},"sky-lending":{"org":[1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0],"base":[5.0,5.0,11.9698,12.2178,9.1234,8.0,7.4754,6.4436,6.0,5.605,6.3309,10.7936,11.4658,7.7415,5.7151,4.2276,4.0084,3.9427,3.8829,4.0844,4.1113,4.2285,4.192,3.9492,3.8452,3.8788,3.7152,3.6325,3.5545,3.5224,3.5517,3.5183,3.5655],"rew":[0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0],"tvl":[1434498789.0,1178191613.0,1416749076.0,1768249532.0,2039406299.0,1888834601.0,1992230353.0,2019828341.0,2067212107.0,1759113816.0,1359486511.0,1063734054.0,1084612308.0,1501836424.0,2155564029.0,1813628965.0,1692607897.0,1629157252.0,1332970775.0,1232304939.0,1331691471.0,1626869738.0,2080417292.0,2366767993.0,2334491578.0,2058381662.0,2258558299.0,2226003822.0,2194378141.0,2201402561.0,1366240271.0,1095602114.0,1080899998.0],"inc":[0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0]},"uniswap-v3":{"org":[1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,0.9988,0.9887,0.9921,0.9849,0.9829,0.9971,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0],"base":[19.9674,17.5369,29.3834,27.9077,23.5994,15.9632,20.7259,21.6074,11.4635,14.4236,38.0418,34.7841,33.1755,34.923,25.7074,24.3128,29.1269,21.2203,18.1245,28.6225,18.7295,26.7341,24.2087,17.3051,17.792,38.3551,27.9214,18.8105,13.2138,26.2305,13.7475,18.725,22.4367],"rew":[0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0258,0.208,0.229,0.2869,0.4638,0.0692,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0],"tvl":[40795731.0,51623683.0,51176856.0,47358325.0,50593881.0,52408258.0,51807814.0,42481229.0,39786390.0,41114010.0,42179833.0,38797122.0,40129426.0,38262201.0,36454242.0,27612482.0,30755077.0,28825274.0,29170931.0,35057927.0,38832372.0,37477111.0,32744630.0,30693621.0,31914065.0,23456544.0,25130750.0,26661545.0,27689215.0,21845183.0,22005835.0,23540929.0,24941414.0],"inc":[0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,18792.0,159091.0,211401.0,275892.0,453871.0,57464.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0]},"uniswap-v4":{"org":[null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0],"base":[null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,13.2165,11.0925,14.552,14.0575,6.9847,80.7155,13.5068,8.068,8.7672,7.3292],"rew":[null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0],"tvl":[null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,13185889.0,12668255.0,11244179.0,12243469.0,14127232.0,13341679.0,11203808.0,12457013.0,15682709.0,20254399.0],"inc":[null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0]},"usual-usd0":{"org":[null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,0.4499,0.3482,0.1867,0.1772,0.1307,0.1657,0.3842,0.3593,0.3548,0.405,0.3244,0.3129,0.4325,0.3748],"base":[null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,32.8752,22.6096,15.4634,17.2495,14.6682,14.7825,18.8762,14.2666,14.0836,14.0072,13.7823,15.3013,20.5596,12.3125],"rew":[null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,40.202,42.3183,67.3594,80.074,97.551,74.4108,30.2501,25.4437,25.6071,20.5746,28.7045,33.608,26.9769,20.5342],"tvl":[null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,19547191.0,19198520.0,12932106.0,11987840.0,12387434.0,14846447.0,6964840.0,6755312.0,6864930.0,8201669.0,6186969.0,5867001.0,7017372.0,8198124.0],"inc":[null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,430595.0,667766.0,739838.0,788970.0,827676.0,938268.0,161623.0,145980.0,144486.0,143318.0,145968.0,167466.0,160781.0,78406.0]}}}</script>
+<script>
+(function(){
+var D=JSON.parse(document.getElementById('D').textContent);
+var N={'uniswap-v3':'Uniswap v3','uniswap-v4':'Uniswap v4','curve-dex':'Curve','aerodrome-slipstream':'Aerodrome Slipstream','aerodrome-v1':'Aerodrome v1','balancer-v3':'Balancer v3'};
+var num=function(v){return parseFloat(v)||0};
+var el=function(t,c,h){var e=document.createElement(t);if(c)e.className=c;if(h!==undefined)e.innerHTML=h;return e};
+var m$=function(v){return v>=1e9?(v/1e9).toFixed(2)+'B':(v/1e6).toFixed(v>=1e8?0:1)+'M'};
+function table(id,head,rows){var t=document.getElementById(id);if(!t)return;
+ t.innerHTML='<thead><tr>'+head.map(function(h){return '<th>'+h+'</th>'}).join('')+'</tr></thead><tbody>'+
+ rows.map(function(r){return '<tr>'+r.map(function(c){var cl=(c&&c.cl)?' class="'+c.cl+'"':'';var v=(c&&c.v!==undefined)?c.v:c;
+  return '<td'+cl+'>'+v+'</td>'}).join('')+'</tr>'}).join('')+'</tbody>';}
+var DEX=D.totals.filter(function(t){return t.grp==='dex'}).sort(function(a,b){return num(b.organic)-num(a.organic)});
+
+var rank=document.getElementById('orgBars');
+DEX.forEach(function(t){var o=num(t.organic),sub=1-o;
+ rank.appendChild(el('div','bline','<span class="cname">'+(N[t.project]||t.project)+'</span>'+
+ '<span class="ctrack"><span class="cfill" style="width:'+(o*100).toFixed(2)+'%"></span>'+
+ (sub>0.002?'<span class="cfill dim" style="width:'+(sub*100).toFixed(2)+'%"></span>':'')+'</span>'+
+ '<span class="cval">'+o.toFixed(2)+'</span>'));});
+
+var mult=document.getElementById('mult'),W=200,H=54,SP=2.6,M=D.months;
+DEX.forEach(function(t){var s=D.series[t.project].org,pts=[],seg=[];
+ for(var i=0;i<M.length;i++){if(s[i]===null){if(seg.length){pts.push(seg);seg=[]}continue}
+  seg.push([(i/(M.length-1))*W,SP+(1-s[i])*(H-2*SP)])}
+ if(seg.length)pts.push(seg);
+ var area='',line='';
+ pts.forEach(function(g){if(g.length<2)return;
+  line+='M'+g.map(function(q){return q[0].toFixed(1)+','+q[1].toFixed(1)}).join('L');
+  area+='M'+g[0][0].toFixed(1)+','+H+'L'+g.map(function(q){return q[0].toFixed(1)+','+q[1].toFixed(1)}).join('L')+'L'+g[g.length-1][0].toFixed(1)+','+H+'Z'});
+ mult.appendChild(el('div','sm','<h4>'+(N[t.project]||t.project)+'<span>'+num(t.organic).toFixed(2)+'</span></h4>'+
+  '<svg viewBox="0 0 '+W+' '+H+'" preserveAspectRatio="none" role="img" aria-label="'+t.project+'">'+
+  '<line x1="0" y1="'+(H/2)+'" x2="'+W+'" y2="'+(H/2)+'" stroke="currentColor" stroke-width="0.7" stroke-dasharray="2 3" opacity=".35"/>'+
+  '<path d="'+area+'" fill="currentColor" opacity=".14"/>'+
+  '<path d="'+line+'" fill="none" stroke="currentColor" stroke-width="1.3" vector-effect="non-scaling-stroke" stroke-linejoin="round"/></svg>'+
+  '<p>$'+(num(t.incentives_usd)/1e6).toFixed(1)+'M paid out</p>'));});
+
+var rows=D.ev.map(function(e){
+ var pr=e.group.split('|')[1], ty=e.group.split('|')[0];
+ var isTot=(pr==='all');
+ var nm=isTot?(ty==='stop'?'All switch-offs':'All switch-ons'):((ty==='stop'?'switch-off, ':'switch-on, ')+(N[pr]||pr));
+ return [{v:isTot?'<b>'+nm+'</b>':nm},e.n,num(e.med_reward_before).toFixed(2)+'%',num(e.med_reward_after).toFixed(2)+'%',
+  num(e.med_pool_d90).toFixed(1)+'%',num(e.med_protocol_d90).toFixed(1)+'%',
+  {v:num(e.med_excess_d30).toFixed(1)+'%',cl:num(e.med_excess_d30)<-5?'neg':(num(e.med_excess_d30)>15?'mark':'')},
+  {v:num(e.med_excess_d90).toFixed(1)+'%',cl:num(e.med_excess_d90)<-5?'neg':(num(e.med_excess_d90)>15?'mark':'')},
+  (num(e.share_excess_neg_90)*100).toFixed(0)+'%'];});
+rows.push([{v:'<b>Lending, switch-ons</b>'},50,'0.00%','1.09%','19.5%','6.6%','5.8%','-0.6%','52%']);
+rows.push([{v:'<b>Lending, switch-offs</b>'},41,'1.89%','0.41%','-12.5%','1.1%',{v:'-6.0%',cl:'neg'},{v:'-7.4%',cl:'neg'},'56%']);
+table('evTable',['Group','Events','Reward before','Reward after','Pool TVL, 90d','Venue, 90d','Excess, 30d','Excess, 90d','Share negative'],rows);
+
+table('incTable',['Venue','Pools','TVL now','Paid out','Fee rate','Reward rate','Fee share','Price of liquidity, %/yr'],
+ DEX.slice().sort(function(a,b){return num(b.incentives_usd)-num(a.incentives_usd)}).map(function(t){
+  var s=D.series[t.project],tv=s.tvl.filter(function(x){return x!==null}),inc=num(t.incentives_usd);
+  var avg=tv.reduce(function(a,b){return a+b},0)/(tv.length||1), months=tv.length;
+  var price=months?inc/avg*(12/months)*100:0;
+  return [(N[t.project]||t.project),t.pools,'$'+m$(num(t.tvl_now)),
+   {v:'$'+m$(inc),cl:inc>2e7?'neg':''},num(t.base_apy_w).toFixed(2)+'%',
+   {v:num(t.reward_apy_w).toFixed(2)+'%',cl:num(t.reward_apy_w)>5?'neg':''},
+   num(t.organic).toFixed(2),price.toFixed(1)+'%'];}));
+
+var R='../data/';
+document.getElementById('files').innerHTML=[['dex_stable_monthly.csv','monthly panel by venue and issuer'],
+ ['dex_stable_totals.csv','venue totals: pools, TVL, emissions, rate composition'],
+ ['dex_events_did.csv','60 emissions changes, adjusted for the venue trend']]
+ .map(function(x){return '<a href="'+R+x[0]+'" target="_blank" rel="noopener"><span>'+x[0]+'</span><span>'+x[1]+'</span></a>'}).join('');
+
+document.getElementById('tt').addEventListener('click',function(){
+ var c=document.documentElement.getAttribute('data-theme');
+ if(!c)c=matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light';
+ document.documentElement.setAttribute('data-theme',c==='dark'?'light':'dark');});
+})();
+</script>
+
+</body>
+</html>

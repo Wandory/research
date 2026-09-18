@@ -1,0 +1,420 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Who runs your money in Morpho</title>
+</head>
+<body>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,600;8..60,700&family=Source+Sans+3:wght@400;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+:root{
+  --paper:#FFFFFF; --ink:#111111; --ink-2:#3A3A3A; --ink-3:#6B6B6B;
+  --rule:#D6D6D6; --rule-2:#9A9A9A; --tint:#F4F4F2;
+  --c1:#7A5A1E; --c2:#1F5F55; --c3:#2F4E8F; --c4:#8E3E3C;
+  --c5:#3D6524; --c6:#5B3C86; --c7:#175C6E; --c8:#7E3760;
+  --serif:'Source Serif 4',Georgia,'Times New Roman',serif;
+  --sans:'Source Sans 3',-apple-system,'Segoe UI',Arial,sans-serif;
+  --mono:'IBM Plex Mono',ui-monospace,Consolas,monospace;
+  --measure:37em; --col:48em;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --paper:#121212; --ink:#ECECEA; --ink-2:#C2C2BE; --ink-3:#8E8E8A;
+  --rule:#2C2C2C; --rule-2:#555555; --tint:#1A1A1A;
+  --c1:#C9A16A; --c2:#7FB9AC; --c3:#8AA9E0; --c4:#D7908F;
+  --c5:#9AC07C; --c6:#B694DC; --c7:#6FC2D6; --c8:#C98BB4;
+}}
+:root[data-theme="dark"]{
+  --paper:#121212; --ink:#ECECEA; --ink-2:#C2C2BE; --ink-3:#8E8E8A;
+  --rule:#2C2C2C; --rule-2:#555555; --tint:#1A1A1A;
+  --c1:#C9A16A; --c2:#7FB9AC; --c3:#8AA9E0; --c4:#D7908F;
+  --c5:#9AC07C; --c6:#B694DC; --c7:#6FC2D6; --c8:#C98BB4;
+}
+*{box-sizing:border-box}
+body{margin:0; background:var(--paper); color:var(--ink);
+  font-family:var(--serif); font-size:17px; line-height:1.52;
+  -webkit-font-smoothing:antialiased; hyphens:auto}
+.paper{max-width:var(--col); margin:0 auto; padding:clamp(28px,5vw,64px) clamp(20px,5vw,40px) 96px}
+p{margin:0 0 .85em; max-width:var(--measure)}
+p.wide{max-width:none}
+h1,h2,h3,h4{font-family:var(--sans); font-weight:600; color:var(--ink); margin:0}
+a{color:inherit; text-decoration:underline; text-underline-offset:2px; text-decoration-thickness:.5px;
+  text-decoration-color:var(--rule-2)}
+a:hover{text-decoration-color:var(--ink)}
+ul,ol{margin:0 0 .9em; padding-left:1.15em; max-width:var(--measure)}
+li{margin-bottom:.35em}
+ul.plain{list-style:none; padding-left:0}
+ul.plain li{margin-bottom:.7em}
+b,strong{font-weight:600}
+.mono{font-family:var(--mono); font-variant-numeric:tabular-nums}
+
+/* title block */
+.titleblock{border-bottom:1.5px solid var(--ink); padding-bottom:22px; margin-bottom:26px}
+.kicker{font-family:var(--sans); font-size:12px; font-weight:600; letter-spacing:.11em;
+  text-transform:uppercase; color:var(--ink-3); margin:0 0 14px}
+h1{font-size:clamp(27px,3.4vw,36px); line-height:1.16; letter-spacing:-.015em; max-width:26ch}
+.sub{margin-top:10px; font-size:17px; color:var(--ink-2); max-width:var(--measure)}
+dl.meta{display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:12px 26px;
+  margin:22px 0 0; padding-top:16px; border-top:1px solid var(--rule)}
+dl.meta dt{font-family:var(--sans); font-size:11px; font-weight:600; letter-spacing:.08em;
+  text-transform:uppercase; color:var(--ink-3)}
+dl.meta dd{margin:3px 0 0; font-size:14.5px; color:var(--ink-2); font-family:var(--sans)}
+
+/* abstract and toc */
+.abstract{background:var(--tint); padding:20px 22px; margin-bottom:26px}
+.abstract h2{font-size:12px; letter-spacing:.11em; text-transform:uppercase; color:var(--ink-3); margin-bottom:9px}
+.abstract p{font-size:16px; margin-bottom:.6em}
+.abstract p:last-child{margin-bottom:0}
+nav.toc{margin-bottom:34px; padding-bottom:22px; border-bottom:1px solid var(--rule)}
+nav.toc h2{font-size:12px; letter-spacing:.11em; text-transform:uppercase; color:var(--ink-3); margin-bottom:10px}
+nav.toc ol{list-style:none; padding:0; margin:0; columns:2; column-gap:38px; max-width:none}
+nav.toc li{font-family:var(--sans); font-size:14px; margin-bottom:5px; break-inside:avoid}
+nav.toc a{text-decoration:none; color:var(--ink-2)}
+nav.toc a:hover{color:var(--ink); text-decoration:underline}
+nav.toc .n{display:inline-block; min-width:1.7em; color:var(--ink-3); font-variant-numeric:tabular-nums}
+
+/* sections */
+section{margin-bottom:34px}
+section > h2{font-size:19px; line-height:1.3; margin:34px 0 12px; padding-bottom:6px;
+  border-bottom:1px solid var(--rule); display:flex; gap:.6em; align-items:baseline}
+section > h2 .n{color:var(--ink-3); font-variant-numeric:tabular-nums; flex:none}
+h3{font-size:15.5px; margin:22px 0 8px}
+.lead{font-size:17px; color:var(--ink-2)}
+
+/* figures and tables */
+figure{margin:22px 0 24px}
+figcaption{font-family:var(--sans); font-size:13px; color:var(--ink-2); line-height:1.5; margin-top:10px;
+  padding-top:8px; border-top:1px solid var(--rule); max-width:none}
+figcaption b{font-weight:600; color:var(--ink)}
+.tbl{margin:22px 0 24px}
+.tcap{font-family:var(--sans); font-size:13px; color:var(--ink); line-height:1.5; margin:0 0 8px; max-width:none}
+.tcap b{font-weight:600}
+.tnote{font-family:var(--sans); font-size:12.5px; color:var(--ink-3); line-height:1.5; margin:8px 0 0; max-width:none}
+.tw{overflow-x:auto}
+table{border-collapse:collapse; width:100%; min-width:520px; font-family:var(--sans); font-size:13.5px}
+thead th{font-size:11.5px; font-weight:600; letter-spacing:.04em; text-transform:uppercase; color:var(--ink-2);
+  text-align:right; padding:0 8px 7px; border-bottom:1px solid var(--ink); vertical-align:bottom}
+thead th:first-child{text-align:left; padding-left:0}
+thead th:last-child{padding-right:0}
+tbody td{text-align:right; padding:7px 8px; border-bottom:1px solid var(--rule);
+  font-variant-numeric:tabular-nums; color:var(--ink-2); white-space:nowrap}
+tbody td:first-child{text-align:left; padding-left:0; color:var(--ink); white-space:normal}
+tbody td:last-child{padding-right:0}
+tbody tr:last-child td{border-bottom:1px solid var(--ink)}
+td.mark{color:var(--ink); font-weight:600}
+td.neg{color:var(--c4)}
+
+/* simple charts, print safe */
+.bars{display:grid}
+.bline{display:grid; grid-template-columns:minmax(92px,150px) minmax(0,1fr) 62px; gap:14px; align-items:center;
+  padding:6px 0}
+.bline .cname{font-family:var(--sans); font-size:13px}
+.ctrack{position:relative; height:9px; background:var(--tint); border:1px solid var(--rule)}
+.cfill{position:absolute; inset:0 auto 0 0; background:var(--ink)}
+.cfill.dim{left:auto; right:0; background:var(--rule-2)}
+.cval{font-family:var(--mono); font-size:12.5px; text-align:right; font-variant-numeric:tabular-nums; color:var(--ink-2)}
+.dz{position:relative; height:10px; background:var(--tint); border:1px solid var(--rule)}
+.dz .zl{position:absolute; top:-3px; bottom:-3px; width:1px; background:var(--rule-2)}
+.dz span{position:absolute; top:0; bottom:0; background:var(--ink)}
+.dz span.m{background:var(--c4)}
+.lines svg{display:block; width:100%; height:auto; overflow:visible}
+.lines text{font-family:var(--mono); font-size:9.5px; fill:var(--ink-3)}
+.legend{display:flex; flex-wrap:wrap; gap:8px 20px; margin-top:12px; font-family:var(--sans); font-size:12.5px; color:var(--ink-2)}
+.legend i{display:inline-block; width:15px; height:2px; margin-right:7px; vertical-align:4px}
+.legend i.sw{height:9px; border:1px solid var(--rule)}
+.smallmult{display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:16px 20px}
+@media(max-width:760px){.smallmult{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.sm h4{font-family:var(--sans); font-size:12.5px; font-weight:600; display:flex; justify-content:space-between; gap:8px; margin-bottom:5px}
+.sm h4 span{font-family:var(--mono); font-weight:400; color:var(--ink-3)}
+.sm svg{display:block; width:100%; height:auto; border-bottom:1px solid var(--rule)}
+.sm p{font-family:var(--mono); font-size:10.5px; color:var(--ink-3); margin:5px 0 0; white-space:nowrap}
+.ustack{display:grid}
+.urow{display:grid; grid-template-columns:minmax(92px,150px) minmax(0,1fr); gap:14px; align-items:center; padding:5px 0}
+.ubar{display:flex; height:10px; border:1px solid var(--rule)}
+.ubar span{height:100%}
+
+/* key findings, no bullets, flush left */
+.findings{list-style:none; padding:0; margin:0 0 .9em; max-width:var(--measure)}
+.findings li{margin-bottom:.75em}
+.findings b{font-weight:600}
+
+/* references */
+ol.refs{padding-left:1.4em; max-width:none}
+ol.refs li{font-family:var(--sans); font-size:13.5px; color:var(--ink-2); margin-bottom:.5em}
+ol.refs code{font-family:var(--mono); font-size:12.5px}
+.files2{display:grid; margin-top:6px}
+.files2 a{display:grid; grid-template-columns:minmax(0,22em) minmax(0,1fr); gap:16px; padding:7px 0;
+  border-bottom:1px solid var(--rule); text-decoration:none; font-family:var(--sans); font-size:13px}
+.files2 a span:first-child{font-family:var(--mono); font-size:12.5px; color:var(--ink)}
+.files2 a span:last-child{color:var(--ink-3)}
+.files2 a:hover span:last-child{color:var(--ink-2)}
+@media(max-width:620px){.files2 a{grid-template-columns:1fr; gap:2px}}
+
+/* theme toggle, screen only */
+#tt{position:fixed; right:14px; bottom:14px; z-index:50; appearance:none; cursor:pointer;
+  background:var(--paper); border:1px solid var(--rule-2); color:var(--ink-3);
+  font-family:var(--sans); font-size:11px; letter-spacing:.08em; text-transform:uppercase; padding:7px 11px}
+#tt:hover{color:var(--ink); border-color:var(--ink)}
+@media print{ #tt{display:none} }
+</style>
+
+<button id="tt" type="button">Theme</button>
+<article class="paper">
+
+<header class="titleblock">
+  <p class="kicker">Independent research &middot; Morpho Blue</p>
+  <h1>Who runs your money in Morpho</h1>
+  <p class="sub">Market structure of curated vaults, their rates, fees and collateral profile. Snapshot of 17 September 2026 with one year of daily history</p>
+  <dl class="meta">
+    <div><dt>Author</dt><dd>Illia Sharan (Wandor)</dd></div>
+    <div><dt>Date</dt><dd>17 September 2026</dd></div>
+    <div><dt>Source</dt><dd>Morpho's own API</dd></div>
+    <div><dt>Sample</dt><dd>78 vaults, $2.00B</dd></div>
+  </dl>
+</header>
+
+<section class="abstract">
+  <h2>Abstract</h2>
+  <p>In Aave the protocol sets the risk parameters. In Morpho Blue the protocol supplies isolated markets, while the decision of where to place a deposit and against which collateral belongs to an external curator. The depositor sees a rate and a vault name, but not whose decision it is or what backs it.</p>
+  <p>This study covers all 78 vaults above $1M on the snapshot date, $2.00B in total, plus one year of daily history for the thirty largest. Of the $1.53B held in vaults with a readable rate, 84.5% belongs to three curators. The median rate across the thirty largest is 3.40% a year with an interquartile range of 1.08 points, so the choice of curator barely moves the yield, while the curator fee ranges from zero to 25% and the share of blue chip collateral from zero to 100%. Six vaults holding $473M are documented separately: their API returns rates of up to 297,995% a year and none of them lists a curator.</p>
+</section>
+
+<nav class="toc">
+  <h2>Contents</h2>
+  <ol>
+    <li><a href="#s1"><span class="n">1</span>Question</a></li>
+    <li><a href="#s2"><span class="n">2</span>Data and method</a></li>
+    <li><a href="#s3"><span class="n">3</span>Curator concentration</a></li>
+    <li><a href="#s4"><span class="n">4</span>Rate and its stability</a></li>
+    <li><a href="#s5"><span class="n">5</span>Curator fee</a></li>
+    <li><a href="#s6"><span class="n">6</span>Collateral profile</a></li>
+    <li><a href="#s7"><span class="n">7</span>Movement of deposits</a></li>
+    <li><a href="#s8"><span class="n">8</span>Vaults with an unreadable rate</a></li>
+    <li><a href="#s9"><span class="n">9</span>Limitations</a></li>
+    <li><a href="#s10"><span class="n">10</span>Conclusions</a></li>
+    <li><a href="#refs"><span class="n">&nbsp;</span>References</a></li>
+    <li><a href="#data"><span class="n">&nbsp;</span>Data availability</a></li>
+  </ol>
+</nav>
+
+<section id="s1">
+  <h2><span class="n">1</span>Question</h2>
+  <p class="lead">If every curator delivers roughly the same rate, what actually separates them, and what is the depositor paying a fee for?</p>
+  <p>Morpho Blue ranks second by fees and first by rewards paid among the eight lending protocols measured in the preceding study [2], yet it keeps none of the fees itself: the rate a depositor gets is set by a curator, not by the protocol. The curated model moves the risk decision from the protocol to an external team. Formally this increases competition: there are many curators and each builds its own vault. In practice the depositor chooses by rate, and the rate, as shown below, barely distinguishes curators. The difference therefore lies in what the rate does not express: the composition of collateral, the liquidation threshold, the number of markets and the fee.</p>
+</section>
+
+<section id="s2">
+  <h2><span class="n">2</span>Data and method</h2>
+  <h3>2.1 Source</h3>
+  <p>Data comes from Morpho's own API (<span class="mono">blue-api.morpho.org</span>) [1] rather than from an aggregator, for two reasons. First, the API returns the rate twice, with and without rewards, so the split between organic and subsidised yield is a protocol fact here rather than an estimate. Second, it returns the allocation across markets with the collateral asset and liquidation threshold of each, which makes the risk profile describable.</p>
+  <h3>2.2 Sample</h3>
+  <p>All V1 vaults with assets above $1M were taken: 78 vaults, $2.00B. The API lists 1,402 vaults in total, so 94% of them do not reach one million. V2 vaults are out of scope, which is why the total does not match protocol TVL at aggregators, where collateral held in isolated markets is also counted.</p>
+  <h3>2.3 Quality filter</h3>
+  <p>Vaults with a rate above 100% a year or a fee above 35% were excluded: six vaults holding $473M. They are not dropped silently but analysed in section 8. Sections 3 to 7 are computed on the remaining 72 vaults and $1.53B.</p>
+  <h3>2.4 Metrics</h3>
+  <ul class="plain">
+    <li><b>Collateral profile.</b> For each allocation the collateral symbol and the market liquidation threshold are taken and weighted by the amount allocated. Blue chip means WETH, wstETH, cbETH, rETH, weETH, ezETH, WBTC, cbBTC, tBTC, LBTC, USDC, USDT, DAI and USDS.</li>
+    <li><b>Rate stability</b> uses the median and the interquartile range instead of mean and standard deviation, because single day spikes up to 90% a year otherwise distort the picture. Spikes are counted separately as the number of days above 20% a year.</li>
+    <li><b>History.</b> Daily series of rate, rate excluding rewards and assets over 365 days for the thirty largest readable vaults. The series arrive newest first, which is accounted for when computing the change in assets.</li>
+  </ul>
+</section>
+
+<section id="s3">
+  <h2><span class="n">3</span>Curator concentration</h2>
+  <p>Figure 1 shows how assets are distributed across curators; table 1 adds the rate, the fee and the collateral profile.</p>
+  <figure id="fig1">
+    <div class="bars" id="curAum"></div>
+    <figcaption><b>Figure 1.</b> Share of assets by curator among vaults with a readable rate, $1.53B. Source: Morpho API [1], author's calculation.</figcaption>
+  </figure>
+  <div class="tbl" id="tab1">
+    <p class="tcap"><b>Table 1.</b> Rate, fee and collateral composition by curator, across the 72 vaults with a readable rate.</p>
+    <div class="tw"><table id="curTable"></table></div>
+    <p class="tnote">All figures are weighted by assets. LLTV is the liquidation threshold; markets is the average number of markets a vault allocates to.</p>
+  </div>
+  <p>Three curators, Gauntlet, Steakhouse Financial and SparkDAO, hold 84.5% of assets. The remaining nine groups share 15.5%. Fifteen vaults holding $128M list no curator at all; their rate is above the sample average and their share of days with rewards is 11.3% against 0.2% at Gauntlet.</p>
+</section>
+
+<section id="s4">
+  <h2><span class="n">4</span>Rate and its stability</h2>
+  <p>Figure 2 plots the median rate and the interquartile range for the twenty two largest vaults over a year of daily observations.</p>
+  <figure id="fig2">
+    <div class="lines" id="apyBox"></div>
+    <figcaption><b>Figure 2.</b> Median annual rate (dot) and interquartile range (bar) over 365 days. Scale runs from zero to 8% a year.</figcaption>
+  </figure>
+  <p>The median across thirty vaults is 3.40% a year and the median interquartile range is 1.08 points. Dollar vaults of the three large curators sit between 3.16% and 3.93%, a smaller gap than between two bank deposits. Across the year the thirty vaults produced 238 days with a rate above 20% a year; these are moments when utilisation hits its ceiling and they last hours.</p>
+  <p>In Morpho's own accounting rewards are almost absent at the large curators: across the vault-days observed, rewards are present on 0.6% of days at Gauntlet and 1.3% at Steakhouse, and on none at all at SparkDAO. The exception is the two Re7 vaults on World, which carry no curator label in the API: rewards are present on 54.5% of their days and add a median 4.2 points on Re7 USDC and 1.9 points on Re7 WLD.</p>
+</section>
+
+<section id="s5">
+  <h2><span class="n">5</span>Curator fee</h2>
+  <p>The fee ranges from zero to 25% of yield with a median of 10%. Figure 3 sets it against what the curator actually delivers.</p>
+  <figure id="fig3">
+    <div class="bars" id="feeBars"></div>
+    <figcaption><b>Figure 3.</b> Rate delivered to the depositor (upper bar, scale to 8% a year) and curator fee (lower bar, scale to 25%).</figcaption>
+  </figure>
+  <p>Gauntlet charges 1.6% on average and delivers 3.90% a year. Steakhouse charges 12.0% and delivers 3.53%. Anthias Labs and Hakutora charge 15% each and deliver 2.78% and 4.02%. There is no relationship between the size of the fee and the result in this data, while the fee is deducted from the depositor's result directly and permanently.</p>
+</section>
+
+<section id="s6">
+  <h2><span class="n">6</span>Collateral profile</h2>
+  <p>If the rate is nearly identical everywhere, the difference moves to the collateral. Figure 4 shows its composition by curator.</p>
+  <figure id="fig4">
+    <div class="ustack" id="riskStack"></div>
+    <figcaption><b>Figure 4.</b> Collateral composition by curator as a share of assets: blue chips, fixed maturity Pendle tokens, other collateral.</figcaption>
+  </figure>
+  <p>SparkDAO and Hakutora hold 100% of assets against blue chip collateral at rates of 4.00% and 4.02%. Felix, Clearstar and Hyperithm hold none of it at rates of 2.83%, 1.24% and 7.30%, so in two cases out of three the extra collateral risk is not compensated by a higher rate. Five vaults holding $43M keep more than a fifth of their assets behind Pendle tokens, which carry a maturity date and behave differently from a plain asset while looking identical in the interface. Twenty six vaults holding $140M keep less than 20% in blue chips.</p>
+</section>
+
+<section id="s7">
+  <h2><span class="n">7</span>Movement of deposits</h2>
+  <figure id="fig5">
+    <div class="bars" id="flowBars"></div>
+    <figcaption><b>Figure 5.</b> Change in vault assets over 365 days for vaults with a full year of history. The scale is square root and clipped at 400%; exact values are printed on the right.</figcaption>
+  </figure>
+  <p>Of the 26 vaults with a full year of history, 16 lost more than 30% of their assets while several grew several fold. This money did not leave Morpho, it moved inside it: Gauntlet USDC Prime on Base grew from $13M to $419M while the same curator's identically named vault on Ethereum fell from $128M to $26M. The curated model therefore asks the depositor to track not only the curator but which of that curator's vaults is currently working.</p>
+</section>
+
+<section id="s8">
+  <h2><span class="n">8</span>Vaults with an unreadable rate</h2>
+  <p>Collection surfaced a separate category: vaults where the API returns yields in the thousands and hundreds of thousands of per cent a year. None of the six lists a curator.</p>
+  <div class="tbl" id="tab3">
+    <p class="tcap"><b>Table 2.</b> Vaults excluded by the quality filter.</p>
+    <div class="tw"><table id="badTable"></table></div>
+    <p class="tnote">Values are reproduced as returned by the API on 17 September 2026. These vaults are excluded from sections 3 to 7.</p>
+  </div>
+  <p>Together they hold $473M, or 23.6% of all assets in vaults above one million. The largest, Adpend USDC, holds $302M at a curator fee of 50%, double the maximum among the rest. The list includes vaults named Not Gauntlet and Duplicated Key. The vault namespace is not moderated, and what the depositor sees in the interface is a name and a number.</p>
+</section>
+
+<section id="s9">
+  <h2><span class="n">9</span>Limitations</h2>
+  <ul class="plain">
+    <li><b>The curator is taken as of today.</b> Curators change while the rate history stays, so the current curator is attributed to the whole year of a vault's history.</li>
+    <li><b>Idle funds are measured in the snapshot only.</b> Part of a vault's assets may sit unallocated, which dilutes the rate. The yearly history does not track it.</li>
+    <li><b>Risk is measured crudely.</b> Classifying collateral by asset symbol does not separate a sound oracle from a weak one and ignores liquidity depth. This is a first layer of description, not a risk assessment.</li>
+    <li><b>Morpho V2 is excluded,</b> as is collateral held inside isolated markets, so the sample size is not comparable to protocol TVL at aggregators.</li>
+    <li><b>One source.</b> No onchain verification was performed and the net of fee yield is taken as reported.</li>
+  </ul>
+</section>
+
+<section id="s10">
+  <h2><span class="n">10</span>Conclusions</h2>
+  <ol>
+    <li>The curator market is concentrated: three groups hold 84.5% of assets and the remaining nine share a sixth.</li>
+    <li>The rate has stopped being a competitive instrument: the spread of medians among large curators is under one percentage point.</li>
+    <li>The curator fee is unrelated to the result the depositor receives and varies by more than an order of magnitude.</li>
+    <li>The real difference between curators sits in collateral and liquidation thresholds, that is, in what the rate does not express and the interface does not show.</li>
+    <li>Almost a quarter of the assets in large vaults sits in objects whose rate cannot be read from the API and whose curator is not listed.</li>
+  </ol>
+</section>
+
+<section id="refs">
+  <h2>References</h2>
+  <ol class="refs">
+    <li>Morpho. GraphQL API, <code>blue-api.morpho.org/graphql</code>: queries <code>vaults</code>, <code>curators</code>, <code>vaultByAddress.historicalState</code>. Retrieved 17 September 2026.</li>
+    <li>Illia Sharan. Organic yield against token subsidies: decomposing depositor yield at eight lending protocols, September 2026. Morpho Blue ranks second by fees and first by rewards paid in that study.</li>
+  </ol>
+</section>
+
+<section id="data">
+  <h2>Data availability</h2>
+  <div class="files2" id="files"></div>
+</section>
+
+</article>
+
+<script id="D" type="application/json">{"curators":[{"curator":"Gauntlet","vaults":"23","aum_usd":"581262831","net_apy":"3.90","net_apy_ex_rewards":"3.90","reward_share":"0.000","fee_pct":"1.6","avg_lltv":"0.866","pt_share":"0.000","bluechip_share":"0.911","other_share":"0.089","utilization":"0.859","market_hhi":"0.802","markets_per_vault":"5.6"},{"curator":"Steakhouse Financial","vaults":"14","aum_usd":"401666009","net_apy":"3.53","net_apy_ex_rewards":"3.53","reward_share":"0.000","fee_pct":"12.0","avg_lltv":"0.873","pt_share":"0.046","bluechip_share":"0.846","other_share":"0.107","utilization":"0.883","market_hhi":"0.596","markets_per_vault":"7.6"},{"curator":"SparkDAO","vaults":"2","aum_usd":"310223003","net_apy":"4.00","net_apy_ex_rewards":"4.00","reward_share":"0.000","fee_pct":"9.8","avg_lltv":"0.860","pt_share":"0.000","bluechip_share":"1.000","other_share":"0.000","utilization":"0.901","market_hhi":"0.994","markets_per_vault":"2.0"},{"curator":"No curator listed","vaults":"15","aum_usd":"128493566","net_apy":"4.18","net_apy_ex_rewards":"3.56","reward_share":"0.147","fee_pct":"4.3","avg_lltv":"0.857","pt_share":"0.015","bluechip_share":"0.838","other_share":"0.146","utilization":"0.862","market_hhi":"0.532","markets_per_vault":"3.9"},{"curator":"Felix","vaults":"3","aum_usd":"28931987","net_apy":"2.83","net_apy_ex_rewards":"2.83","reward_share":"0.000","fee_pct":"10.0","avg_lltv":"0.777","pt_share":"0.000","bluechip_share":"0.000","other_share":"1.000","utilization":"0.782","market_hhi":"0.702","markets_per_vault":"4.4"},{"curator":"Hakutora","vaults":"2","aum_usd":"22741599","net_apy":"4.02","net_apy_ex_rewards":"4.02","reward_share":"0.000","fee_pct":"15.0","avg_lltv":"0.860","pt_share":"0.000","bluechip_share":"1.000","other_share":"0.000","utilization":"0.893","market_hhi":"1.000","markets_per_vault":"1.0"},{"curator":"Yearn","vaults":"4","aum_usd":"21245364","net_apy":"5.73","net_apy_ex_rewards":"5.47","reward_share":"0.046","fee_pct":"3.8","avg_lltv":"0.870","pt_share":"0.082","bluechip_share":"0.524","other_share":"0.394","utilization":"0.899","market_hhi":"0.445","markets_per_vault":"5.7"},{"curator":"Pangolins","vaults":"1","aum_usd":"11849045","net_apy":"3.97","net_apy_ex_rewards":"3.97","reward_share":"0.000","fee_pct":"10.0","avg_lltv":"0.860","pt_share":"0.000","bluechip_share":"1.000","other_share":"0.000","utilization":"0.901","market_hhi":"1.000","markets_per_vault":"1.0"},{"curator":"Anthias Labs","vaults":"3","aum_usd":"11221846","net_apy":"2.78","net_apy_ex_rewards":"2.68","reward_share":"0.036","fee_pct":"15.0","avg_lltv":"0.889","pt_share":"0.000","bluechip_share":"1.000","other_share":"0.000","utilization":"0.890","market_hhi":"0.527","markets_per_vault":"4.5"},{"curator":"MEV Capital","vaults":"2","aum_usd":"6665248","net_apy":"3.05","net_apy_ex_rewards":"3.05","reward_share":"0.000","fee_pct":"10.0","avg_lltv":"0.943","pt_share":"0.000","bluechip_share":"0.683","other_share":"0.317","utilization":"0.876","market_hhi":"0.783","markets_per_vault":"4.0"},{"curator":"Clearstar","vaults":"2","aum_usd":"4386668","net_apy":"1.24","net_apy_ex_rewards":"1.24","reward_share":"0.000","fee_pct":"7.3","avg_lltv":"0.862","pt_share":"0.018","bluechip_share":"0.000","other_share":"0.982","utilization":"0.909","market_hhi":"0.920","markets_per_vault":"2.5"},{"curator":"Hyperithm","vaults":"1","aum_usd":"1701853","net_apy":"7.30","net_apy_ex_rewards":"7.30","reward_share":"0.000","fee_pct":"10.0","avg_lltv":"0.770","pt_share":"0.000","bluechip_share":"0.000","other_share":"1.000","utilization":"0.896","market_hhi":"0.703","markets_per_vault":"2.0"}],"hist":[{"curator":"Gauntlet","vaults":"10","aum_usd":"546876039","w_median_apy":"3.91","w_iqr_apy":"1.12","w_reward_days_share":"0.002","spike_days_total":"51","w_aum_growth_pct":"1551"},{"curator":"Steakhouse Financial","vaults":"8","aum_usd":"386159541","w_median_apy":"3.16","w_iqr_apy":"0.97","w_reward_days_share":"0.017","spike_days_total":"46","w_aum_growth_pct":"254"},{"curator":"SparkDAO","vaults":"1","aum_usd":"303948497","w_median_apy":"3.93","w_iqr_apy":"1.07","w_reward_days_share":"0.000","spike_days_total":"0","w_aum_growth_pct":"-57"},{"curator":"No curator listed","vaults":"5","aum_usd":"100946803","w_median_apy":"4.29","w_iqr_apy":"1.59","w_reward_days_share":"0.113","spike_days_total":"66","w_aum_growth_pct":"1512"},{"curator":"Felix","vaults":"2","aum_usd":"24036688","w_median_apy":"2.30","w_iqr_apy":"1.39","w_reward_days_share":"0.020","spike_days_total":"57","w_aum_growth_pct":"570"},{"curator":"Hakutora","vaults":"1","aum_usd":"17011649","w_median_apy":"2.98","w_iqr_apy":"0.95","w_reward_days_share":"0.016","spike_days_total":"4","w_aum_growth_pct":"-63"},{"curator":"Yearn","vaults":"2","aum_usd":"16189316","w_median_apy":"4.32","w_iqr_apy":"2.22","w_reward_days_share":"0.244","spike_days_total":"14","w_aum_growth_pct":"479"},{"curator":"Pangolins","vaults":"1","aum_usd":"11849088","w_median_apy":"3.95","w_iqr_apy":"0.73","w_reward_days_share":"0.000","spike_days_total":"0","w_aum_growth_pct":"2000"}],"vaults":[{"vault":"Gauntlet USDC Prime","curator":"Gauntlet","chain":"8453","asset":"USDC","aum_usd":"419246757","net_apy":"4.424","net_apy_ex_rewards":"4.424","fee":"0.00","avg_lltv":"0.8594","pt_share":"0.0000","bluechip_share":"1.0000","markets":"6","hhi":"0.8474","utilization":"0.9010"},{"vault":"Spark USDC Vault","curator":"SparkDAO","chain":"8453","asset":"USDC","aum_usd":"303947318","net_apy":"3.966","net_apy_ex_rewards":"3.966","fee":"10.00","avg_lltv":"0.8600","pt_share":"0.0000","bluechip_share":"1.0000","markets":"2","hhi":"1.0000","utilization":"0.9010"},{"vault":"Adpend USDC","curator":"none","chain":"1","asset":"USDC","aum_usd":"301797905","net_apy":"5359.815","net_apy_ex_rewards":"5359.815","fee":"50.00","avg_lltv":"0.9150","pt_share":"0.0000","bluechip_share":"0.0000","markets":"3","hhi":"1.0000","utilization":"1.0000"},{"vault":"1337 USDC","curator":"none","chain":"1","asset":"USDC","aum_usd":"160980624","net_apy":"297995.799","net_apy_ex_rewards":"297995.799","fee":"0.00","avg_lltv":"0.9150","pt_share":"0.0000","bluechip_share":"0.0000","markets":"2","hhi":"1.0000","utilization":"1.0000"},{"vault":"Steakhouse USDC","curator":"Steakhouse Financial","chain":"8453","asset":"USDC","aum_usd":"130930464","net_apy":"3.297","net_apy_ex_rewards":"3.297","fee":"25.00","avg_lltv":"0.8593","pt_share":"0.0000","bluechip_share":"1.0000","markets":"5","hhi":"0.9172","utilization":"0.9010"},{"vault":"Steakhouse USDT","curator":"Steakhouse Financial","chain":"1","asset":"USDT","aum_usd":"87023062","net_apy":"2.385","net_apy_ex_rewards":"2.385","fee":"5.00","avg_lltv":"0.8655","pt_share":"0.0000","bluechip_share":"0.9059","markets":"10","hhi":"0.2602","utilization":"0.8396"},{"vault":"Steakhouse USDC","curator":"Steakhouse Financial","chain":"1","asset":"USDC","aum_usd":"69211032","net_apy":"5.188","net_apy_ex_rewards":"5.188","fee":"5.00","avg_lltv":"0.8696","pt_share":"0.0000","bluechip_share":"0.8252","markets":"10","hhi":"0.2917","utilization":"0.9098"},{"vault":"Grove x Steakhouse USDC High Yield","curator":"none","chain":"8453","asset":"USDC","aum_usd":"62115719","net_apy":"4.464","net_apy_ex_rewards":"4.464","fee":"0.00","avg_lltv":"0.8573","pt_share":"0.0000","bluechip_share":"1.0000","markets":"5","hhi":"0.4523","utilization":"0.9012"},{"vault":"Steakhouse ETH","curator":"Steakhouse Financial","chain":"1","asset":"WETH","aum_usd":"28628362","net_apy":"1.517","net_apy_ex_rewards":"1.517","fee":"5.00","avg_lltv":"0.9643","pt_share":"0.0000","bluechip_share":"1.0000","markets":"3","hhi":"0.9390","utilization":"0.8613"},{"vault":"Gauntlet USDC Prime","curator":"Gauntlet","chain":"1","asset":"USDC","aum_usd":"26225429","net_apy":"5.182","net_apy_ex_rewards":"5.182","fee":"5.00","avg_lltv":"0.8600","pt_share":"0.0000","bluechip_share":"1.0000","markets":"7","hhi":"0.3258","utilization":"0.9099"},{"vault":"Smokehouse USDT","curator":"Steakhouse Financial","chain":"1","asset":"USDT","aum_usd":"23884066","net_apy":"4.003","net_apy_ex_rewards":"4.003","fee":"10.00","avg_lltv":"0.8954","pt_share":"0.5087","bluechip_share":"0.3572","markets":"15","hhi":"0.2000","utilization":"0.8711"},{"vault":"Vault Bridge WBTC","curator":"Gauntlet","chain":"1","asset":"WBTC","aum_usd":"23622740","net_apy":"0.000","net_apy_ex_rewards":"0.000","fee":"5.00","avg_lltv":"0.9450","pt_share":"0.0000","bluechip_share":"1.0000","markets":"1","hhi":"1.0000","utilization":"0.0011"},{"vault":"Steakhouse Prime USDC","curator":"Steakhouse Financial","chain":"8453","asset":"USDC","aum_usd":"20498149","net_apy":"4.193","net_apy_ex_rewards":"4.193","fee":"5.00","avg_lltv":"0.8576","pt_share":"0.0000","bluechip_share":"1.0000","markets":"5","hhi":"0.9049","utilization":"0.9010"},{"vault":"Metronome msUSD Vault","curator":"Gauntlet","chain":"1","asset":"msUSD","aum_usd":"19763143","net_apy":"0.184","net_apy_ex_rewards":"0.184","fee":"10.00","avg_lltv":"0.9150","pt_share":"0.0000","bluechip_share":"0.0000","markets":"3","hhi":"0.9362","utilization":"0.9340"},{"vault":"Hakutora USDC","curator":"Hakutora","chain":"1","asset":"USDC","aum_usd":"17011570","net_apy":"4.657","net_apy_ex_rewards":"4.657","fee":"15.00","avg_lltv":"0.8600","pt_share":"0.0000","bluechip_share":"1.0000","markets":"1","hhi":"1.0000","utilization":"0.9102"},{"vault":"Vault Bridge WETH","curator":"Gauntlet","chain":"1","asset":"WETH","aum_usd":"16766181","net_apy":"1.335","net_apy_ex_rewards":"1.335","fee":"5.00","avg_lltv":"0.9650","pt_share":"0.0000","bluechip_share":"1.0000","markets":"4","hhi":"0.9987","utilization":"0.8625"},{"vault":"Felix HYPE","curator":"Felix","chain":"999","asset":"WHYPE","aum_usd":"16156543","net_apy":"1.037","net_apy_ex_rewards":"1.037","fee":"10.00","avg_lltv":"0.8600","pt_share":"0.0001","bluechip_share":"0.0000","markets":"3","hhi":"0.9511","utilization":"0.7606"},{"vault":"Smokehouse USDC","curator":"Steakhouse Financial","chain":"1","asset":"USDC","aum_usd":"13545502","net_apy":"5.700","net_apy_ex_rewards":"5.700","fee":"10.00","avg_lltv":"0.9006","pt_share":"0.2997","bluechip_share":"0.0377","markets":"13","hhi":"0.2143","utilization":"0.8991"},{"vault":"Vault Bridge USDC","curator":"Steakhouse Financial","chain":"1","asset":"USDC","aum_usd":"12417084","net_apy":"5.169","net_apy_ex_rewards":"5.169","fee":"5.00","avg_lltv":"0.8600","pt_share":"0.0000","bluechip_share":"1.0000","markets":"2","hhi":"0.8644","utilization":"0.9097"},{"vault":"Felix USDC (Frontier)","curator":"none","chain":"999","asset":"USDC","aum_usd":"11870325","net_apy":"5.736","net_apy_ex_rewards":"5.736","fee":"10.00","avg_lltv":"0.7700","pt_share":"0.0000","bluechip_share":"0.0000","markets":"3","hhi":"0.5057","utilization":"0.8904"},{"vault":"Pangolins USDC","curator":"Pangolins","chain":"8453","asset":"USDC","aum_usd":"11849045","net_apy":"3.966","net_apy_ex_rewards":"3.966","fee":"10.00","avg_lltv":"0.8600","pt_share":"0.0000","bluechip_share":"1.0000","markets":"1","hhi":"1.0000","utilization":"0.9010"},{"vault":"Re7 USDC","curator":"none","chain":"480","asset":"USDC","aum_usd":"10137232","net_apy":"6.282","net_apy_ex_rewards":"1.474","fee":"10.00","avg_lltv":"0.8447","pt_share":"0.0000","bluechip_share":"0.8303","markets":"3","hhi":"0.3740","utilization":"0.8996"},{"vault":"SwissBorg Morpho USDC","curator":"Gauntlet","chain":"1","asset":"USDC","aum_usd":"9327551","net_apy":"4.930","net_apy_ex_rewards":"4.930","fee":"5.00","avg_lltv":"0.8600","pt_share":"0.0000","bluechip_share":"1.0000","markets":"3","hhi":"0.3795","utilization":"0.9100"},{"vault":"Re7 WLD","curator":"none","chain":"480","asset":"WLD","aum_usd":"9154037","net_apy":"1.837","net_apy_ex_rewards":"0.001","fee":"10.00","avg_lltv":"0.8600","pt_share":"0.0000","bluechip_share":"1.0000","markets":"2","hhi":"0.8624","utilization":"0.8778"},{"vault":"Gauntlet USDC RWA","curator":"Gauntlet","chain":"1","asset":"USDC","aum_usd":"8983282","net_apy":"6.730","net_apy_ex_rewards":"6.730","fee":"0.00","avg_lltv":"0.7876","pt_share":"0.0000","bluechip_share":"0.1954","markets":"7","hhi":"0.6853","utilization":"0.9086"},{"vault":"Yearn OG USDC","curator":"Yearn","chain":"1","asset":"USDC","aum_usd":"8882868","net_apy":"7.639","net_apy_ex_rewards":"7.009","fee":"5.00","avg_lltv":"0.8823","pt_share":"0.1969","bluechip_share":"0.0052","markets":"7","hhi":"0.2732","utilization":"0.9060"},{"vault":"Metronome msETH Vault","curator":"Gauntlet","chain":"8453","asset":"msETH","aum_usd":"7933224","net_apy":"0.038","net_apy_ex_rewards":"0.038","fee":"5.00","avg_lltv":"0.9450","pt_share":"0.0000","bluechip_share":"0.0047","markets":"2","hhi":"0.9906","utilization":"0.9995"},{"vault":"Felix USDC","curator":"Felix","chain":"999","asset":"USDC","aum_usd":"7870462","net_apy":"4.855","net_apy_ex_rewards":"4.855","fee":"10.00","avg_lltv":"0.6934","pt_share":"0.0011","bluechip_share":"0.0000","markets":"7","hhi":"0.3627","utilization":"0.7840"},{"vault":"Gauntlet WETH Prime","curator":"Gauntlet","chain":"1","asset":"WETH","aum_usd":"7718734","net_apy":"1.493","net_apy_ex_rewards":"1.493","fee":"5.00","avg_lltv":"0.9621","pt_share":"0.0000","bluechip_share":"1.0000","markets":"4","hhi":"0.7413","utilization":"0.8547"},{"vault":"WETH ARM Vault","curator":"none","chain":"1","asset":"WETH","aum_usd":"7653781","net_apy":"1.490","net_apy_ex_rewards":"1.490","fee":"5.00","avg_lltv":"0.9619","pt_share":"0.0000","bluechip_share":"1.0000","markets":"4","hhi":"0.7336","utilization":"0.8548"},{"vault":"Gauntlet USDT Frontier","curator":"Gauntlet","chain":"1","asset":"USDT","aum_usd":"7576531","net_apy":"2.363","net_apy_ex_rewards":"2.363","fee":"5.00","avg_lltv":"0.8826","pt_share":"0.0000","bluechip_share":"0.7648","markets":"11","hhi":"0.2759","utilization":"0.8460"},{"vault":"Yearn USDC","curator":"Yearn","chain":"1","asset":"USDC","aum_usd":"7306389","net_apy":"5.479","net_apy_ex_rewards":"5.479","fee":"0.00","avg_lltv":"0.8600","pt_share":"0.0000","bluechip_share":"1.0000","markets":"5","hhi":"0.5857","utilization":"0.9100"},{"vault":"Steakhouse Prime USDC","curator":"Steakhouse Financial","chain":"747474","asset":"vbUSDC","aum_usd":"6676069","net_apy":"2.448","net_apy_ex_rewards":"2.448","fee":"10.00","avg_lltv":"0.8600","pt_share":"0.0000","bluechip_share":"0.0000","markets":"2","hhi":"0.9956","utilization":"0.7799"},{"vault":"Spark Blue Chip USDC Vault","curator":"SparkDAO","chain":"1","asset":"USDC","aum_usd":"6275686","net_apy":"5.444","net_apy_ex_rewards":"5.444","fee":"1.00","avg_lltv":"0.8600","pt_share":"0.0000","bluechip_share":"1.0000","markets":"2","hhi":"0.7278","utilization":"0.9105"},{"vault":"Not Gauntlet","curator":"none","chain":"42161","asset":"USDC","aum_usd":"6266109","net_apy":"297995.774","net_apy_ex_rewards":"297995.774","fee":"0.00","avg_lltv":"0.9150","pt_share":"0.0000","bluechip_share":"0.0000","markets":"2","hhi":"1.0000","utilization":"1.0000"},{"vault":"Moonwell Flagship USDC","curator":"Anthias Labs","chain":"8453","asset":"USDC","aum_usd":"6055647","net_apy":"3.894","net_apy_ex_rewards":"3.807","fee":"15.00","avg_lltv":"0.8600","pt_share":"0.0000","bluechip_share":"1.0000","markets":"4","hhi":"0.6008","utilization":"0.9014"},{"vault":"Hakutora USDT","curator":"Hakutora","chain":"1","asset":"USDT","aum_usd":"5730030","net_apy":"2.122","net_apy_ex_rewards":"2.122","fee":"15.00","avg_lltv":"0.8600","pt_share":"0.0000","bluechip_share":"1.0000","markets":"1","hhi":"1.0000","utilization":"0.8422"},{"vault":"Re7 WETH","curator":"none","chain":"480","asset":"WETH","aum_usd":"5311511","net_apy":"2.565","net_apy_ex_rewards":"0.024","fee":"10.00","avg_lltv":"0.9250","pt_share":"0.0000","bluechip_share":"1.0000","markets":"2","hhi":"0.5550","utilization":"0.3143"},{"vault":"Felix USDT0","curator":"Felix","chain":"999","asset":"USDT0","aum_usd":"4904982","net_apy":"5.461","net_apy_ex_rewards":"5.461","fee":"10.00","avg_lltv":"0.6359","pt_share":"0.0000","bluechip_share":"0.0000","markets":"5","hhi":"0.4265","utilization":"0.8465"},{"vault":"MEV Capital wETH","curator":"MEV Capital","chain":"1","asset":"WETH","aum_usd":"4550182","net_apy":"1.442","net_apy_ex_rewards":"1.442","fee":"10.00","avg_lltv":"0.9650","pt_share":"0.0000","bluechip_share":"1.0000","markets":"3","hhi":"0.9982","utilization":"0.8627"},{"vault":"Metronome msETH Vault","curator":"Gauntlet","chain":"1","asset":"msETH","aum_usd":"4546816","net_apy":"7.561","net_apy_ex_rewards":"7.561","fee":"5.00","avg_lltv":"0.9227","pt_share":"0.0000","bluechip_share":"0.0000","markets":"3","hhi":"0.6186","utilization":"0.9199"},{"vault":"Gauntlet USDT Prime","curator":"Gauntlet","chain":"1","asset":"USDT","aum_usd":"4534655","net_apy":"2.370","net_apy_ex_rewards":"2.370","fee":"5.00","avg_lltv":"0.8600","pt_share":"0.0000","bluechip_share":"0.9999","markets":"8","hhi":"0.4308","utilization":"0.8385"},{"vault":"Moonwell Flagship ETH","curator":"Anthias Labs","chain":"8453","asset":"WETH","aum_usd":"3920118","net_apy":"1.346","net_apy_ex_rewards":"1.229","fee":"15.00","avg_lltv":"0.9441","pt_share":"0.0000","bluechip_share":"1.0000","markets":"5","hhi":"0.4801","utilization":"0.8961"},{"vault":"Safe x Steakhouse USDC","curator":"none","chain":"1","asset":"USDC","aum_usd":"3837330","net_apy":"4.928","net_apy_ex_rewards":"4.928","fee":"10.00","avg_lltv":"0.8600","pt_share":"0.0000","bluechip_share":"1.0000","markets":"3","hhi":"0.4830","utilization":"0.9102"},{"vault":"Vault Bridge USDT","curator":"Gauntlet","chain":"1","asset":"USDT","aum_usd":"3811900","net_apy":"2.374","net_apy_ex_rewards":"2.374","fee":"5.00","avg_lltv":"0.8726","pt_share":"0.0000","bluechip_share":"0.8800","markets":"5","hhi":"0.4109","utilization":"0.8418"},{"vault":"Gauntlet USDC Core","curator":"Gauntlet","chain":"1","asset":"USDC","aum_usd":"3790452","net_apy":"5.426","net_apy_ex_rewards":"5.426","fee":"5.00","avg_lltv":"0.8419","pt_share":"0.0000","bluechip_share":"0.9934","markets":"8","hhi":"0.4829","utilization":"0.9096"},{"vault":"Yearn WBTC","curator":"none","chain":"1","asset":"WBTC","aum_usd":"3616516","net_apy":"0.023","net_apy_ex_rewards":"0.023","fee":"0.00","avg_lltv":"0.9450","pt_share":"0.0000","bluechip_share":"1.0000","markets":"2","hhi":"1.0000","utilization":"0.6831"},{"vault":"Yearn USDT","curator":"none","chain":"1","asset":"USDT","aum_usd":"3114477","net_apy":"2.396","net_apy_ex_rewards":"2.396","fee":"5.00","avg_lltv":"0.8565","pt_share":"0.0000","bluechip_share":"0.9609","markets":"3","hhi":"0.4664","utilization":"0.8392"},{"vault":"Clearstar Yield USDC","curator":"Clearstar","chain":"1","asset":"USDC","aum_usd":"3102967","net_apy":"0.000","net_apy_ex_rewards":"0.000","fee":"0.00","avg_lltv":"0.8600","pt_share":"0.0000","bluechip_share":"0.0000","markets":"1","hhi":"1.0000","utilization":"1.0000"},{"vault":"Safe x Steakhouse USDT","curator":"none","chain":"1","asset":"USDT","aum_usd":"3046402","net_apy":"2.253","net_apy_ex_rewards":"2.253","fee":"10.00","avg_lltv":"0.8597","pt_share":"0.0000","bluechip_share":"0.9848","markets":"4","hhi":"0.5160","utilization":"0.8409"},{"vault":"Yearn OG WETH","curator":"Yearn","chain":"1","asset":"WETH","aum_usd":"3045763","net_apy":"1.471","net_apy_ex_rewards":"1.471","fee":"5.00","avg_lltv":"0.9600","pt_share":"0.0000","bluechip_share":"1.0000","markets":"2","hhi":"0.6256","utilization":"0.8489"},{"vault":"OUSD Vault V1","curator":"none","chain":"1","asset":"USDC","aum_usd":"2941423","net_apy":"7.392","net_apy_ex_rewards":"7.392","fee":"5.00","avg_lltv":"0.8600","pt_share":"0.0000","bluechip_share":"0.0000","markets":"1","hhi":"1.0000","utilization":"0.9048"},{"vault":"Steakhouse High Yield USDC","curator":"Steakhouse Financial","chain":"42161","asset":"USDC","aum_usd":"2399685","net_apy":"4.532","net_apy_ex_rewards":"4.532","fee":"10.00","avg_lltv":"0.9150","pt_share":"0.9999","bluechip_share":"0.0000","markets":"2","hhi":"0.9998","utilization":"0.8976"},{"vault":"Gauntlet LRT Core","curator":"Gauntlet","chain":"1","asset":"WETH","aum_usd":"2398062","net_apy":"1.400","net_apy_ex_rewards":"1.400","fee":"10.00","avg_lltv":"0.9604","pt_share":"0.0000","bluechip_share":"1.0000","markets":"5","hhi":"0.6385","utilization":"0.8510"},{"vault":"Gauntlet WBTC Core","curator":"Gauntlet","chain":"1","asset":"WBTC","aum_usd":"2374312","net_apy":"0.061","net_apy_ex_rewards":"0.061","fee":"10.00","avg_lltv":"0.9450","pt_share":"0.0000","bluechip_share":"0.0000","markets":"1","hhi":"1.0000","utilization":"0.9051"},{"vault":"Gauntlet USDC","curator":"Gauntlet","chain":"999","asset":"USDC","aum_usd":"2338805","net_apy":"4.832","net_apy_ex_rewards":"4.832","fee":"10.00","avg_lltv":"0.6580","pt_share":"0.0000","bluechip_share":"0.0000","markets":"3","hhi":"0.6002","utilization":"0.8563"},{"vault":"Steakhouse High Yield USDC v1.1","curator":"Steakhouse Financial","chain":"8453","asset":"USDC","aum_usd":"2324666","net_apy":"5.784","net_apy_ex_rewards":"5.784","fee":"0.00","avg_lltv":"0.7295","pt_share":"0.0000","bluechip_share":"0.0417","markets":"17","hhi":"0.2283","utilization":"0.9030"},{"vault":"Gauntlet DAI Core","curator":"Gauntlet","chain":"1","asset":"DAI","aum_usd":"2288142","net_apy":"4.630","net_apy_ex_rewards":"4.630","fee":"10.00","avg_lltv":"0.8780","pt_share":"0.0215","bluechip_share":"0.0000","markets":"7","hhi":"0.4744","utilization":"0.8806"},{"vault":"Usual Boosted USDC","curator":"MEV Capital","chain":"1","asset":"USDC","aum_usd":"2115066","net_apy":"6.523","net_apy_ex_rewards":"6.523","fee":"10.00","avg_lltv":"0.8958","pt_share":"0.0000","bluechip_share":"0.0000","markets":"6","hhi":"0.3212","utilization":"0.9051"},{"vault":"Yearn OG USDC","curator":"Yearn","chain":"8453","asset":"USDC","aum_usd":"2010345","net_apy":"4.656","net_apy_ex_rewards":"4.656","fee":"10.00","avg_lltv":"0.7112","pt_share":"0.0000","bluechip_share":"0.3642","markets":"8","hhi":"0.4225","utilization":"0.8991"},{"vault":"Index Coop hyETH","curator":"Gauntlet","chain":"1","asset":"WETH","aum_usd":"2003043","net_apy":"1.443","net_apy_ex_rewards":"1.443","fee":"10.00","avg_lltv":"0.9650","pt_share":"0.0000","bluechip_share":"1.0000","markets":"1","hhi":"1.0000","utilization":"0.8628"},{"vault":"Gauntlet USDC Frontier","curator":"Gauntlet","chain":"1","asset":"USDC","aum_usd":"1910918","net_apy":"0.000","net_apy_ex_rewards":"0.000","fee":"5.00","avg_lltv":"0.0000","pt_share":"0.0000","bluechip_share":"0.0000","markets":"0","hhi":"0.0000","utilization":"0.0000"},{"vault":"Gauntlet USDC Core","curator":"Gauntlet","chain":"8453","asset":"USDC","aum_usd":"1838849","net_apy":"3.985","net_apy_ex_rewards":"3.985","fee":"10.00","avg_lltv":"0.8552","pt_share":"0.0000","bluechip_share":"1.0000","markets":"9","hhi":"0.6088","utilization":"0.9011"},{"vault":"Safe x Smokehouse USDT","curator":"none","chain":"1","asset":"USDT","aum_usd":"1798763","net_apy":"5.370","net_apy_ex_rewards":"5.370","fee":"11.50","avg_lltv":"0.8909","pt_share":"0.5557","bluechip_share":"0.4398","markets":"7","hhi":"0.4305","utilization":"0.8780"},{"vault":"Lulo USDC","curator":"none","chain":"1","asset":"USDC","aum_usd":"1797137","net_apy":"4644.989","net_apy_ex_rewards":"4644.989","fee":"0.00","avg_lltv":"0.9150","pt_share":"0.0000","bluechip_share":"0.0000","markets":"2","hhi":"1.0000","utilization":"1.0000"},{"vault":"Steakhouse EURCV","curator":"Steakhouse Financial","chain":"1","asset":"EURCV","aum_usd":"1789135","net_apy":"1.593","net_apy_ex_rewards":"1.593","fee":"0.00","avg_lltv":"0.8874","pt_share":"0.0000","bluechip_share":"0.6056","markets":"8","hhi":"0.2871","utilization":"0.9035"},{"vault":"Hyperithm USDC Apex","curator":"Hyperithm","chain":"1","asset":"USDC","aum_usd":"1701853","net_apy":"7.300","net_apy_ex_rewards":"7.300","fee":"10.00","avg_lltv":"0.7700","pt_share":"0.0000","bluechip_share":"0.0000","markets":"2","hhi":"0.7025","utilization":"0.8955"},{"vault":"Safe x Smokehouse USDC","curator":"none","chain":"1","asset":"USDC","aum_usd":"1640985","net_apy":"5.627","net_apy_ex_rewards":"5.627","fee":"11.50","avg_lltv":"0.8576","pt_share":"0.6045","bluechip_share":"0.3955","markets":"2","hhi":"0.5218","utilization":"0.8947"},{"vault":"Duplicated Key","curator":"none","chain":"1","asset":"USDC","aum_usd":"1347289","net_apy":"297995.799","net_apy_ex_rewards":"297995.799","fee":"0.00","avg_lltv":"0.8600","pt_share":"0.0000","bluechip_share":"0.0000","markets":"1","hhi":"1.0000","utilization":"1.0000"},{"vault":"Cronos USDC","curator":"Steakhouse Financial","chain":"1","asset":"USDC","aum_usd":"1303308","net_apy":"5.500","net_apy_ex_rewards":"5.500","fee":"0.00","avg_lltv":"0.8600","pt_share":"0.0000","bluechip_share":"1.0000","markets":"1","hhi":"1.0000","utilization":"0.9105"},{"vault":"Clearstar USDC Reactor","curator":"Clearstar","chain":"1","asset":"USDC","aum_usd":"1283701","net_apy":"4.239","net_apy_ex_rewards":"4.239","fee":"25.00","avg_lltv":"0.8683","pt_share":"0.0603","bluechip_share":"0.0000","markets":"6","hhi":"0.7279","utilization":"0.6898"},{"vault":"Moonwell Flagship EURC","curator":"Anthias Labs","chain":"8453","asset":"EURC","aum_usd":"1246081","net_apy":"1.853","net_apy_ex_rewards":"1.752","fee":"15.00","avg_lltv":"0.8600","pt_share":"0.0000","bluechip_share":"1.0000","markets":"5","hhi":"0.3151","utilization":"0.8157"},{"vault":"Gauntlet EURC Core","curator":"Gauntlet","chain":"1","asset":"EURC","aum_usd":"1232763","net_apy":"2.052","net_apy_ex_rewards":"2.052","fee":"10.00","avg_lltv":"0.8600","pt_share":"0.0000","bluechip_share":"1.0000","markets":"4","hhi":"0.5744","utilization":"0.8709"},{"vault":"OUSD Vault V1","curator":"none","chain":"8453","asset":"USDC","aum_usd":"1212061","net_apy":"4.758","net_apy_ex_rewards":"4.758","fee":"5.00","avg_lltv":"0.7150","pt_share":"0.0000","bluechip_share":"0.1596","markets":"6","hhi":"0.3739","utilization":"0.9045"},{"vault":"frobUSDC","curator":"none","chain":"42161","asset":"USDC","aum_usd":"1062463","net_apy":"297951.764","net_apy_ex_rewards":"297951.764","fee":"0.00","avg_lltv":"0.8600","pt_share":"0.0000","bluechip_share":"0.0000","markets":"3","hhi":"1.0000","utilization":"1.0000"},{"vault":"OUSD Vault V1","curator":"none","chain":"999","asset":"USDC","aum_usd":"1043004","net_apy":"5.787","net_apy_ex_rewards":"5.787","fee":"5.00","avg_lltv":"0.6250","pt_share":"0.0000","bluechip_share":"0.0000","markets":"2","hhi":"0.5008","utilization":"0.8514"},{"vault":"Steakhouse Ethena USDtb","curator":"Steakhouse Financial","chain":"1","asset":"USDtb","aum_usd":"1035424","net_apy":"3.270","net_apy_ex_rewards":"3.270","fee":"5.00","avg_lltv":"0.9150","pt_share":"0.0000","bluechip_share":"0.0000","markets":"2","hhi":"1.0000","utilization":"0.8808"},{"vault":"Resolv USDC","curator":"Gauntlet","chain":"1","asset":"USDC","aum_usd":"1030543","net_apy":"0.000","net_apy_ex_rewards":"0.000","fee":"10.00","avg_lltv":"0.0000","pt_share":"0.0000","bluechip_share":"0.0000","markets":"0","hhi":"0.0000","utilization":"0.0000"}],"vh":[{"vault":"Gauntlet USDC Prime","curator":"Gauntlet","chain":"8453","days":"366","aum_now_usd":"419248377","aum_year_ago_usd":"13015557","aum_growth_pct":"3121","median_apy":"4.40","iqr_apy":"1.16","p95_apy":"6.75","days_over_20pct":"0","reward_days_share":"0.000","median_reward_pp":"0.000"},{"vault":"Spark USDC Vault","curator":"SparkDAO","chain":"8453","days":"366","aum_now_usd":"303948497","aum_year_ago_usd":"707804650","aum_growth_pct":"-57","median_apy":"3.93","iqr_apy":"1.07","p95_apy":"6.21","days_over_20pct":"0","reward_days_share":"0.000","median_reward_pp":"0.000"},{"vault":"Steakhouse USDC","curator":"Steakhouse Financial","chain":"8453","days":"366","aum_now_usd":"130931024","aum_year_ago_usd":"20506065","aum_growth_pct":"538","median_apy":"3.29","iqr_apy":"0.91","p95_apy":"5.25","days_over_20pct":"0","reward_days_share":"0.025","median_reward_pp":"0.000"},{"vault":"Steakhouse USDT","curator":"Steakhouse Financial","chain":"1","days":"366","aum_now_usd":"87022773","aum_year_ago_usd":"118206659","aum_growth_pct":"-26","median_apy":"2.66","iqr_apy":"1.00","p95_apy":"8.03","days_over_20pct":"8","reward_days_share":"0.016","median_reward_pp":"0.000"},{"vault":"Steakhouse USDC","curator":"Steakhouse Financial","chain":"1","days":"366","aum_now_usd":"69211355","aum_year_ago_usd":"435465506","aum_growth_pct":"-84","median_apy":"3.40","iqr_apy":"0.97","p95_apy":"5.72","days_over_20pct":"6","reward_days_share":"0.016","median_reward_pp":"0.000"},{"vault":"Grove x Steakhouse USDC High Yield","curator":"No curator listed","chain":"8453","days":"340","aum_now_usd":"62116000","aum_year_ago_usd":"1","aum_growth_pct":"NA","median_apy":"4.36","iqr_apy":"1.04","p95_apy":"6.90","days_over_20pct":"0","reward_days_share":"0.000","median_reward_pp":"0.000"},{"vault":"Steakhouse ETH","curator":"Steakhouse Financial","chain":"1","days":"366","aum_now_usd":"28649447","aum_year_ago_usd":"90188482","aum_growth_pct":"-68","median_apy":"1.61","iqr_apy":"0.43","p95_apy":"4.38","days_over_20pct":"6","reward_days_share":"0.000","median_reward_pp":"0.000"},{"vault":"Gauntlet USDC Prime","curator":"Gauntlet","chain":"1","days":"366","aum_now_usd":"26225525","aum_year_ago_usd":"127993732","aum_growth_pct":"-80","median_apy":"3.48","iqr_apy":"1.16","p95_apy":"5.98","days_over_20pct":"7","reward_days_share":"0.016","median_reward_pp":"0.000"},{"vault":"Smokehouse USDT","curator":"Steakhouse Financial","chain":"1","days":"366","aum_now_usd":"23883995","aum_year_ago_usd":"37871303","aum_growth_pct":"-37","median_apy":"3.42","iqr_apy":"1.35","p95_apy":"10.31","days_over_20pct":"12","reward_days_share":"0.016","median_reward_pp":"0.000"},{"vault":"Vault Bridge WBTC","curator":"Gauntlet","chain":"1","days":"366","aum_now_usd":"23624938","aum_year_ago_usd":"73615184","aum_growth_pct":"-68","median_apy":"0.01","iqr_apy":"0.02","p95_apy":"0.10","days_over_20pct":"2","reward_days_share":"0.000","median_reward_pp":"0.000"},{"vault":"Steakhouse Prime USDC","curator":"Steakhouse Financial","chain":"8453","days":"366","aum_now_usd":"20498238","aum_year_ago_usd":"148552","aum_growth_pct":"13699","median_apy":"4.23","iqr_apy":"1.31","p95_apy":"6.94","days_over_20pct":"0","reward_days_share":"0.000","median_reward_pp":"0.000"},{"vault":"Metronome msUSD Vault","curator":"Gauntlet","chain":"1","days":"366","aum_now_usd":"19510140","aum_year_ago_usd":"5910099","aum_growth_pct":"230","median_apy":"2.43","iqr_apy":"2.19","p95_apy":"6.31","days_over_20pct":"2","reward_days_share":"0.000","median_reward_pp":"0.000"},{"vault":"Hakutora USDC","curator":"Hakutora","chain":"1","days":"366","aum_now_usd":"17011649","aum_year_ago_usd":"45397206","aum_growth_pct":"-63","median_apy":"2.98","iqr_apy":"0.95","p95_apy":"4.66","days_over_20pct":"4","reward_days_share":"0.016","median_reward_pp":"0.000"},{"vault":"Vault Bridge WETH","curator":"Gauntlet","chain":"1","days":"366","aum_now_usd":"16778529","aum_year_ago_usd":"65461529","aum_growth_pct":"-74","median_apy":"1.52","iqr_apy":"0.53","p95_apy":"4.33","days_over_20pct":"2","reward_days_share":"0.000","median_reward_pp":"0.000"},{"vault":"Felix HYPE","curator":"Felix","chain":"999","days":"366","aum_now_usd":"16166193","aum_year_ago_usd":"130474838","aum_growth_pct":"-88","median_apy":"0.78","iqr_apy":"0.87","p95_apy":"6.20","days_over_20pct":"6","reward_days_share":"0.000","median_reward_pp":"0.000"},{"vault":"Smokehouse USDC","curator":"Steakhouse Financial","chain":"1","days":"366","aum_now_usd":"13545567","aum_year_ago_usd":"174098065","aum_growth_pct":"-92","median_apy":"4.83","iqr_apy":"1.10","p95_apy":"8.27","days_over_20pct":"8","reward_days_share":"0.016","median_reward_pp":"0.000"},{"vault":"Vault Bridge USDC","curator":"Steakhouse Financial","chain":"1","days":"366","aum_now_usd":"12417142","aum_year_ago_usd":"123679315","aum_growth_pct":"-90","median_apy":"3.31","iqr_apy":"1.11","p95_apy":"6.20","days_over_20pct":"6","reward_days_share":"0.016","median_reward_pp":"0.000"},{"vault":"Felix USDC (Frontier)","curator":"No curator listed","chain":"999","days":"291","aum_now_usd":"11870382","aum_year_ago_usd":"0","aum_growth_pct":"NA","median_apy":"5.82","iqr_apy":"1.65","p95_apy":"10.87","days_over_20pct":"2","reward_days_share":"0.072","median_reward_pp":"0.000"},{"vault":"Pangolins USDC","curator":"Pangolins","chain":"8453","days":"309","aum_now_usd":"11849088","aum_year_ago_usd":"100","aum_growth_pct":"NA","median_apy":"3.95","iqr_apy":"0.73","p95_apy":"6.05","days_over_20pct":"0","reward_days_share":"0.000","median_reward_pp":"0.000"},{"vault":"Re7 USDC","curator":"No curator listed","chain":"480","days":"366","aum_now_usd":"10137270","aum_year_ago_usd":"43124710","aum_growth_pct":"-76","median_apy":"6.22","iqr_apy":"5.08","p95_apy":"75.63","days_over_20pct":"43","reward_days_share":"0.545","median_reward_pp":"4.232"},{"vault":"SwissBorg Morpho USDC","curator":"Gauntlet","chain":"1","days":"366","aum_now_usd":"9327586","aum_year_ago_usd":"10140629","aum_growth_pct":"-8","median_apy":"3.16","iqr_apy":"1.03","p95_apy":"5.18","days_over_20pct":"4","reward_days_share":"0.016","median_reward_pp":"0.000"},{"vault":"Re7 WLD","curator":"No curator listed","chain":"480","days":"366","aum_now_usd":"9163733","aum_year_ago_usd":"15054606","aum_growth_pct":"-39","median_apy":"1.97","iqr_apy":"2.37","p95_apy":"49.51","days_over_20pct":"21","reward_days_share":"0.545","median_reward_pp":"1.884"},{"vault":"Gauntlet USDC RWA","curator":"Gauntlet","chain":"1","days":"366","aum_now_usd":"8983325","aum_year_ago_usd":"5018829","aum_growth_pct":"79","median_apy":"5.44","iqr_apy":"1.45","p95_apy":"14.75","days_over_20pct":"17","reward_days_share":"0.016","median_reward_pp":"0.000"},{"vault":"Yearn OG USDC","curator":"Yearn","chain":"1","days":"366","aum_now_usd":"8882900","aum_year_ago_usd":"882932","aum_growth_pct":"906","median_apy":"4.64","iqr_apy":"2.86","p95_apy":"10.53","days_over_20pct":"9","reward_days_share":"0.263","median_reward_pp":"0.000"},{"vault":"Metronome msETH Vault","curator":"Gauntlet","chain":"8453","days":"366","aum_now_usd":"7876697","aum_year_ago_usd":"13606979","aum_growth_pct":"-42","median_apy":"1.55","iqr_apy":"0.90","p95_apy":"4.26","days_over_20pct":"6","reward_days_share":"0.000","median_reward_pp":"0.000"},{"vault":"Felix USDC","curator":"Felix","chain":"999","days":"366","aum_now_usd":"7870495","aum_year_ago_usd":"389677","aum_growth_pct":"1920","median_apy":"5.41","iqr_apy":"2.45","p95_apy":"38.35","days_over_20pct":"51","reward_days_share":"0.060","median_reward_pp":"0.000"},{"vault":"Gauntlet WETH Prime","curator":"Gauntlet","chain":"1","days":"366","aum_now_usd":"7724419","aum_year_ago_usd":"68109441","aum_growth_pct":"-89","median_apy":"1.62","iqr_apy":"0.45","p95_apy":"4.78","days_over_20pct":"4","reward_days_share":"0.000","median_reward_pp":"0.000"},{"vault":"WETH ARM Vault","curator":"No curator listed","chain":"1","days":"242","aum_now_usd":"7659418","aum_year_ago_usd":"0","aum_growth_pct":"NA","median_apy":"1.61","iqr_apy":"0.42","p95_apy":"3.21","days_over_20pct":"0","reward_days_share":"0.000","median_reward_pp":"0.000"},{"vault":"Gauntlet USDT Frontier","curator":"Gauntlet","chain":"1","days":"366","aum_now_usd":"7576502","aum_year_ago_usd":"505269","aum_growth_pct":"1399","median_apy":"3.39","iqr_apy":"1.61","p95_apy":"9.23","days_over_20pct":"7","reward_days_share":"0.016","median_reward_pp":"0.000"},{"vault":"Yearn USDC","curator":"Yearn","chain":"1","days":"366","aum_now_usd":"7306415","aum_year_ago_usd":"12010517","aum_growth_pct":"-39","median_apy":"3.94","iqr_apy":"1.44","p95_apy":"8.97","days_over_20pct":"5","reward_days_share":"0.222","median_reward_pp":"0.000"}],"bad":[{"vault":"Adpend USDC","chain":"1","asset":"USDC","aum_usd":"301797905","reported_net_apy":"5359.8","fee_pct":"50","curator":"none","markets":"3","bluechip_share":"0.00"},{"vault":"1337 USDC","chain":"1","asset":"USDC","aum_usd":"160980624","reported_net_apy":"297995.8","fee_pct":"0","curator":"none","markets":"2","bluechip_share":"0.00"},{"vault":"Not Gauntlet","chain":"42161","asset":"USDC","aum_usd":"6266109","reported_net_apy":"297995.8","fee_pct":"0","curator":"none","markets":"2","bluechip_share":"0.00"},{"vault":"Lulo USDC","chain":"1","asset":"USDC","aum_usd":"1797137","reported_net_apy":"4645.0","fee_pct":"0","curator":"none","markets":"2","bluechip_share":"0.00"},{"vault":"Duplicated Key","chain":"1","asset":"USDC","aum_usd":"1347289","reported_net_apy":"297995.8","fee_pct":"0","curator":"none","markets":"1","bluechip_share":"0.00"},{"vault":"frobUSDC","chain":"42161","asset":"USDC","aum_usd":"1062463","reported_net_apy":"297951.8","fee_pct":"0","curator":"none","markets":"3","bluechip_share":"0.00"}]}</script>
+<script>
+(function(){
+var D=JSON.parse(document.getElementById('D').textContent);
+var num=function(v){return parseFloat(v)||0};
+var el=function(t,c,h){var e=document.createElement(t);if(c)e.className=c;if(h!==undefined)e.innerHTML=h;return e};
+var m$=function(v){return v>=1e9?(v/1e9).toFixed(2)+'B':(v/1e6).toFixed(v>=1e8?0:1)+'M'};
+function table(id,head,rows){var t=document.getElementById(id);if(!t)return;
+ t.innerHTML='<thead><tr>'+head.map(function(h){return '<th>'+h+'</th>'}).join('')+'</tr></thead><tbody>'+
+ rows.map(function(r){return '<tr>'+r.map(function(c){var cl=(c&&c.cl)?' class="'+c.cl+'"':'';var v=(c&&c.v!==undefined)?c.v:c;
+  return '<td'+cl+'>'+v+'</td>'}).join('')+'</tr>'}).join('')+'</tbody>';}
+var CU=D.curators, tot=CU.reduce(function(s,c){return s+num(c.aum_usd)},0);
+
+var box=document.getElementById('curAum');
+CU.forEach(function(c){var sh=num(c.aum_usd)/tot;
+ box.appendChild(el('div','bline','<span class="cname">'+c.curator+'</span>'+
+  '<span class="ctrack"><span class="cfill'+(c.curator==='No curator listed'?' dim':'')+'" style="width:'+(sh*100).toFixed(2)+'%"></span></span>'+
+  '<span class="cval">'+(sh*100).toFixed(1)+'%</span>'));});
+
+table('curTable',['Curator','Vaults','Assets','Rate','Fee','Blue chip','PT Pendle','Other','LLTV','Markets'],
+ CU.map(function(c){return [c.curator,c.vaults,'$'+m$(num(c.aum_usd)),num(c.net_apy).toFixed(2)+'%',
+  {v:num(c.fee_pct).toFixed(1)+'%',cl:num(c.fee_pct)>=12?'neg':''},
+  {v:(num(c.bluechip_share)*100).toFixed(0)+'%',cl:num(c.bluechip_share)>=0.9?'mark':(num(c.bluechip_share)<0.2?'neg':'')},
+  (num(c.pt_share)*100).toFixed(1)+'%',(num(c.other_share)*100).toFixed(0)+'%',num(c.avg_lltv).toFixed(3),c.markets_per_vault]}));
+
+var VH=D.vh.slice(0,22), mxA=8;
+(function(){
+ var rowH=19, padL=170, padR=52, padB=26, W=740, H=VH.length*rowH+padB+8;
+ var xs=function(v){return padL+(Math.min(v,mxA)/mxA)*(W-padL-padR)};
+ var s2='<svg viewBox="0 0 '+W+' '+H+'" role="img" aria-label="median rate and interquartile range by vault">';
+ [0,2,4,6,8].forEach(function(t){
+  s2+='<line x1="'+xs(t).toFixed(1)+'" y1="4" x2="'+xs(t).toFixed(1)+'" y2="'+(H-padB+4)+'" stroke="currentColor" opacity="'+(t===0?'.35':'.14')+'"/>'+
+      '<text x="'+xs(t).toFixed(1)+'" y="'+(H-padB+18)+'" text-anchor="middle">'+t+'%</text>';});
+ VH.forEach(function(v,i){
+  var y=8+i*rowH, med=parseFloat(v.median_apy)||0, iq=parseFloat(v.iqr_apy)||0;
+  var lo=Math.max(0,med-iq/2), hi=Math.min(mxA,med+iq/2);
+  s2+='<text x="'+(padL-10)+'" y="'+(y+3.5)+'" text-anchor="end" style="font-family:var(--sans);fill:var(--ink)">'+
+      v.vault.replace(/;/g,',').slice(0,30)+'</text>';
+  s2+='<line x1="'+xs(lo).toFixed(1)+'" y1="'+y+'" x2="'+xs(hi).toFixed(1)+'" y2="'+y+'" stroke="currentColor" stroke-width="1.2" opacity=".45"/>';
+  s2+='<line x1="'+xs(lo).toFixed(1)+'" y1="'+(y-3)+'" x2="'+xs(lo).toFixed(1)+'" y2="'+(y+3)+'" stroke="currentColor" stroke-width="1" opacity=".45"/>';
+  s2+='<line x1="'+xs(hi).toFixed(1)+'" y1="'+(y-3)+'" x2="'+xs(hi).toFixed(1)+'" y2="'+(y+3)+'" stroke="currentColor" stroke-width="1" opacity=".45"/>';
+  s2+='<circle cx="'+xs(med).toFixed(1)+'" cy="'+y+'" r="3" fill="var(--ink)"/>';
+  s2+='<text x="'+(W-padR+10)+'" y="'+(y+3.5)+'" style="fill:var(--ink)">'+med.toFixed(2)+'%</text>';});
+ document.getElementById('apyBox').innerHTML=s2+'</svg>';
+})();
+var fb=document.getElementById('feeBars'), mxF=25, mxR=8;
+CU.slice().sort(function(a,b){return num(b.fee_pct)-num(a.fee_pct)}).forEach(function(c){
+ fb.appendChild(el('div','bline','<span class="cname">'+c.curator+'</span>'+
+  '<span style="display:flex;flex-direction:column;gap:3px">'+
+  '<span style="display:block;height:7px;width:'+(num(c.net_apy)/mxR*100).toFixed(1)+'%;background:var(--ink)"></span>'+
+  '<span style="display:block;height:7px;width:'+(num(c.fee_pct)/mxF*100).toFixed(1)+'%;background:var(--c1)"></span></span>'+
+  '<span class="cval">'+num(c.net_apy).toFixed(2)+' / '+num(c.fee_pct).toFixed(0)+'</span>'));});
+fb.insertAdjacentHTML('afterend','<div class="legend"><span><i class="sw" style="background:var(--ink)"></i>APY to depositor</span><span><i class="sw" style="background:var(--c1)"></i>curator fee</span></div>');
+
+var rs=document.getElementById('riskStack');
+CU.forEach(function(c){var b=num(c.bluechip_share),p=num(c.pt_share),o=Math.max(0,1-b-p);
+ rs.appendChild(el('div','urow','<span class="cname" style="font-family:var(--sans);font-size:13px">'+c.curator+'</span><span class="ubar">'+
+  (b>0?'<span style="width:'+(b*100).toFixed(1)+'%;background:var(--ink)"></span>':'')+
+  (p>0?'<span style="width:'+(p*100).toFixed(1)+'%;background:var(--c1)"></span>':'')+
+  (o>0?'<span style="width:'+(o*100).toFixed(1)+'%;background:var(--rule-2)"></span>':'')+'</span>'));});
+rs.insertAdjacentHTML('afterend','<div class="legend"><span><i class="sw" style="background:var(--ink)"></i>blue-chip collateral</span><span><i class="sw" style="background:var(--c1)"></i>PT Pendle</span><span><i class="sw" style="background:var(--rule-2)"></i>other collateral</span></div>');
+
+var fl=document.getElementById('flowBars');
+var rows=D.vh.filter(function(v){return v.aum_growth_pct!=='NA'&&v.aum_growth_pct!=='n/a'})
+ .map(function(v){return {n:v.vault.replace(/;/g,','),g:num(v.aum_growth_pct)}}).sort(function(a,b){return b.g-a.g});
+var sc=function(g){var c=Math.max(-100,Math.min(400,g));return Math.sqrt(Math.abs(c))/20*50};
+rows.forEach(function(r){var w=sc(r.g);
+ fl.appendChild(el('div','bline','<span class="cname">'+r.n+'</span>'+
+  '<span class="dz"><span class="zl" style="left:50%"></span>'+
+  '<span class="'+(r.g>=0?'':'m')+'" style="left:'+(r.g>=0?50:50-w)+'%;width:'+w.toFixed(1)+'%"></span></span>'+
+  '<span class="cval">'+(r.g>0?'+':'')+r.g.toFixed(0)+'%</span>'));});
+
+table('badTable',['Vault','Chain','Asset','Assets','Rate per API','Fee','Curator','Markets'],
+ D.bad.map(function(b){return [b.vault,b.chain,b.asset,'$'+m$(num(b.aum_usd)),
+  {v:num(b.reported_net_apy).toLocaleString('en-US')+'%',cl:'neg'},
+  {v:num(b.fee_pct).toFixed(0)+'%',cl:num(b.fee_pct)>=50?'neg':''},'not listed',b.markets]}));
+
+var R='../data/';
+document.getElementById('files').innerHTML=[['morpho_vaults.csv','78 vaults: curator, fee, collateral mix, LLTV, utilisation'],
+ ['morpho_curators.csv','the same aggregated by curator'],
+ ['morpho_vault_history.csv','a year of daily rate and assets, thirty largest vaults'],
+ ['morpho_curator_history.csv','the same aggregated by curator'],
+ ['morpho_unreadable_vaults.csv','the six excluded vaults with their reported values']]
+ .map(function(x){return '<a href="'+R+x[0]+'" target="_blank" rel="noopener"><span>'+x[0]+'</span><span>'+x[1]+'</span></a>'}).join('');
+
+document.getElementById('tt').addEventListener('click',function(){
+ var c=document.documentElement.getAttribute('data-theme');
+ if(!c)c=matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light';
+ document.documentElement.setAttribute('data-theme',c==='dark'?'light':'dark');});
+})();
+</script>
+
+</body>
+</html>

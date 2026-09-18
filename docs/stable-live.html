@@ -1,0 +1,692 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Stablecoin yield, live</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Schibsted+Grotesk:wght@400;500;600;700&family=Instrument+Serif:ital@0;1&family=Geist+Mono:wght@400;500&display=swap">
+<style>
+/* ===================== TOKENS ===================== */
+:root{
+  --bg:#08090A; --card:#111315; --card-2:#16191B;
+  --fg:#EFEFED; --fg-2:#A8ABA9; --fg-3:#6E7273;
+  --line:#1E2224; --line-2:#2C3134;
+  --accent:#EFEFED; --accent-fg:#C7CBC9; --on-accent:#08090A;
+  --neg:#D7908F;
+  --sans:'Schibsted Grotesk',-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;
+  --serif:'Instrument Serif',Georgia,'Times New Roman',serif;
+  --mono:'Geist Mono',ui-monospace,'SF Mono',Menlo,Consolas,monospace;
+  --maxw:1060px;
+  --pad:clamp(20px,4vw,40px);
+  --secpad:clamp(46px,5.2vw,74px);
+  --measure:70ch;
+  --ease:cubic-bezier(.16,.84,.34,1);
+}
+:root[data-theme="light"]{
+  --bg:#FBFBFA; --card:#FFFFFF; --card-2:#F7F7F5;
+  --fg:#0B0C0D; --fg-2:#4A4E50; --fg-3:#84898B;
+  --line:#E4E5E2; --line-2:#D2D4D0;
+  --accent:#0B0C0D; --accent-fg:#3A3E40; --on-accent:#FBFBFA;
+  --neg:#8E3E3C;
+}
+@media (prefers-color-scheme: light){
+  :root:not([data-theme="dark"]){
+    --bg:#FBFBFA; --card:#FFFFFF; --card-2:#F7F7F5;
+    --fg:#0B0C0D; --fg-2:#4A4E50; --fg-3:#84898B;
+    --line:#E4E5E2; --line-2:#D2D4D0;
+    --accent:#0B0C0D; --accent-fg:#3A3E40; --on-accent:#FBFBFA;
+    --neg:#8E3E3C;
+  }
+}
+
+/* ===================== BASE ===================== */
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0; background:var(--bg); color:var(--fg);
+  font-family:var(--sans); font-size:16px; line-height:1.6; letter-spacing:-.005em;
+  -webkit-font-smoothing:antialiased; overflow-x:hidden}
+p{margin:0}
+ul,ol{margin:0; padding:0; list-style:none}
+a{color:inherit; text-decoration:none}
+h1,h2,h3,h4{margin:0; font-weight:600; letter-spacing:-.03em; line-height:1.1; text-wrap:balance}
+:focus-visible{outline:2px solid var(--accent); outline-offset:3px; border-radius:3px}
+table{border-collapse:collapse}
+.kicker{font-family:var(--mono); font-size:11px; letter-spacing:.16em; text-transform:uppercase; color:var(--fg-3)}
+
+/* ===================== SECTIONS ===================== */
+.sec{max-width:var(--maxw); margin-inline:auto; padding:var(--secpad) var(--pad); border-bottom:1px solid var(--line)}
+.sec:last-of-type{border-bottom:none}
+.sec > h2{font-size:clamp(21px,2.6vw,27px); letter-spacing:-.035em}
+.sec > .note{margin-top:16px; font-size:15px; color:var(--fg-2); line-height:1.6; max-width:72ch}
+.sec > .note b{color:var(--fg); font-weight:600}
+.sec > .note + .note{margin-top:10px}
+
+/* ===================== HERO ===================== */
+.hero{padding-block:clamp(46px,5.5vw,78px) clamp(30px,3.6vw,46px)}
+.hero h1{font-size:clamp(30px,4.4vw,50px); font-weight:600; letter-spacing:-.04em; line-height:1.06; margin-top:16px}
+.hero p.intro{margin-top:18px; font-size:clamp(16px,1.6vw,18px); color:var(--fg-2); line-height:1.6; max-width:62ch}
+.statusline{margin-top:20px; display:flex; flex-wrap:wrap; align-items:center; gap:10px 20px;
+  font-family:var(--mono); font-size:12px; letter-spacing:.04em; color:var(--fg-3)}
+.statusline i{display:inline-block; width:6px; height:6px; border-radius:50%; background:var(--fg-3); flex:none}
+.statusline i.live{background:var(--accent)}
+.statusline i.off{background:var(--neg)}
+button.plain{appearance:none; background:none; border:0; padding:0; cursor:pointer;
+  font-family:var(--mono); font-size:12px; letter-spacing:.1em; text-transform:uppercase;
+  color:var(--fg-3); transition:color .22s var(--ease)}
+button.plain:hover{color:var(--fg)}
+button.plain[disabled]{opacity:.4; cursor:default}
+button.plain.on{color:var(--fg)}
+
+.nums{display:grid; grid-template-columns:repeat(auto-fit,minmax(170px,1fr)); gap:26px 30px;
+  margin-top:clamp(30px,3.6vw,44px); padding-top:26px; border-top:1px solid var(--line)}
+.num b{display:block; font-family:var(--mono); font-size:clamp(25px,3vw,33px); font-weight:500;
+  letter-spacing:-.04em; font-variant-numeric:tabular-nums; line-height:1.05}
+.num .lb{display:block; font-family:var(--mono); font-size:10.5px; letter-spacing:.13em;
+  text-transform:uppercase; color:var(--fg-3); margin-bottom:11px}
+.num span.sub{display:block; margin-top:9px; font-size:13px; color:var(--fg-3); line-height:1.45}
+.num span.sub b{display:inline; font-family:var(--mono); font-size:13px; font-weight:400; color:var(--fg-2); letter-spacing:0}
+.num .skel{color:var(--fg-3)}
+
+
+/* ===================== CHARTS ===================== */
+.bline{display:grid; grid-template-columns:minmax(92px,150px) minmax(0,1fr) 108px; gap:clamp(10px,2vw,20px);
+  align-items:center; padding-block:10px; border-bottom:1px solid var(--line)}
+.bline:first-child{border-top:1px solid var(--line)}
+.bline .cname{font-size:13.5px; letter-spacing:-.01em}
+.trk{position:relative; height:20px}
+.trk .base{position:absolute; left:0; right:0; top:9px; height:1px; background:var(--line-2)}
+.trk .seg{position:absolute; top:9px; height:2px; background:var(--accent)}
+.trk .pt{position:absolute; top:4px; width:11px; height:11px; border-radius:50%; margin-left:-5.5px}
+.trk .pt.now{background:var(--accent); border:2px solid var(--bg)}
+.trk .pt.then{background:transparent; border:1.5px solid var(--fg-3)}
+.cval{font-family:var(--mono); font-size:13px; text-align:right; font-variant-numeric:tabular-nums; color:var(--fg-2)}
+.cval .d{color:var(--fg-3)}
+.cval .dn{color:var(--neg)}
+.ckey{display:flex; flex-wrap:wrap; gap:16px; margin-top:16px; font-size:12.5px; color:var(--fg-3)}
+.ckey i{display:inline-block; width:11px; height:11px; border-radius:50%; margin-right:8px; vertical-align:-1px}
+.ckey i.now{background:var(--accent)}
+.ckey i.then{border:1.5px solid var(--fg-3)}
+
+figure{margin:26px 0 0}
+figcaption{margin-top:16px; padding-top:11px; border-top:1px solid var(--line);
+  font-size:12.5px; color:var(--fg-3); line-height:1.55; max-width:84ch}
+figcaption b{color:var(--fg-2); font-weight:600}
+
+/* small multiples, one series per panel, no categorical colour needed */
+.sm-grid{display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:26px 24px}
+@media(max-width:900px){.sm-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:520px){.sm-grid{grid-template-columns:minmax(0,1fr)}}
+.sm h4{display:flex; align-items:baseline; justify-content:space-between; gap:10px;
+  font-size:13px; font-weight:600; letter-spacing:-.02em; margin-bottom:9px}
+.sm .smn{min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap}
+.sm .smv{font-family:var(--mono); font-weight:400; font-size:12.5px; color:var(--fg-2);
+  font-variant-numeric:tabular-nums; flex:none}
+.sm .smc{position:relative}
+.sm .smc svg{display:block; width:100%; height:auto; border-bottom:1px solid var(--line-2)}
+.sm .smc svg rect.smhit{cursor:crosshair}
+.sm .smf{margin-top:8px; font-family:var(--mono); font-size:10.5px; color:var(--fg-3); line-height:1.4}
+.smaxis{display:flex; justify-content:space-between; margin-top:16px;
+  font-family:var(--mono); font-size:10.5px; letter-spacing:.05em; color:var(--fg-3)}
+.gridline{stroke:var(--line-2); stroke-width:1}
+
+.tip{position:absolute; pointer-events:none; opacity:0; transition:opacity .14s var(--ease);
+  background:var(--card); border:1px solid var(--line-2); border-radius:4px; padding:9px 11px;
+  font-size:12.5px; box-shadow:0 8px 28px rgba(0,0,0,.3); z-index:9; white-space:nowrap}
+.tip.on{opacity:1}
+.tip .tt{font-family:var(--mono); font-size:10px; letter-spacing:.12em; text-transform:uppercase;
+  color:var(--fg-3); margin-bottom:5px}
+.tip .tv{font-family:var(--mono); font-variant-numeric:tabular-nums; color:var(--fg)}
+
+
+.dl{font-size:11px; fill:var(--fg-2)}
+.chart svg{display:block;width:100%;height:auto;overflow:visible}
+.chart text{font-family:var(--mono);font-size:10px;fill:var(--fg-3)}
+
+/* ===================== TABLES ===================== */
+.tw{overflow-x:auto; margin-top:26px}
+table.d{width:100%; table-layout:auto; font-size:13px}
+table.d th,table.d td{text-align:right; padding:11px 9px; border-bottom:1px solid var(--line); white-space:nowrap}
+table.d th:first-child,table.d td:first-child{text-align:left; padding-left:2px; padding-right:18px; white-space:normal}
+table.d th:last-child,table.d td:last-child{padding-right:2px}
+table.d.wide{min-width:820px}
+table.d thead th{font-family:var(--mono); font-size:10px; letter-spacing:.09em; text-transform:uppercase;
+  color:var(--fg-3); font-weight:400; border-bottom:1px solid var(--line-2); vertical-align:bottom;
+  cursor:pointer; user-select:none; transition:color .2s var(--ease)}
+table.d thead th:hover{color:var(--fg-2)}
+table.d thead th[aria-sort]{color:var(--fg)}
+table.d thead th[aria-sort="descending"]::after{content:" \25BE"}
+table.d thead th[aria-sort="ascending"]::after{content:" \25B4"}
+table.d tbody td{font-family:var(--mono); color:var(--fg-2); font-variant-numeric:tabular-nums}
+table.d tbody td:first-child{font-family:var(--sans); color:var(--fg); font-size:13.5px}
+table.d tbody tr:hover td{color:var(--fg)}
+table.d td.mark{color:var(--fg)}
+table.d td.neg{color:var(--neg)}
+table.d td.empty{font-family:var(--sans); color:var(--fg-3); text-align:left}
+
+/* ===================== CONTROLS ===================== */
+.ctl{display:flex; flex-wrap:wrap; gap:14px 26px; align-items:baseline; margin-top:26px;
+  padding-bottom:16px; border-bottom:1px solid var(--line)}
+.ctl .cl{font-family:var(--mono); font-size:10.5px; letter-spacing:.13em; text-transform:uppercase; color:var(--fg-3)}
+.ctl input[type=search]{appearance:none; background:transparent; border:0; border-bottom:1px solid var(--line-2);
+  color:var(--fg); font-family:var(--sans); font-size:14px; padding:4px 2px; min-width:200px}
+.ctl input[type=search]::placeholder{color:var(--fg-3)}
+.ctl input[type=search]:focus{outline:0; border-bottom-color:var(--fg)}
+.ctl .grp{display:flex; flex-wrap:wrap; gap:16px}
+.cnt{margin-left:auto; font-family:var(--mono); font-size:11.5px; color:var(--fg-3); letter-spacing:.04em}
+.pager{display:flex; flex-wrap:wrap; align-items:baseline; gap:18px; margin-top:20px}
+.pager .pg{font-family:var(--mono); font-size:11.5px; color:var(--fg-3); letter-spacing:.06em; margin-left:auto}
+
+/* ===================== NOTICE / FOOT ===================== */
+.err{margin-top:22px; padding-left:15px; border-left:1px solid var(--neg);
+  font-size:14px; color:var(--fg-2); line-height:1.6; max-width:76ch}
+.err b{color:var(--fg); font-weight:600}
+.foot{max-width:var(--maxw); margin-inline:auto; padding:var(--secpad) var(--pad) clamp(60px,7vw,96px)}
+.foot h4{font-family:var(--mono); font-size:11px; font-weight:500; letter-spacing:.13em;
+  text-transform:uppercase; color:var(--accent-fg); margin-bottom:12px}
+.foot p{font-size:13.5px; color:var(--fg-3); line-height:1.6; max-width:80ch}
+.foot .blk + .blk{margin-top:26px}
+.foot a{color:var(--fg-2); transition:color .22s var(--ease)}
+.foot a:hover{color:var(--fg)}
+
+#dock{position:fixed; right:16px; bottom:calc(16px + env(safe-area-inset-bottom,0px)); z-index:900}
+#theme{appearance:none; cursor:pointer; background:var(--card); border:1px solid var(--line-2); border-radius:4px;
+  color:var(--fg-3); width:38px; height:38px; display:grid; place-items:center;
+  box-shadow:0 8px 28px rgba(0,0,0,.28); transition:color .25s var(--ease), border-color .25s var(--ease)}
+#theme svg{width:16px; height:16px}
+#theme:hover{color:var(--accent); border-color:var(--accent)}
+
+@media(max-width:700px){
+  .bline{grid-template-columns:minmax(0,1fr) 104px; grid-template-areas:"nm vals" "trk trk"; row-gap:8px}
+  .bline .cname{grid-area:nm} .bline .cval{grid-area:vals} .bline .trk{grid-area:trk}
+  .cnt{margin-left:0; width:100%}
+}
+</style>
+</head>
+<body>
+<div id="dock"><button id="theme" type="button" aria-label="Switch theme">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
+</button></div>
+
+<header class="sec hero">
+  <p class="kicker">Live panel &middot; yield-bearing stablecoins</p>
+  <h1>The rate that does not hold</h1>
+  <p class="intro">The advertised rate on eight yield-bearing stablecoin issuers, read live every time this page opens, against the published study of what holders actually realised over 30, 90, 180 and 365 days.</p>
+  <div class="statusline">
+    <span id="stat"><i></i> connecting</span>
+    <span id="stamp"></span>
+    <button class="plain" id="refresh" type="button" disabled>Refresh</button>
+  </div>
+  <div id="errbox"></div>
+  <div class="nums" id="hero"></div>
+</header>
+
+<section class="sec" id="sec-drift">
+  <h2>What moved since publication</h2>
+  <p class="note">The hollow marker is the rate the study recorded in its final month, the filled marker is the rate on offer right now. The scale is in per cent a year.</p>
+  <figure>
+    <div id="drift"></div>
+    <div class="ckey" id="drift-lg"></div>
+    <figcaption><b>Figure 1.</b> Advertised rate by issuer, published against live, per cent a year, weighted by pool size. Source: DefiLlama yields API, author's calculation.</figcaption>
+  </figure>
+</section>
+
+<section class="sec" id="sec-live">
+  <h2>Live issuer table</h2>
+  <p class="note">Rate and size are weighted across the issuer's pools. Realised over advertised is the study's result: the median ratio of what a holder actually accrued to what the rate promised on the day of entry, at a one-year horizon. One means the promise was met. Click any heading to sort.</p>
+  <div class="tw"><table class="d wide" id="tlive"></table></div>
+</section>
+
+<section class="sec" id="sec-cr">
+  <h2>Advertised against realised</h2>
+  <p class="note">From the published study, unchanged. Only windows whose entry rate was at least 3% a year are counted, and a horizon with fewer than thirty windows is left blank.</p>
+  <figure>
+    <div id="crbars"></div>
+    <div class="ckey" id="crbars-lg"></div>
+    <figcaption><b>Figure 2.</b> Median ratio of realised to advertised yield at each horizon. The scale runs from 0.6 to 1.05; the dashed line marks one, where the promise is exactly met. Source: DefiLlama yields API, author's panel.</figcaption>
+  </figure>
+</section>
+
+<section class="sec" id="sec-hist">
+  <h2>The baseline series</h2>
+  <p class="note">The published panel, unchanged. Every issuer on the same vertical scale, so the height of one panel against another is the difference in rate.</p>
+  <figure>
+    <div id="hist"></div>
+    <p class="ckey" id="hist-lg"></p>
+    <figcaption><b>Figure 3.</b> Monthly advertised rate by issuer, per cent a year. Gaps are months with no data in the source rather than a zero rate. Source: DefiLlama yields API, author's panel.</figcaption>
+  </figure>
+  <figure>
+    <div id="sizes-chart"></div>
+    <p class="ckey" id="sizes-lg"></p>
+    <figcaption><b>Figure 4.</b> Size by issuer over the same months, in dollars, all panels on one scale. Size follows the rate with a lag, which is what makes a high launch rate an acquisition tool rather than a property of the product. Source: DefiLlama yields API, author's panel.</figcaption>
+  </figure>
+</section>
+
+<section class="sec" id="sec-pools">
+  <h2>Pool explorer</h2>
+  <p class="note">Every live pool behind the numbers above. Twenty five rows a page, largest first.</p>
+  <div class="ctl">
+    <span class="cl">Search</span>
+    <input type="search" id="q" placeholder="symbol, chain or issuer" autocomplete="off">
+    <span class="cl">Minimum size</span>
+    <span class="grp" id="szs"></span>
+    <span class="cnt" id="cnt"></span>
+  </div>
+  <div class="ctl" style="border-bottom:none;padding-bottom:0;margin-top:14px">
+    <span class="cl">Issuer</span>
+    <span class="grp" id="chips"></span>
+  </div>
+  <div class="tw"><table class="d wide" id="tpools"></table></div>
+  <div class="pager">
+    <button class="plain" id="prev" type="button">Previous</button>
+    <button class="plain" id="next" type="button">Next</button>
+    <span class="pg" id="pg"></span>
+  </div>
+</section>
+
+<footer class="foot">
+  <div class="blk">
+    <h4>Method</h4>
+    <p>Realised yield is computed by log-compounding daily rates and annualising, never by averaging them. Windows are stepped every 15 days and discarded when a gap in the series exceeds a quarter of the window length. Only windows whose entry rate was at least 3% a year enter the ratio, that is, the ones a holder would plausibly act on. The live rate is the base rate weighted by pool size across the issuer's pools.</p>
+  </div>
+  <div class="blk">
+    <h4>Sources</h4>
+    <p><a href="https://yields.llama.fi/pools" target="_blank" rel="noopener">yields.llama.fi/pools</a>, fetched by this page at open time. Baseline panel from the study published September 2026, covering 38 pools across eight issuers.</p>
+  </div>
+  <div class="blk">
+    <h4>Limits</h4>
+    <p>Fees and slippage are excluded: the yield here is the product's rate, not the investor's bottom line. Risk is not measured, so depegs, collateral quality and counterparty risk are invisible in this data. History lengths differ between issuers, which is why annual windows do not exist for all of them. Rates come from one aggregator with no reconciliation against issuer contracts.</p>
+  </div>
+</footer>
+
+<script>
+/* Shared core for the four live panels. Formatting, fetch, charts, sortable
+   and paginated tables. Panels supply only their data and their columns. */
+var DASH=(function(){
+"use strict";
+var $=function(id){return document.getElementById(id)};
+var el=function(t,c,h){var e=document.createElement(t);if(c)e.className=c;if(h!==undefined)e.innerHTML=h;return e};
+var num=function(v){var n=parseFloat(v);return isFinite(n)?n:0};
+var f2=function(v,d){return (+v).toFixed(d===undefined?2:d)};
+var pct=function(v,d){return (v*100).toFixed(d===undefined?1:d)+'%'};
+var usd=function(v){var a=Math.abs(v);
+  if(a>=1e9)return '$'+(v/1e9).toFixed(2)+'B';
+  if(a>=1e6)return '$'+(v/1e6).toFixed(a>=1e8?0:1)+'M';
+  if(a>=1e3)return '$'+(v/1e3).toFixed(0)+'k';
+  return '$'+(+v).toFixed(0);};
+var esc=function(s){return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;')
+  .replace(/>/g,'&gt;').replace(/"/g,'&quot;')};
+var dash='&mdash;';
+
+function timeout(ms){return new Promise(function(_,rej){setTimeout(function(){rej(new Error('timeout'))},ms)})}
+function getJSON(u,ms){return Promise.race([fetch(u,{cache:'no-store'}).then(function(r){
+  if(!r.ok)throw new Error('HTTP '+r.status);return r.json();}),timeout(ms||25000)]);}
+function postJSON(u,body,ms){return Promise.race([fetch(u,{method:'POST',
+  headers:{'Content-Type':'application/json'},body:JSON.stringify(body)}).then(function(r){
+  if(!r.ok)throw new Error('HTTP '+r.status);return r.json();}),timeout(ms||25000)]);}
+
+function setStatus(kind,msg){var s=$('stat');if(s)s.innerHTML='<i class="'+kind+'"></i> '+msg}
+function setStamp(t){var s=$('stamp');if(s)s.textContent=t}
+function showError(msg){var b=$('errbox');if(b)b.innerHTML='<p class="err"><b>This page could not reach the API</b> ('+
+  esc(msg)+'), so the live figures are empty and only the published baseline is shown. That normally means the page '+
+  'is running somewhere outbound requests are blocked, or the source is down. Open the file directly in a browser, '+
+  'or serve it over http, and it will fill in.</p>';}
+function clearError(){var b=$('errbox');if(b)b.innerHTML=''}
+
+/* hero: [label, value, sub] */
+function hero(cells){
+  $('hero').innerHTML=cells.map(function(c){
+    return '<div class="num"><span class="lb">'+c[0]+'</span><b>'+c[1]+'</b><span class="sub">'+c[2]+'</span></div>';
+  }).join('');
+}
+
+/* dumbbell: rows [{name, then, now}], lo = scale floor, fmt */
+function dumbbell(host,legend,rows,lo,fmt,thenLabel,nowLabel){
+  var box=$(host); box.innerHTML='';
+  var hi=1; rows.forEach(function(r){hi=Math.max(hi,r.then,(r.now==null?0:r.now))});
+  var px=function(v){return Math.max(0,Math.min(100,(v-lo)/(hi-lo)*100))};
+  rows.forEach(function(r){
+    var a=px(r.then), b=r.now==null?a:px(r.now);
+    var d=r.now==null?null:(r.now-r.then);
+    box.appendChild(el('div','bline',
+      '<span class="cname">'+esc(r.name)+'</span>'+
+      '<span class="trk"><span class="base"></span>'+
+        (r.now==null?'':'<span class="seg" style="left:'+Math.min(a,b)+'%;width:'+Math.abs(b-a)+'%"></span>')+
+        '<span class="pt then" style="left:'+a+'%"></span>'+
+        (r.now==null?'':'<span class="pt now" style="left:'+b+'%"></span>')+'</span>'+
+      '<span class="cval">'+(r.now==null?dash:fmt(r.now))+
+        ' <span class="d">was '+fmt(r.then)+'</span><br>'+
+        (d==null?'<span class="d">'+dash+'</span>'
+               :'<span class="'+(d<0?'dn':'d')+'">'+(d>=0?'+':'')+fmt(d)+'</span>')+'</span>'));
+  });
+  if(legend)$(legend).innerHTML='<span><i class="then"></i>'+esc(thenLabel)+'</span>'+
+    '<span><i class="now"></i>'+esc(nowLabel)+'</span>'+
+    '<span>scale starts at '+fmt(lo)+'</span>';
+}
+
+/* small multiples: one series per panel, no categorical colour needed */
+function smallMultiples(host,months,opts){
+  var box=$(host); box.innerHTML='';
+  var W=230,H=74,SP=3,lo=opts.lo,hi=opts.hi;
+  var xs=function(i){return (i/(months.length-1))*W};
+  var ys=function(v){return SP+(1-(Math.max(lo,Math.min(hi,v))-lo)/(hi-lo))*(H-2*SP)};
+  var grid=el('div','sm-grid');
+  opts.series.forEach(function(sr){
+    var segs=[],cur=[];
+    for(var i=0;i<months.length;i++){var v=sr.v[i];
+      if(v===null||v===undefined){if(cur.length){segs.push(cur);cur=[]}continue}
+      cur.push([xs(i),ys(v)]);}
+    if(cur.length)segs.push(cur);
+    var g='<svg viewBox="0 0 '+W+' '+H+'" preserveAspectRatio="none" role="img" aria-label="'+esc(sr.n)+'">';
+    if(opts.ref!==undefined)
+      g+='<line class="gridline" x1="0" y1="'+ys(opts.ref).toFixed(1)+'" x2="'+W+'" y2="'+
+         ys(opts.ref).toFixed(1)+'" stroke-dasharray="2 3" opacity=".8"/>';
+    segs.forEach(function(sg){
+      if(sg.length<2){g+='<circle cx="'+sg[0][0].toFixed(1)+'" cy="'+sg[0][1].toFixed(1)+'" r="2" fill="var(--accent)"/>';return}
+      var d='M'+sg.map(function(q){return q[0].toFixed(1)+','+q[1].toFixed(1)}).join('L');
+      g+='<path d="'+d+'L'+sg[sg.length-1][0].toFixed(1)+','+H+'L'+sg[0][0].toFixed(1)+','+H+'Z" fill="var(--accent)" opacity=".13"/>';
+      g+='<path d="'+d+'" fill="none" stroke="var(--accent)" stroke-width="2" vector-effect="non-scaling-stroke" stroke-linejoin="round" stroke-linecap="round"/>';
+    });
+    g+='<rect class="smhit" x="0" y="0" width="'+W+'" height="'+H+'" fill="transparent"/></svg>';
+    var cell=el('div','sm','<h4><span class="smn">'+esc(sr.n)+'</span><span class="smv">'+esc(sr.tag)+'</span></h4>'+
+      '<div class="smc">'+g+'</div><p class="smf">'+esc(sr.foot)+'</p>');
+    var cb=cell.querySelector('.smc'), tip=el('div','tip'); cb.appendChild(tip);
+    var svg=cb.querySelector('svg');
+    svg.addEventListener('mousemove',function(ev){
+      var r=svg.getBoundingClientRect();
+      var i=Math.max(0,Math.min(months.length-1,Math.round((ev.clientX-r.left)/r.width*(months.length-1))));
+      var v=sr.v[i];
+      tip.innerHTML='<div class="tt">'+months[i]+'</div><div class="tv">'+
+        (v===null||v===undefined?'no data':opts.tip(v))+'</div>';
+      tip.classList.add('on');
+      var tw=tip.offsetWidth;
+      tip.style.left=Math.max(0,Math.min(r.width-tw,(i/(months.length-1))*r.width-tw/2))+'px';
+      tip.style.top='-8px';
+    });
+    svg.addEventListener('mouseleave',function(){tip.classList.remove('on')});
+    grid.appendChild(cell);
+  });
+  box.appendChild(grid);
+  box.appendChild(el('p','smaxis','<span>'+months[0]+'</span><span>'+months[months.length-1]+'</span>'));
+}
+
+/* dot and whisker: rows [{name, med, lo, hi, tag}] on a shared scale */
+function dotWhisker(host,rows,maxX,fmt){
+  var box=$(host);
+  var rowH=21,padL=176,padR=64,padB=28,W=920,H=rows.length*rowH+padB+10;
+  var xs=function(v){return padL+(Math.min(v,maxX)/maxX)*(W-padL-padR)};
+  var g='<svg viewBox="0 0 '+W+' '+H+'" role="img" aria-label="rate and its spread by vault">';
+  for(var t=0;t<=maxX;t+=maxX/4){
+    g+='<line class="gridline" x1="'+xs(t).toFixed(1)+'" y1="4" x2="'+xs(t).toFixed(1)+'" y2="'+(H-padB+4)+'" opacity=".7"/>'+
+       '<text x="'+xs(t).toFixed(1)+'" y="'+(H-padB+20)+'" text-anchor="middle">'+fmt(t)+'</text>';
+  }
+  rows.forEach(function(r,i){
+    var y=14+i*rowH;
+    g+='<text x="'+(padL-12)+'" y="'+(y+3.5)+'" text-anchor="end" class="dl">'+esc(r.name)+'</text>';
+    g+='<line x1="'+xs(r.lo).toFixed(1)+'" y1="'+y+'" x2="'+xs(r.hi).toFixed(1)+'" y2="'+y+
+       '" stroke="var(--fg-3)" stroke-width="1.5"/>';
+    g+='<circle cx="'+xs(r.med).toFixed(1)+'" cy="'+y+'" r="3.4" fill="var(--accent)"/>';
+    g+='<text x="'+(W-padR+10)+'" y="'+(y+3.5)+'" class="dl">'+esc(r.tag)+'</text>';
+  });
+  box.innerHTML=g+'</svg>';
+}
+
+/* sortable table. cols: [key, head, render(row), sortValue(row), className] */
+function Table(id,cols,getRows,opts){
+  opts=opts||{};
+  var state={k:opts.sort||cols[0][0],dir:1,page:0};
+  var perPage=opts.perPage||0;
+  function draw(){
+    var rows=getRows().slice();
+    var sc=cols.filter(function(c){return c[0]===state.k})[0]||cols[0];
+    rows.sort(function(x,y){var a=sc[3](x),b=sc[3](y);
+      return typeof a==='string'?state.dir*String(a).localeCompare(String(b)):state.dir*(b-a);});
+    var total=rows.length,pages=1;
+    if(perPage){
+      pages=Math.max(1,Math.ceil(total/perPage));
+      if(state.page>=pages)state.page=pages-1;
+      if(state.page<0)state.page=0;
+      rows=rows.slice(state.page*perPage,state.page*perPage+perPage);
+    }
+    var t=$(id);
+    t.innerHTML='<thead><tr>'+cols.map(function(c){
+      return '<th data-k="'+c[0]+'"'+(c[0]===state.k?(' aria-sort="'+(state.dir===1?'descending':'ascending')+'"'):'')+
+        '>'+c[1]+'</th>';}).join('')+'</tr></thead><tbody>'+
+      (rows.length?rows.map(function(r){return '<tr>'+cols.map(function(c){
+        var cl=typeof c[4]==='function'?c[4](r):(c[4]||'');
+        return '<td'+(cl?' class="'+cl+'"':'')+'>'+c[2](r)+'</td>';}).join('')+'</tr>';}).join('')
+       :'<tr><td class="empty" colspan="'+cols.length+'">'+(opts.empty||'Nothing to show.')+'</td></tr>')+
+      '</tbody>';
+    Array.prototype.forEach.call(t.querySelectorAll('th'),function(th){
+      th.addEventListener('click',function(){
+        if(state.k===th.dataset.k)state.dir*=-1; else {state.k=th.dataset.k;state.dir=1}
+        state.page=0; draw();});});
+    if(opts.onDraw)opts.onDraw(total,pages,state.page);
+  }
+  return {draw:draw,reset:function(){state.page=0},state:state};
+}
+
+/* plain-text chip row */
+function chips(host,options,current,onPick){
+  var h=$(host);
+  h.innerHTML=options.map(function(o){
+    return '<button class="plain'+(o[0]===current?' on':'')+'" type="button" data-v="'+esc(o[0])+'">'+esc(o[1])+'</button>';
+  }).join('');
+  Array.prototype.forEach.call(h.querySelectorAll('button'),function(b){
+    b.addEventListener('click',function(){
+      Array.prototype.forEach.call(h.querySelectorAll('button'),function(x){x.classList.toggle('on',x===b)});
+      onPick(b.dataset.v);});});
+}
+
+function theme(){
+  var b=$('theme'); if(!b)return;
+  b.addEventListener('click',function(){
+    var c=document.documentElement.getAttribute('data-theme');
+    if(!c)c=matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light';
+    document.documentElement.setAttribute('data-theme',c==='dark'?'light':'dark');});
+}
+
+return {$:$,el:el,num:num,f2:f2,pct:pct,usd:usd,esc:esc,dash:dash,
+  getJSON:getJSON,postJSON:postJSON,setStatus:setStatus,setStamp:setStamp,
+  showError:showError,clearError:clearError,hero:hero,dumbbell:dumbbell,
+  smallMultiples:smallMultiples,dotWhisker:dotWhisker,Table:Table,chips:chips,theme:theme};
+})();
+</script>
+
+<script id="BL" type="application/json">{"months":["2024-01","2024-02","2024-03","2024-04","2024-05","2024-06","2024-07","2024-08","2024-09","2024-10","2024-11","2024-12","2025-01","2025-02","2025-03","2025-04","2025-05","2025-06","2025-07","2025-08","2025-09","2025-10","2025-11","2025-12","2026-01","2026-02","2026-03","2026-04","2026-05","2026-06","2026-07","2026-08","2026-09"],"name":{"sky-lending":"Sky (sUSDS)","ondo-yield-assets":"Ondo","ethena-usde":"Ethena (sUSDe)","midas-rwa":"Midas","falcon-finance":"Falcon","usual-usd0":"Usual USD0","origin-dollar":"Origin Dollar","origin-ether":"Origin Ether"},"order":["ethena-usde","sky-lending","midas-rwa","falcon-finance","ondo-yield-assets","usual-usd0","origin-dollar","origin-ether"],"proto":{"ethena-usde":{"base":[null,20.389,37.107,23.984,20.729,17.264,11.269,7.069,6.434,11.343,20.674,20.386,12.107,9.18,6.557,4.976,5.761,4.905,6.695,7.614,7.073,4.258,5.175,4.415,4.757,3.753,3.491,4.031,3.783,3.869,3.974,4.308,4.792],"org":[null,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0],"tvl":[null,182398887,327573908,380833521,571655958,1437654024,1546917918,1291261826,1119261570,1269628939,2070394724,3747251904,3681578348,3446641761,2742219503,2083937840,2355785530,3328306874,3575865999,5391631953,5910565543,5535436880,4499830585,3534896168,3705033598,3630204230,3561519786,3058367136,1862631965,1733508819,1588044637,1435749636,1346876956],"first":"2024-02","start":20.39,"peak":37.11,"peak_m":"2024-03","now_then":4.79,"tvl_peak":5910565543,"tvl_then":1346876956,"inc_usd":0,"pools":1},"sky-lending":{"base":[5.0,5.0,11.97,12.218,9.123,8.0,7.475,6.444,6.0,5.605,6.331,10.794,11.466,7.742,5.715,4.228,4.008,3.943,3.883,4.084,4.111,4.229,4.192,3.949,3.845,3.879,3.715,3.632,3.554,3.522,3.552,3.518,3.566],"org":[1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0],"tvl":[1434498789,1178191613,1416749076,1768249532,2039406299,1888834601,1992230353,2019828341,2067212107,1759113816,1359486511,1063734054,1084612308,1501836424,2155564029,1813628965,1692607897,1629157252,1332970775,1232304939,1331691471,1626869738,2080417292,2366767993,2334491578,2058381662,2258558299,2226003822,2194378141,2201402561,1366240271,1095602114,1080899998],"first":"2024-01","start":5.0,"peak":12.22,"peak_m":"2024-04","now_then":3.57,"tvl_peak":2366767993,"tvl_then":1080899998,"inc_usd":0,"pools":5},"midas-rwa":{"base":[null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,6.645,10.421,9.545,null,null,null,null,null,null,8.298,6.928,6.099,4.991],"org":[null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,1.0,1.0,1.0,null,null,null,null,null,null,1.0,1.0,1.0,1.0],"tvl":[null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,104966466,113705915,91918940,null,null,null,null,null,null,20617669,21606250,22007277,24118845],"first":"2025-09","start":6.65,"peak":10.42,"peak_m":"2025-10","now_then":4.99,"tvl_peak":113705915,"tvl_then":24118845,"inc_usd":0,"pools":15},"falcon-finance":{"base":[null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,7.766,7.452,7.936,6.465,5.8,5.397,5.58,4.31,4.502,4.754,4.108,3.707],"org":[null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0],"tvl":[null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,122927446,92091595,84375928,79433278,56269051,52134489,49215717,45823678,42424094,39216203,38580926,42058474],"first":"2025-10","start":7.77,"peak":7.94,"peak_m":"2025-12","now_then":3.71,"tvl_peak":122927446,"tvl_then":42058474,"inc_usd":0,"pools":2},"ondo-yield-assets":{"base":[null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,3.618,3.39,3.485,3.513,3.516,3.532,3.534,3.535,3.551],"org":[null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0],"tvl":[null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,108251491,110158899,141872412,146567781,180222711,238329904,234018319,230201733,232117598],"first":"2026-01","start":3.62,"peak":3.62,"peak_m":"2026-01","now_then":3.55,"tvl_peak":238329904,"tvl_then":232117598,"inc_usd":0,"pools":11},"usual-usd0":{"base":[null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,32.875,22.61,15.463,17.25,14.668,14.783,18.876,14.267,14.084,14.007,13.782,15.301,20.56,12.312],"org":[null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,0.4499,0.3482,0.1867,0.1772,0.1307,0.1657,0.3842,0.3593,0.3548,0.405,0.3244,0.3129,0.4325,0.3748],"tvl":[null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,19547191,19198520,12932106,11987840,12387434,14846447,6964840,6755312,6864930,8201669,6186969,5867001,7017372,8198124],"first":"2025-08","start":32.88,"peak":32.88,"peak_m":"2025-08","now_then":12.31,"tvl_peak":19547191,"tvl_then":8198124,"inc_usd":5541141,"pools":1},"origin-dollar":{"base":[null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,5.369,6.494],"org":[null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,1.0,1.0],"tvl":[null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,5586123,5617536],"first":"2026-08","start":5.37,"peak":6.49,"peak_m":"2026-09","now_then":6.49,"tvl_peak":5617536,"tvl_then":5617536,"inc_usd":0,"pools":1},"origin-ether":{"base":[null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,2.7,2.7],"org":[null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,1.0,1.0],"tvl":[null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,35876305,39129779],"first":"2026-08","start":2.7,"peak":2.7,"peak_m":"2026-09","now_then":2.7,"tvl_peak":39129779,"tvl_then":39129779,"inc_usd":0,"pools":2}},"cr":{"aerodrome-slipstream":{"180":{"ratio":1.473,"n":290,"below":0.317},"30":{"ratio":1.609,"n":475,"below":0.267},"365":{"ratio":1.444,"n":66,"below":0.288},"90":{"ratio":1.635,"n":392,"below":0.301}},"balancer-v3":{"180":{"ratio":0.847,"n":37,"below":0.73},"30":{"ratio":0.945,"n":46,"below":0.696},"90":{"ratio":0.876,"n":39,"below":0.769}},"curve-dex":{"180":{"ratio":0.898,"n":603,"below":0.629},"30":{"ratio":0.988,"n":711,"below":0.54},"365":{"ratio":0.815,"n":450,"below":0.709},"90":{"ratio":0.955,"n":668,"below":0.569}},"ethena-usde":{"180":{"ratio":0.938,"n":50,"below":0.58},"30":{"ratio":1.042,"n":60,"below":0.45},"365":{"ratio":0.811,"n":39,"below":0.692},"90":{"ratio":0.989,"n":56,"below":0.536}},"midas-rwa":{"30":{"ratio":1.019,"n":37,"below":0.405}},"ondo-yield-assets":{"180":{"ratio":1.012,"n":44,"below":0.5},"30":{"ratio":1.018,"n":154,"below":0.091},"90":{"ratio":1.018,"n":110,"below":0.236}},"sky-lending":{"180":{"ratio":0.96,"n":75,"below":0.573},"30":{"ratio":1.018,"n":101,"below":0.297},"365":{"ratio":0.879,"n":59,"below":0.729},"90":{"ratio":1.0,"n":87,"below":0.506}},"uniswap-v3":{"180":{"ratio":1.249,"n":1481,"below":0.394},"30":{"ratio":1.257,"n":1687,"below":0.372},"365":{"ratio":1.304,"n":1260,"below":0.37},"90":{"ratio":1.273,"n":1607,"below":0.372}},"uniswap-v4":{"180":{"ratio":0.907,"n":51,"below":0.569},"30":{"ratio":0.938,"n":133,"below":0.549},"90":{"ratio":0.944,"n":98,"below":0.541}}}}</script>
+<script>
+(function(){
+"use strict";
+var D=DASH, $=D.$, usd=D.usd, f2=D.f2, pct=D.pct, esc=D.esc;
+var BL=JSON.parse(document.getElementById('BL').textContent);
+var MONTHS=BL.months, NAME=BL.name, ORDER=BL.order, P=BL.proto, CR=BL.cr;
+var SLUG=Object.keys(NAME);
+var POOLS=[], AGG={}, live=false;
+
+function load(){
+  return D.getJSON('https://yields.llama.fi/pools',30000).then(function(j){
+    POOLS=((j&&j.data)||[]).filter(function(p){
+      return SLUG.indexOf(p.project)>=0 && p.apyBase!==null && p.apyBase!==undefined;})
+      .map(function(p){return {project:p.project,sym:p.symbol||'',chain:p.chain||'',
+        tvl:D.num(p.tvlUsd),base:D.num(p.apyBase),rew:D.num(p.apyReward)};});
+    var by={};
+    POOLS.forEach(function(p){
+      var o=by[p.project]||(by[p.project]={n:0,tvl:0,wb:0,wr:0});
+      o.n++;o.tvl+=p.tvl;o.wb+=p.base*p.tvl;o.wr+=p.rew*p.tvl;});
+    AGG={};
+    SLUG.forEach(function(s){var o=by[s]; if(!o||!o.tvl){AGG[s]=null;return}
+      AGG[s]={pools:o.n,tvl:o.tvl,base:o.wb/o.tvl,rew:o.wr/o.tvl,
+        org:(o.wb+o.wr)>0?o.wb/(o.wb+o.wr):1};});
+    live=true;});
+}
+function r365(s){var c=CR[s]&&CR[s][365];return c?c.ratio:null}
+
+function renderHero(){
+  var tvl=0,w=0,n=0,issuers=0;
+  SLUG.forEach(function(s){var a=AGG[s];if(!a)return;issuers++;tvl+=a.tvl;w+=a.base*a.tvl;n+=a.pools;});
+  var rateNow=tvl?w/tvl:null;
+  var bw=0,bt=0;
+  ORDER.forEach(function(s){bw+=P[s].now_then*P[s].tvl_then;bt+=P[s].tvl_then;});
+  var rateThen=bt?bw/bt:0;
+  var ratios=ORDER.map(r365).filter(function(v){return v!=null}).sort(function(a,b){return a-b});
+  var medR=ratios.length?(ratios.length%2?ratios[(ratios.length-1)/2]
+    :(ratios[ratios.length/2-1]+ratios[ratios.length/2])/2):null;
+  var peaks=ORDER.map(function(s){return P[s].peak});
+  D.hero([
+    ['Advertised rate, now', live?f2(rateNow)+'%':D.dash,
+      live?('published <b>'+f2(rateThen)+'%</b>, weighted by size'):'<span class="skel">waiting for live data</span>'],
+    ['Size covered', live?usd(tvl):D.dash,
+      live?('<b>'+n.toLocaleString('en-US')+'</b> pools across <b>'+issuers+'</b> issuers')
+        :'<span class="skel">waiting for live data</span>'],
+    ['Realised over advertised, 1y', medR==null?D.dash:f2(medR,2),
+      'median across issuers with enough history. One would mean the promise was met'],
+    ['Highest rate ever offered', f2(Math.max.apply(null,peaks))+'%',
+      'Ethena in March 2024, against <b>'+f2(P['ethena-usde'].now_then)+'%</b> by the end of the study']
+  ]);
+}
+
+function renderDrift(){
+  var rows=ORDER.map(function(s){var a=AGG[s];
+    return {name:NAME[s],then:P[s].now_then,now:live?(a?a.base:null):null};})
+    .sort(function(a,b){return (b.now==null?b.then:b.now)-(a.now==null?a.then:a.now)});
+  D.dumbbell('drift','drift-lg',rows,0,function(v){return f2(v)+'%'},
+    'published, final month','live, this page load');
+}
+
+function renderLive(){
+  D.Table('tlive',[
+    ['name','Issuer',function(r){return esc(NAME[r.s])},function(r){return NAME[r.s]},''],
+    ['pools','Pools',function(r){return r.a?r.a.pools:D.dash},function(r){return r.a?r.a.pools:-1},''],
+    ['tvl','Size',function(r){return r.a?usd(r.a.tvl):D.dash},function(r){return r.a?r.a.tvl:-1},''],
+    ['base','Rate now',function(r){return r.a?f2(r.a.base)+'%':D.dash},function(r){return r.a?r.a.base:-1},'mark'],
+    ['was','Published',function(r){return f2(P[r.s].now_then)+'%'},function(r){return P[r.s].now_then},''],
+    ['peak','Peak',function(r){return f2(P[r.s].peak)+'% <span class="d">'+P[r.s].peak_m+'</span>'},
+      function(r){return P[r.s].peak},''],
+    ['from','Observed from',function(r){return P[r.s].first},function(r){return P[r.s].first},''],
+    ['org','Asset funded',function(r){return r.a?f2(r.a.org):D.dash},function(r){return r.a?r.a.org:-1},
+      function(r){return (r.a&&r.a.org<0.9)?'neg':''}],
+    ['cr','Realised / advertised, 1y',function(r){var v=r365(r.s);return v==null?D.dash:f2(v,3)},
+      function(r){var v=r365(r.s);return v==null?-1:v},
+      function(r){var v=r365(r.s);return (v!=null&&v<0.9)?'neg':''}],
+    ['szdrop','Size vs peak',function(r){var p=P[r.s];
+      return p.tvl_peak?f2((p.tvl_then/p.tvl_peak-1)*100,0)+'%':D.dash},
+      function(r){var p=P[r.s];return p.tvl_peak?(p.tvl_then/p.tvl_peak-1):-99},
+      function(r){var p=P[r.s];return (p.tvl_peak&&p.tvl_then/p.tvl_peak-1<-0.5)?'neg':''}]
+  ],function(){return ORDER.map(function(s){return {s:s,a:AGG[s]}})},
+   {sort:'tvl',empty:'Waiting for live data.'}).draw();
+}
+
+function renderCR(){
+  var box=$('crbars'); box.innerHTML='';
+  var W=[30,90,180,365], lo=0.6, hi=1.05;
+  var PW=230,PH=74,SP=8,padL=6,padR=6;
+  var xs=function(i){return padL+(i/(W.length-1))*(PW-padL-padR)};
+  var ys=function(v){return SP+(1-(Math.max(lo,Math.min(hi,v))-lo)/(hi-lo))*(PH-2*SP)};
+  var grid=D.el('div','sm-grid');
+  ORDER.forEach(function(s){
+    var c=CR[s]; if(!c)return;
+    var pts=[]; W.forEach(function(w,i){ if(c[w])pts.push([xs(i),ys(c[w].ratio),c[w].ratio,i]); });
+    if(!pts.length)return;
+    var g='<svg viewBox="0 0 '+PW+' '+PH+'" role="img" aria-label="'+esc(NAME[s])+'">';
+    g+='<line class="gridline" x1="0" y1="'+ys(1).toFixed(1)+'" x2="'+PW+'" y2="'+ys(1).toFixed(1)+
+       '" stroke-dasharray="2 3" opacity=".9"/>';
+    if(pts.length>1)
+      g+='<path d="M'+pts.map(function(q){return q[0].toFixed(1)+','+q[1].toFixed(1)}).join('L')+
+         '" fill="none" stroke="var(--accent)" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>';
+    pts.forEach(function(q){
+      g+='<circle cx="'+q[0].toFixed(1)+'" cy="'+q[1].toFixed(1)+'" r="3" fill="var(--accent)"><title>'+
+         W[q[3]]+' days: '+f2(q[2],3)+'</title></circle>';});
+    var last=pts[pts.length-1];
+    var missing=W.length-pts.length;
+    grid.appendChild(D.el('div','sm',
+      '<h4><span class="smn">'+esc(NAME[s])+'</span><span class="smv">'+f2(last[2],2)+'</span></h4>'+
+      '<div class="smc">'+g+'</svg></div>'+
+      '<p class="smf">'+W.map(function(w){return c[w]?f2(c[w].ratio,2):'—'}).join('  ')+
+      (missing?('  · '+missing+' horizon'+(missing>1?'s':'')+' too short'):'')+'</p>'));
+  });
+  box.appendChild(grid);
+  box.appendChild(D.el('p','smaxis','<span>30 days</span><span>365 days</span>'));
+  $('crbars-lg').innerHTML='<span>The dashed line marks a ratio of one, where the promise is exactly met.</span>'+
+    '<span>Scale 0.60 to 1.05. A horizon with fewer than thirty windows is left out.</span>';
+}
+
+function renderHistory(){
+  var mx=0; ORDER.forEach(function(s){P[s].base.forEach(function(v){if(v!=null&&v>mx)mx=v})});
+  D.smallMultiples('hist',MONTHS,{lo:0,hi:mx*1.04,
+    series:ORDER.map(function(s){return {n:NAME[s],v:P[s].base,tag:f2(P[s].now_then)+'%',
+      foot:'peaked at '+f2(P[s].peak)+'% in '+P[s].peak_m};}),
+    tip:function(v){return f2(v)+'%'}});
+  $('hist-lg').innerHTML='<span>Every panel runs '+MONTHS[0]+' to '+MONTHS[MONTHS.length-1]+
+    ' on one scale topping out at '+f2(mx)+'% a year.</span>';
+  var tmx=0; ORDER.forEach(function(s){P[s].tvl.forEach(function(v){if(v!=null&&v>tmx)tmx=v})});
+  D.smallMultiples('sizes-chart',MONTHS,{lo:0,hi:tmx*1.04,
+    series:ORDER.map(function(s){return {n:NAME[s],v:P[s].tvl,tag:usd(P[s].tvl_then),
+      foot:'peaked at '+usd(P[s].tvl_peak)};}),
+    tip:function(v){return usd(v)}});
+  $('sizes-lg').innerHTML='<span>All panels on one scale topping out at '+usd(tmx)+'.</span>';
+}
+
+/* explorer */
+var q='',pick='all',minSize=0,pt;
+var SZ=[[1e6,'$1M and up'],[1e5,'$100k and up'],[0,'Everything']];
+function poolRows(){
+  var s=q.toLowerCase();
+  return POOLS.filter(function(p){
+    if(p.tvl<minSize)return false;
+    if(pick!=='all'&&p.project!==pick)return false;
+    if(!s)return true;
+    return (p.sym+' '+p.chain+' '+(NAME[p.project]||p.project)).toLowerCase().indexOf(s)>=0;});
+}
+function buildExplorer(){
+  pt=D.Table('tpools',[
+    ['sym','Pool',function(p){return esc(p.sym)},function(p){return p.sym},''],
+    ['project','Issuer',function(p){return esc(NAME[p.project]||p.project)},function(p){return NAME[p.project]||p.project},''],
+    ['chain','Chain',function(p){return esc(p.chain)},function(p){return p.chain},''],
+    ['tvl','Size',function(p){return usd(p.tvl)},function(p){return p.tvl},''],
+    ['base','Rate',function(p){return f2(p.base)+'%'},function(p){return p.base},'mark'],
+    ['rew','Token top-up',function(p){return f2(p.rew)+'%'},function(p){return p.rew},
+      function(p){return p.rew>1?'neg':''}],
+    ['org','Asset funded',function(p){var d=p.base+p.rew;return d>0?f2(p.base/d):'1.00'},
+      function(p){var d=p.base+p.rew;return d>0?p.base/d:1},'']
+  ],poolRows,{sort:'tvl',perPage:25,empty:'Waiting for live data.',
+    onDraw:function(total,pages,page){
+      var hidden=POOLS.length-total;
+      $('cnt').textContent=total.toLocaleString('en-US')+(total===1?' pool':' pools')+
+        (hidden>0?(', '+hidden.toLocaleString('en-US')+' filtered out'):'');
+      $('pg').textContent=total?('page '+(page+1)+' of '+pages+', showing '+(page*25+1)+' to '+
+        Math.min(total,(page+1)*25)):'';
+      $('prev').disabled=page<=0;$('next').disabled=page>=pages-1;}});
+  D.chips('szs',SZ.map(function(o){return [String(o[0]),o[1]]}),String(minSize),
+    function(v){minSize=+v;pt.reset();pt.draw()});
+  D.chips('chips',[['all','All']].concat(ORDER.map(function(s){return [s,NAME[s]]})),'all',
+    function(v){pick=v;pt.reset();pt.draw()});
+  $('prev').addEventListener('click',function(){pt.state.page--;pt.draw();
+    $('sec-pools').scrollIntoView({behavior:'smooth',block:'start'})});
+  $('next').addEventListener('click',function(){pt.state.page++;pt.draw();
+    $('sec-pools').scrollIntoView({behavior:'smooth',block:'start'})});
+  $('q').addEventListener('input',function(){q=this.value;pt.reset();pt.draw()});
+}
+
+renderHistory(); renderCR(); renderHero(); renderDrift(); renderLive();
+buildExplorer(); pt.draw(); D.theme();
+
+function refresh(){
+  $('refresh').disabled=true; D.setStatus('','loading live data'); D.clearError();
+  var t0=Date.now();
+  load().then(function(){
+    renderHero(); renderDrift(); renderLive(); pt.reset(); pt.draw();
+    D.setStatus('live','live');
+    D.setStamp(new Date().toLocaleString('en-GB')+', '+((Date.now()-t0)/1000).toFixed(1)+'s');
+    $('refresh').disabled=false;
+  }).catch(function(e){
+    live=false; D.setStatus('off','live data unavailable'); D.showError(e.message);
+    $('refresh').disabled=false;});
+}
+$('refresh').addEventListener('click',refresh);
+refresh();
+})();
+</script>
+
+</body>
+</html>

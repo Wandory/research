@@ -1,0 +1,119 @@
+<button id="tt" type="button">Theme</button>
+<article class="paper">
+
+<header class="titleblock">
+  <p class="kicker">Independent research &middot; yield-bearing stablecoins</p>
+  <h1>The rate that does not hold</h1>
+  <p class="sub">The path of the advertised rate across eight yield-bearing stablecoin issuers, set against the yield holders actually realised, January 2024 to September 2026</p>
+  <dl class="meta">
+    <div><dt>Author</dt><dd>Illia Sharan (Wandor)</dd></div>
+    <div><dt>Date</dt><dd>17 September 2026</dd></div>
+    <div><dt>Data</dt><dd>DefiLlama yields API</dd></div>
+    <div><dt>Sample</dt><dd>8 issuers, 38 pools, $9.6B</dd></div>
+  </dl>
+</header>
+
+<section class="abstract">
+  <h2>Abstract</h2>
+  <p>A yield-bearing stablecoin is sold as a single annualised percentage. Behind that number sit different mechanisms: a Treasury coupon, the funding rate on a derivatives market, interest on loans, or a distribution of the issuer's own token. In the interface they all look the same.</p>
+  <p>This paper sets the advertised rate on the day of entry against the yield actually compounded over the following 30, 90, 180 and 365 days. At a one-month horizon the rate is informative for all eight issuers. At a one-year horizon the median ratio of realised to promised falls to 0.81 at Ethena and 0.88 at Sky, whereas at Ondo, backed by Treasuries, the rate misses in only 9% of monthly windows. The case of Usual USD0 is examined separately: at its peak 87% of the displayed yield was funded by distributing the issuer's own token.</p>
+</section>
+
+<nav class="toc">
+  <h2>Contents</h2>
+  <ol>
+    <li><a href="#s1"><span class="n">1</span>Research question</a></li>
+    <li><a href="#s2"><span class="n">2</span>Data and method</a></li>
+    <li><a href="#s3"><span class="n">3</span>The path of rates</a></li>
+    <li><a href="#s4"><span class="n">4</span>Advertised against realised</a></li>
+    <li><a href="#s5"><span class="n">5</span>The case of Usual USD0</a></li>
+    <li><a href="#s6"><span class="n">6</span>Limitations</a></li>
+    <li><a href="#s7"><span class="n">7</span>Conclusions</a></li>
+    <li><a href="#refs"><span class="n">&nbsp;</span>References</a></li>
+    <li><a href="#data"><span class="n">&nbsp;</span>Data availability</a></li>
+  </ol>
+</nav>
+
+<section id="s1">
+  <h2><span class="n">1</span>Research question</h2>
+  <p class="lead">The question of this paper: how well does the advertised rate on a yield-bearing stablecoin predict what the holder ends up with.</p>
+  <p>What matters to a holder is not the rate at the moment of entry but the result compounded over the holding period. The two coincide only when the rate is constant. This paper measures the gap and shows that its size is systematically tied to the mechanism funding the yield.</p>
+  <p>Sample: Sky (sUSDS), Ondo, Ethena (sUSDe), Midas, Falcon, Usual USD0, Origin Dollar and Origin Ether. In total 38 pools of at least $2M each.</p>
+</section>
+
+<section id="s2">
+  <h2><span class="n">2</span>Data and method</h2>
+  <p>Daily series for <span class="mono">apyBase</span>, <span class="mono">apyReward</span> and <span class="mono">tvlUsd</span> come from the DefiLlama yields API [1]. Realised yield is computed by log-compounding daily rates and annualising. Windows are stepped every 15 days and discarded if a gap in the series exceeds a quarter of the window length. Only windows whose entry rate was at least 3% annualised enter the ratio calculation, that is, those a holder would plausibly act on.</p>
+  <p>History lengths differ: Ethena and Sky are observed from the start of 2024, Midas from September 2025, Ondo from January 2026. Annual windows therefore do not exist for every issuer, and the table shows a dash where they do not.</p>
+</section>
+
+<section id="s3">
+  <h2><span class="n">3</span>The path of rates</h2>
+  <figure id="fig1">
+    <div class="lines" id="rateLines"></div>
+    <figcaption><b>Figure 1.</b> Monthly rate by issuer, per cent annualised. A dashed segment joins months for which the source holds no data; it does not indicate a zero rate.</figcaption>
+  </figure>
+  <div class="tbl" id="tab1">
+    <p class="tcap"><b>Table 1.</b> Rate at the start of observation, at peak, and today, with the change in size.</p>
+    <div class="tw"><table id="decayTable"></table></div>
+    <p class="tnote">Size is the sum across that issuer's pools in the sample. The change in size is measured from peak to the current value.</p>
+  </div>
+  <p>Every mechanism has converged on roughly the same level, 3.5% to 5% annualised, but each arrived from a different height. Ethena travelled from 37.11% in March 2024 to 4.79% and lost 77% of its peak size. Sky fell from 12.22% to 3.57%. Ondo has held 3.5% almost without movement since January 2026.</p>
+  <p>The shape of the curve identifies the mechanism. Treasuries produce a nearly horizontal line, a funding rate traces the market cycle, and a governance decision produces steps. Young issuers climb before they settle: Midas opened at 6.65%, peaked at 10.42% a month later and now pays 4.99%; Falcon opened at 7.77%, peaked at 7.94% and now pays 3.71%.</p>
+</section>
+
+<section id="s4">
+  <h2><span class="n">4</span>Advertised against realised</h2>
+  <div class="tbl" id="tab2">
+    <p class="tcap"><b>Table 2.</b> Median ratio of realised to advertised yield across four horizons.</p>
+    <div class="tw"><table id="crTable"></table></div>
+    <p class="tnote">A value of one means the promise was met. A dash means fewer than thirty windows, in which case the value is not computed.</p>
+  </div>
+  <p>At a one-month horizon the ratio sits between 1.02 and 1.04 for all four issuers with sufficient history. At a one-year horizon it drops to 0.81 at Ethena and 0.88 at Sky: the holder received roughly a fifth less than advertised, and that is the median case, not the worst one. Ondo stands out for predictability: only 9% of its monthly windows closed below the advertised rate, against 30% to 45% for the rest.</p>
+  <p>The result matches the lending-protocol paper [2], where the one-year median fell to between 0.64 and 0.90. The advertised rate describes the coming month and does not describe the coming year, whatever the product type.</p>
+</section>
+
+<section id="s5">
+  <h2><span class="n">5</span>The case of Usual USD0</h2>
+  <p>At seven of the eight issuers the entire yield comes from the asset: bonds, funding, or loans. Usual USD0 is different, since a substantial part of it is a distribution of the issuer's own token.</p>
+  <figure id="fig2">
+    <div class="smallmult" id="usualMult"></div>
+    <figcaption><b>Figure 2.</b> Share of the displayed yield funded by the asset itself: Usual USD0 and, for comparison, Ethena.</figcaption>
+  </figure>
+  <p>In December 2025 the asset-funded rate at Usual USD0 stood at 14.67% annualised against a token distribution of 97.55%, meaning 87% of the displayed number was printed. By September 2026 the distribution had fallen to 20.53% and size had dropped from $19.5M to $8.2M. Over the whole period $5.5M was distributed in tokens against an average size of about $11M.</p>
+</section>
+
+<section id="s6">
+  <h2><span class="n">6</span>Limitations</h2>
+  <ul class="plain">
+    <li><b>Fees and slippage are excluded.</b> Yield here is the product's rate, not the investor's bottom line: entering, exiting and swapping cost money that the calculation does not carry.</li>
+    <li><b>Risk is not measured.</b> The paper compares the predictability of a rate, not the soundness of the backing. Depegs, collateral quality and counterparty risk are not visible in this data.</li>
+    <li><b>History lengths differ,</b> so issuers are compared on samples of unequal size, and annual windows do not exist for all of them.</li>
+    <li><b>A single source.</b> Rates are taken from an aggregator; no reconciliation against issuer contracts was performed.</li>
+  </ul>
+</section>
+
+<section id="s7">
+  <h2><span class="n">7</span>Conclusions</h2>
+  <ol>
+    <li>The advertised rate on a yield-bearing stablecoin is informative over a month and misleading over a year.</li>
+    <li>The size of the gap tracks the mechanism: the higher and more volatile the source of income, the wider the divergence.</li>
+    <li>Predictability is a product characteristic in its own right: the issuer with the lowest rate in the sample misses its own promise least often.</li>
+    <li>Size follows the rate with a lag, which makes a high launch rate an acquisition tool rather than a property of the product.</li>
+  </ol>
+</section>
+
+<section id="refs">
+  <h2>References</h2>
+  <ol class="refs">
+    <li>DefiLlama. Yields API, <code>yields.llama.fi/pools</code> and <code>yields.llama.fi/chart/{pool}</code>. Data retrieved 17 September 2026.</li>
+    <li>Illia Sharan. Organic yield against token subsidies: a decomposition of yield across eight lending protocols, September 2026. The method for computing realised yield is taken from it.</li>
+  </ol>
+</section>
+
+<section id="data">
+  <h2>Data availability</h2>
+  <div class="files2" id="files"></div>
+</section>
+
+</article>
